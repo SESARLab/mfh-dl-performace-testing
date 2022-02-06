@@ -11,5 +11,5 @@ This repository contains:
 - My *Bachelor's* degree thesis where I discuss the performance evaluation between [Apache Hive](https://hive.apache.org/) and [Apache Druid](https://druid.apache.org/)
 - Inside the benchmark folder:
   - JMeter test plans used to benchmark Apache Hive and Apache Druid via HTTP
-  - Performance testing results 
+  - JMeter Performance testing results in CSV
 
