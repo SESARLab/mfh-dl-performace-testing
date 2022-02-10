@@ -1,0 +1,11 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1644325727068,1465,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1463,0,48
+1644325728542,1407,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1407,0,5
+1644325729950,1407,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1407,0,6
+1644325731359,1409,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1409,0,6
+1644325732769,1412,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1411,0,7
+1644325734182,1412,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1412,0,6
+1644325735595,1427,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1427,0,7
+1644325737022,1416,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1416,0,6
+1644325738440,1421,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1421,0,5
+1644325739862,1416,Query 5,200,OK,Thread Group 1-1,text,true,,4030,573,1,1,http://172.20.28.121:8888/druid/v2/sql/,1416,0,5
