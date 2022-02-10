@@ -537,11 +537,73 @@ JMeter ran with the following conditions:
 - Single user testing
 - Each query was run 10 times to have 10 samples per query
 - Each request consisted of all 6 queries run in succession
-- For each request, Average Response Time, Lowest Response Time, Highest Response Time, and Average Response Time Standard Deviation per query were calculated
+- For each request, Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation were calculated
 
 ## 3. Test results
 
 Show and compare tests results using Apache JMeter charts.
+
+### 3.1 Query 1
+
+![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 1.png)
+<sub>Figure 1: Average response time for Query 1</sub>
+
+
+| Query           | Average | Min  | Max  | Std. Dev. |
+| --------------- | ------- | ---- | ---- | --------- |
+| Hive - Query 1  | 382     | 346  | 457  | 39,50     |
+| Druid - Query 1 | 160     | 148  | 229  | 23,22     |
+<sub>Table 2:  Average response time for Query 1</sub>
+
+|         | Average - Hive | Average - Druid | Cohen's d | Average Difference |
+| ------- | -------------- | --------------- | --------- | ------------------ |
+| Query 1 | 382            | 160             | 6.87      | Huge decrease      |
+<sub>Table 3:  Performance difference for Query 1</sub>
+
+### 3.2 Query 2
+
+![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 2.png)
+
+| Query           | Average | Min  | Max  | Std. Dev. |
+| --------------- | ------- | ---- | ---- | --------- |
+| Hive - Query 2  | 376     | 359  | 401  | 13,55     |
+| Druid - Query 2 | 152     | 148  | 163  | 4,17      |
+
+### 3.3 Query 3
+
+![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 3.png)
+
+| Query           | Average | Min  | Max  | Std. Dev. |
+| --------------- | ------- | ---- | ---- | --------- |
+| Hive - Query 3  | 363     | 350  | 383  | 12,67     |
+| Druid - Query 3 | 154     | 148  | 168  | 5,99      |
+
+### 3.4 Query 4
+
+![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 4.png)
+
+| Query           | Average | Min    | Max    | Std. Dev. |
+| --------------- | ------- | ------ | ------ | --------- |
+| Hive - Query 4  | 521931  | 518235 | 526918 | 3157,38   |
+| Druid - Query 4 | 2027    | 2020   | 2038   | 6,53      |
+
+### 3.5 Query 5
+
+![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 5.png)
+
+| Query           | Average | Min    | Max    | Std. Dev. |
+| --------------- | ------- | ------ | ------ | --------- |
+| Hive - Query 5  | 511250  | 503896 | 518260 | 3898,01   |
+| Druid - Query 5 | 1417    | 1401   | 1449   | 12,75     |
+
+### 3.6 Query 6
+
+![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 6.png)
+
+| Query           | Average | Min    | Max    | Std. Dev. |
+| --------------- | ------- | ------ | ------ | --------- |
+| Hive - Query 6  | 580362  | 575520 | 585806 | 2952,75   |
+| Druid - Query 6 | 266     | 264    | 271    | 2,01      |
 
 ## 4. Conclusions
 
