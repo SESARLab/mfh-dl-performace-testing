@@ -1,0 +1,8 @@
+Label,# Samples A,# Samples B,Average A,Average B,Cohen's d,Average Difference,Failed
+Query 1,10,10,382,160,6.87,Huge decrease,false
+Query 2,10,10,376,152,22.37,Huge decrease,false
+Query 3,10,10,363,154,21.15,Huge decrease,false
+Query 4,10,10,521931,2027,232.87,Huge decrease,false
+Query 5,10,10,511250,1417,184.97,Huge decrease,false
+Query 6,10,10,580362,266,277.84,Huge decrease,false
+OVERALL AVERAGE,6,6,269111,696,1.41,Very large decrease,false
