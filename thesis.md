@@ -52,7 +52,7 @@ A concise summary of the thesis.
 
 ### 1.1 Big Data and Data Lake systems
 
-A short paragraph on Big Data, and Data Lake systems: what is a Data Lake, its purpose, mention schema-on-read vs schema-on-write concepts, mention the single table pattern.
+A short paragraph on Big Data and Data Lake systems: what is a Data Lake, its purpose, mention schema-on-read vs schema-on-write concepts, mention the single table pattern.
 
 ### 1.2 MIND Foods HUB
 
@@ -76,7 +76,7 @@ A super short introduction to Apache JMeter.
 
 ## 2. Performance Testing and methodology
 
-To evaluate the performance of Apache Hive and Apache Druid, and to achieve a reproducible test, I followed five major steps for each database:
+To evaluate the performance of Apache Hive and Apache Druid and to achieve a reproducible test, I followed five significant steps for each database:
 
 1. Provision of each solution
 2. Generate syntetic data
@@ -86,7 +86,7 @@ To evaluate the performance of Apache Hive and Apache Druid, and to achieve a re
 
 ### 2.1 Provision each solution
 
-To provision both solutions I used a Vmware virtual machine hosted on the SESAR Lab cluster with the following configuration:
+To provision both solutions, I used a Vmware virtual machine hosted on the SESAR Lab cluster with the following configuration:
 
 - 12 vCPU
 - 48 GiB of memory
@@ -94,7 +94,7 @@ To provision both solutions I used a Vmware virtual machine hosted on the SESAR 
 - 512 GiB storage
 - Debian GNU/Linux 11 (bullseye) operative system.
 
-With the machine properly provisioned I had to replicate the MIND Foods HUB environment; 
+With the machine adequately provisioned, I had to replicate the MIND Foods HUB environment; 
 this was achieved by using a dockerized multi-node Hadoop cluster configured as close as possible to the one running in production.
 The Hadoop cluster is composed by:
 
@@ -113,35 +113,34 @@ Apache Hive was configured to run on the same Hadoop dockerized cluster and cons
 - A Metastore server
 - A MySQL 8.2 instance to persists Metastore's metadata
 
-During the test execution of queries involving a big data set, I encountered various timeouts and/or `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB.
+During the test execution of queries involving a big data set, I encountered various timeouts and `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB.
 After some research and various attempts, I increased the maximum heap size of the Hive Server to 4096 MiB. 
 I also configured the Hive CLI JVM heap size to 8192 MiB.
 
 #### Apache Druid provisioning
 
-Apache Druid was configured to run as a clustered deployment, and consists of the following servers:
-The Druid's cluster used for the tests consists in:
+Apache Druid was configured to run as a clustered deployment and consists of the following servers:
 
 - A Coordinator, responsible for handling the metadata and coordination of the various processes of the cluster
-- A Broker, that receives and forwards queries to the data servers
-- A Router, that acts as an API gateway, receives queries from external clients  and routes them to the Broker
+- A Broker that receives and forwards queries to the data servers
+- A Router that acts as an API gateway, receives queries from external clients  and routes them to the Broker
 - An Historical server, that handles the data storage and runs queries on historical, segmented data
 - A MiddleManager, that handles ingestion of new data into the cluster
 
-As previously mentioned Apache Druid can ingest batch data natively or by loading data files from a Hadoop cluster.
+As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from a Hadoop cluster.
 Since one of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place, I configured the Druid cluster to work with HDFS by using [druid-hdfs-storage extensions](https://druid.apache.org/docs/latest/development/extensions-core/hdfs.html);
 This means that, instead of using a local mount, Druid directly used HDFS to store data segments.
 
 ### 2.2 Data generation
 
-To test both Druid and Hive I generated 50 million rows (approximately 15 GB) of random, synthetic test data that can be downloaded from:
+To test both Druid and Hive, I generated 50 million rows (approximately 15 GB) of random, synthetic test data that can be downloaded from:
 
-At the time of this writing MIND Foods HUB project was just starting to ingest data into the Apache Hive cluster, so I had a relatively small dataset that was not suited to test the performances of Big Data systems like Hive and Druid.
-To solve this problem I wrote a Node.js application to generate random synthetic data that still respect the logical and semantic constraints of MIND Foods HUB Data Lake schema, and to provide a realistic dataset to work with.
+At the time of this writing MIND Foods HUB project was starting to ingest data into the Apache Hive cluster, so I had a relatively small dataset that was not suited to test the performances of Big Data systems like Hive and Druid.
+To solve this problem, I wrote a Node.js application to generate random synthetic data that still respect the logical and semantic constraints of MIND Foods HUB Data Lake schema and to provide a realistic dataset to work with.
 The application code is hosted on SESAR Lab Github's organization: : [https://github.com/SESARLab/mfh-measurements-generator]( https://github.com/SESARLab/mfh-measurements-generator).
 
 MIND Foods HUB data are stored in a single table, named `dl_measurements`, that follows a denormalized data model to avoid expensive join operations.
-This means that, for each row of the table, we can have missing (`NULL`) values, depending on the type of measurement.
+This means that we can have (`NULL`) values for each row of the table, depending on the type of measurement.
 This is the table schema:
 
 ```sql
@@ -174,18 +173,18 @@ CREATE TABLE dl_measurements
 
 MIND Foods HUB *sensors* are of three types:
 
-- Measurements, that register discrete, floating-point, values (for example temperature, humidity, wind speed, etc, etc).
-This type of measurement is stored in the `double_value` column, while the time of the measurement is stored in the `measure_timestamp` column.
+- Measurements, that register discrete, floating-point values (for example, temperature, humidity, wind speed, etc.).
+This type of measurement is stored in the `double_value` column, while the measurement time is stored in the `measure_timestamp` column.
 
 - Phase sensors, that register a range of floating-point values in a given period.
-This type of measurement is stored in the `str_value` column, while the time start and end of the measurement are stored respectively in the `start_timestamp` and `end_timestamp` columns.
+This type of measurement is stored in the `str_value` column, while the time start and end of the measure are stored respectively in `start_timestamp` and `end_timestamp` columns.
 
 - Tag sensors, that register string-based values. 
-This type of measurement is stored in the `double_value` column, while the time of the measurement is stored in the `measure_timestamp` column.
+This type of measurement is stored in the `double_value` column, while the measurement time is stored in the `measure_timestamp` column.
 
 Each *sensor* provides measurements for a given *location*, or rather cultivation.
 
-To randomly generate data for `dl_measurements` I needed to mock this relation between a sensor type and its measurement, and guarantee these logical constraints:
+To randomly generate data for `dl_measurements`, I needed to mock this relation between a sensor type and its measurement and guarantee these logical constraints:
 
 - `double_value` is only populated for float-based measurements while `str_value` is `NULL`.
 `measure_timestamp` is calculated, while `start_timestamp` and `end_timestamp` are `NULL`
@@ -199,18 +198,19 @@ Both `start_timestamp` and `end_timestamp` times are calculated, while `measure_
 While measurements values were randomly generated, *sensor* related data (`sensor_id`, `sensor_type`, `sensor_desc_name`, `unit_of_measure` ) were dumped from the MIND Foods HUB Hive production cluster and randomly picked for each generated row.
 With [Mockaroo](https://www.mockaroo.com/), an online service that allows generating synthetic data comprehensive of commons and scientific plant names, I produced a set of 100 locations that were randomly picked for each generated row of the dataset.
 
-Finally, to simulate a realistic dataset of a Data Lake that is in operation, all rows were generated computing the `insertion_timestamp` in two years.
+Finally, to simulate a realistic dataset of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
 
 ### 2.3 Data ingestion
 
-Before querying data I had to create tables for both databases and ingest the synthetic generated CSV data.
-The first step consisted in loading the generated dataset in a temporary HDFS folder on the Hadoop Namenode server, to serve as the primary source for the ingestion process.
+Before querying data, I created tables for both databases and ingested the synthetic generated CSV data.
+The first step consisted in loading the generated dataset in a temporary HDFS folder on the Hadoop Namenode server to serve as the primary source for the ingestion process.
 
-Differently from the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some optimizations to both tables, using Hive partitions and Druid segments to store each *measurement* depending on its `insertion_timestamp`, to test each database at the top of their performance capability.
+Unlike the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some table optimizations to test each database at the top of their performance capability.
+Using Hive partitions and Druid segments each *measurement* is stored depending on its `insertion_timestamp`, allowing each platform to retrieve data based on temporal criteria efficiently.
 
 #### Apache Hive table optimization
 
-On Apache Hive, `dl_measurements`, has the following schema:
+On Apache Hive, `dl_measurements` has the following schema:
 
 ```sql
 CREATE TABLE dl_measurements
@@ -244,11 +244,11 @@ CREATE TABLE dl_measurements
     TBLPROPERTIES ('bucketing_version' = '2');
 ```
 
-As we can see it defines an `insertion_date` partition, which determines how the data is stored into the table; *measurements* with the same `insertion_date`, are stored together into the same partition, allowing Hive to efficiently retrieve data that satisfy specified criteria based on the `insertion_date`.
+As we can see, it defines an `insertion_date` partition, which determines how the data is stored into the table; *measurements* with the same `insertion_date`, are held together into the same partition, allowing Hive to efficiently retrieve data that satisfy specified criteria based on the `insertion_date`.
 
 #### Apache Hive ingestion
 
-To ingest data into Hive I first loaded the CSV data from the temporary HDFS folder on the NameNode (ie: `/tmp/mfh`) into an external table:
+To ingest data into Hive, I first loaded the CSV data from the temporary HDFS folder on the NameNode (i.e.: `/tmp/mfh`) into an external table:
 
 ```sql
 CREATE EXTERNAL TABLE IF NOT EXISTS dl_measurements_external
@@ -294,12 +294,12 @@ DISTRIBUTE BY insertion_date;
 
 #### Apache Druid datasource optimization
 
-On Apache Druid, data was ingested by using *insertion_timestamp* as the primary datasource timestamp, with a *month* granularity.
-This means that *measurements* registered within the same month, are stored into the same *time chunks* (with a *time chunks* containing one or more segments).
+On Apache Druid, data was ingested using *insertion_timestamp* as the primary datasource timestamp, with a *month* granularity.
+This means that *measurements* registered within the same month are stored into the same *time chunks* (with a *time chunks* containing one or more segments).
 
 #### Apache Druid ingestion
 
-Druid ingestion is configured by submitting an *[ingestion task](https://druid.apache.org/docs/latest/ingestion/ingestion-spec.html)* spec to the Druid Coordinator; the process was easier since it can be achieved by using Druid's [web console](https://druid.apache.org/docs/latest/operations/druid-console.html).
+Druid ingestion is configured by submitting an *[ingestion task](https://druid.apache.org/docs/latest/ingestion/ingestion-spec.html)* spec to the Druid Coordinator; the process was more accessible since it can be achieved by using Druid's [web console](https://druid.apache.org/docs/latest/operations/druid-console.html).
 Data was loaded from the temporary HDFS folder on the NameNode using the following spec:
 
 ```json
@@ -401,7 +401,7 @@ Apache Druid was 55,8% faster than Apache Hive to import 50 million rows.
 ### 2.4 Queries
 
 To benchmark Apache Hive and Apache Druid, I used the most common query executed by MIND Foods Hub front-end;
-In this way, the benchmark is as close as possible to the real scenario use cases.
+In this way, the benchmark is as close as possible to the actual scenario use cases.
 The queries are, where feasible, slightly optimized for each database to make use of Apache Hive table partitions and Apache Druid time segments.
 
 #### Query 1
@@ -522,20 +522,20 @@ GROUP BY sensor_id, location_id, location_cultivation_name;
 
 ### 2.5 Performance testing using Apache JMeter
 
-I used JMeter to assess single-user query performance; this means that only one thread was employed to run the test plan.
-The motivation under this choice is that Data Lake platforms are very different from application databases that needs to support hundreds or thousands concurrent connection under heay load.
-Especially for small to mid organizations, Data Lake platforms are intended to run data extraction for analytical and business purposes, consisting in few concurrent request, often triggering batch jobs that runs from hours to days.
+I used JMeter to assess single-user query performance; only one thread was employed to run the test plan.
+The motivation under this choice is that Data Lake platforms are very different from application databases that need to support hundreds or thousands of concurrent connections under heavy load.
+Especially for small to mid organizations, Data Lake platforms are intended to run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.
 
-The performance testing was intended to ran against each database HTTP API.
+The performance testing was intended to run against each database HTTP API.
 Sadly, [Apache Hive](https://hive.apache.org/) doesn't expose a set of REST API to interact with, similarly to other more recent platforms. This means that a client is forced to use Hive JDBC drivers or Hive Thrift drivers to perform TCP connections. 
-To work around this problem I decided to write an application that works as an HTTP layer on top of [Javascript Hive driver](https://www.npmjs.com/package/hive-driver), so that a client can execute Hive SQL statements via HTTP.
+To work around this problem, I decided to write an application that works as an HTTP layer on top of [Javascript Hive driver](https://www.npmjs.com/package/hive-driver), so that a client can execute Hive SQL statements via HTTP.
 The application code is hosted on SESAR Lab Github's organization: [https://github.com/SESARLab/hive-http-proxy](https://github.com/SESARLab/hive-http-proxy).
 
-JMeter ran with following conditions:
+JMeter ran with the following conditions:
 
-- Query cache for each database was disabled
+- The query cache for each database was disabled
 - Single user testing
-- Each query was run 10 times, to have 10 samples per query
+- Each query was run 10 times to have 10 samples per query
 - Each request consisted of all 6 queries run in succession
 - For each request, Average Response Time, Lowest Response Time, Highest Response Time, and Average Response Time Standard Deviation per query were calculated
 
