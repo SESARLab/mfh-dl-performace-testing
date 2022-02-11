@@ -549,61 +549,130 @@ Show and compare tests results using Apache JMeter charts.
 <sub>Figure 1: Average response time for Query 1</sub>
 
 
+
+
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 1  | 382     | 346  | 457  | 39,50     |
 | Druid - Query 1 | 160     | 148  | 229  | 23,22     |
-<sub>Table 2:  Average response time for Query 1</sub>
+<sub>Table 2:  Query 1 </sub>
 
-|         | Average - Hive | Average - Druid | Cohen's d | Average Difference |
-| ------- | -------------- | --------------- | --------- | ------------------ |
-| Query 1 | 382            | 160             | 6.87      | Huge decrease      |
+
+
+| Performance | Cohen's d | Average Difference |
+| ------- | --------- | ------------------ |
+| Query 1 | 6.87      | Huge decrease      |
 <sub>Table 3:  Performance difference for Query 1</sub>
+
+
 
 ### 3.2 Query 2
 
 ![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 2.png)
+<sub>Figure 1: Average response time for Query 2</sub>
+
+
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 2  | 376     | 359  | 401  | 13,55     |
 | Druid - Query 2 | 152     | 148  | 163  | 4,17      |
+<sub>Table 4:  Query 2</sub>
+
+
+
+| Performance | Cohen's d | Average Difference |
+| ----------- | --------- | ------------------ |
+| Query 2     | 22.37     | Huge decrease      |
+<sub>Table 5:  Performance difference for Query 2</sub>
+
+
 
 ### 3.3 Query 3
 
 ![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 3.png)
+<sub>Figure 1: Average response time for Query 3</sub>
+
+
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 3  | 363     | 350  | 383  | 12,67     |
 | Druid - Query 3 | 154     | 148  | 168  | 5,99      |
+<sub>Table 6:  Query 3</sub>
+
+
+
+| Performance | Cohen's d | Average Difference |
+| ----------- | --------- | ------------------ |
+| Query 3     | 21.15     | Huge decrease      |
+<sub>Table 7:  Performance difference for Query 3</sub>
+
+
 
 ### 3.4 Query 4
 
 ![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 4.png)
+<sub>Figure 1: Average response time for Query 4</sub>
+
+
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 4  | 521931  | 518235 | 526918 | 3157,38   |
 | Druid - Query 4 | 2027    | 2020   | 2038   | 6,53      |
+<sub>Table 8:  Query 1</sub>
+
+
+
+| Performance | Cohen's d | Average Difference |
+| ----------- | --------- | ------------------ |
+| Query 4     | 232.87    | Huge decrease      |
+<sub>Table 9:  Performance difference for Query 4</sub>
+
 
 ### 3.5 Query 5
 
 ![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 5.png)
+<sub>Figure 1: Average response time for Query 5</sub>
+
+
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 5  | 511250  | 503896 | 518260 | 3898,01   |
 | Druid - Query 5 | 1417    | 1401   | 1449   | 12,75     |
+<sub>Table 10:  Query  5</sub>
+
+
+
+| Performance | Hive   | Druid | Cohen's d | Average Difference |
+| ----------- | ------ | ----- | --------- | ------------------ |
+| Query 5     | 511250 | 1417  | 184.97    | Huge decrease      |
+<sub>Table 11:  Performance difference for Query 5</sub>
+
 
 ### 3.6 Query 6
 
 ![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 6.png)
+<sub>Figure 1: Average response time for Query 6</sub>
+
+
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 6  | 580362  | 575520 | 585806 | 2952,75   |
 | Druid - Query 6 | 266     | 264    | 271    | 2,01      |
+<sub>Table 12:  Query 6</sub>
+
+
+
+| Performance | Cohen's d | Average Difference |
+| ----------- | --------- | ------------------ |
+| Query 6     | 277.84    | Huge decrease      |
+<sub>Table 13:  Performance difference for Query 6</sub>
+
+
 
 ## 4. Conclusions
 
