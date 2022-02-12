@@ -1,3 +1,10 @@
+---
+title: Apache Hive and Apache Druid performance testing for MIND Foods HUB Data Lake
+author: Gabriele D'Arrigo
+subject: Evaluating performances of enterprise data lake solutions for MIND Foods HUB project
+keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
+---
+
 <img src="C:\Users\Gabriele\AppData\Roaming\Typora\typora-user-images\image-20220202212948471.png" alt="image-20220202212948471" />
 
 
@@ -14,7 +21,7 @@
 
 
 
-**Relatore**: Prof. Paolo Ceravolo
+**Relatore**: Prof. Paolo Ceravolo, <paolo.ceravolo@unimi.it>
 
 **Tesi di**: Gabriele D'Arrigo, <gabriele.darrigo@studenti.unimi.it>
 
@@ -22,7 +29,7 @@
 
 **Anno Accademico**: 2021-2022
 
-<div style="page-break-after: always;"></div>
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ## Table of contents
 
@@ -40,9 +47,9 @@
     2.5 Performance testing using Apache JMeter
 3. Test results
 4. Conclusions
+4. References
 
-<div style="page-break-after: always;"></div>
-
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ## 0. Abstract
 
@@ -74,6 +81,8 @@ Introduce Apache Druid with a short explanation of its key concepts.
 
 A super short introduction to Apache JMeter.
 
+<div style="page-break-after: always; visibility: hidden;"></div>
+
 ## 2. Performance Testing and methodology
 
 To evaluate the performance of Apache Hive and Apache Druid and to achieve a reproducible test, I followed five significant steps for each database:
@@ -95,7 +104,7 @@ To provision both solutions, I used a Vmware virtual machine hosted on the SESAR
 - Debian GNU/Linux 11 (bullseye) operative system.
 
 With the machine adequately provisioned, I had to replicate the MIND Foods HUB environment; 
-this was achieved by using a dockerized multi-node Hadoop cluster configured as close as possible to the one running in production.
+Provisioning was achieved using a dockerized multi-node Hadoop cluster configured as close to the one running in production.
 The Hadoop cluster is composed by:
 
 - A single NameNode
@@ -119,7 +128,7 @@ I also configured the Hive CLI JVM heap size to 8192 MiB.
 
 #### Apache Druid provisioning
 
-Apache Druid was configured to run as a clustered deployment and consists of the following servers:
+I configured Apache Druid to run as a clustered deployment and consists of the following servers:
 
 - A Coordinator, responsible for handling the metadata and coordination of the various processes of the cluster
 - A Broker that receives and forwards queries to the data servers
@@ -129,7 +138,7 @@ Apache Druid was configured to run as a clustered deployment and consists of the
 
 As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from a Hadoop cluster.
 Since one of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place, I configured the Druid cluster to work with HDFS by using [druid-hdfs-storage extensions](https://druid.apache.org/docs/latest/development/extensions-core/hdfs.html);
-This means that, instead of using a local mount, Druid directly used HDFS to store data segments.
+Instead of using a local mount, Apache Druid directly used HDFS to store data segments.
 
 ### 2.2 Data generation
 
@@ -140,8 +149,8 @@ To solve this problem, I wrote a Node.js application to generate random syntheti
 The application code is hosted on SESAR Lab Github's organization: : [https://github.com/SESARLab/mfh-measurements-generator]( https://github.com/SESARLab/mfh-measurements-generator).
 
 MIND Foods HUB data are stored in a single table, named `dl_measurements`, that follows a denormalized data model to avoid expensive join operations.
-This means that we can have (`NULL`) values for each row of the table, depending on the type of measurement.
-This is the table schema:
+Each row of the table can have (`NULL`) values, depending on the type of measurement.
+`dl_measurements` table schema is the following:
 
 ```sql
 CREATE TABLE dl_measurements
@@ -173,7 +182,7 @@ CREATE TABLE dl_measurements
 
 MIND Foods HUB *sensors* are of three types:
 
-- Measurements, that register discrete, floating-point values (for example, temperature, humidity, wind speed, etc.).
+- Measurements, that register discrete, floating-point values (for example, temperature, humidity, wind speed, and others).
 This type of measurement is stored in the `double_value` column, while the measurement time is stored in the `measure_timestamp` column.
 
 - Phase sensors, that register a range of floating-point values in a given period.
@@ -196,9 +205,9 @@ Both `start_timestamp` and `end_timestamp` times are calculated, while `measure_
 `measure_timestamp` is calculated, while `start_timestamp` and `end_timestamp` are `NULL`
 
 While measurements values were randomly generated, *sensor* related data (`sensor_id`, `sensor_type`, `sensor_desc_name`, `unit_of_measure` ) were dumped from the MIND Foods HUB Hive production cluster and randomly picked for each generated row.
-With [Mockaroo](https://www.mockaroo.com/), an online service that allows generating synthetic data comprehensive of commons and scientific plant names, I produced a set of 100 locations that were randomly picked for each generated row of the dataset.
+With [Mockaroo](https://www.mockaroo.com/), an online service that allows generating synthetic data comprehensive of commons and scientific plant names, I produced a set of 100 locations, randomly picked for each generated row of the dataset.
 
-Finally, to simulate a realistic dataset of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
+Finally, to simulate a dataset of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
 
 ### 2.3 Data ingestion
 
@@ -206,7 +215,7 @@ Before querying data, I created tables for both databases and ingested the synth
 The first step consisted in loading the generated dataset in a temporary HDFS folder on the Hadoop Namenode server to serve as the primary source for the ingestion process.
 
 Unlike the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some table optimizations to test each database at the top of their performance capability.
-Using Hive partitions and Druid segments each *measurement* is stored depending on its `insertion_timestamp`, allowing each platform to retrieve data based on temporal criteria efficiently.
+Using Hive partitions and Druid segments, each *measurement* is stored depending on its `insertion_timestamp`, allowing each platform to efficiently retrieve data based on temporal criteria.
 
 #### Apache Hive table optimization
 
@@ -244,7 +253,7 @@ CREATE TABLE dl_measurements
     TBLPROPERTIES ('bucketing_version' = '2');
 ```
 
-As we can see, it defines an `insertion_date` partition, which determines how the data is stored into the table; *measurements* with the same `insertion_date`, are held together into the same partition, allowing Hive to efficiently retrieve data that satisfy specified criteria based on the `insertion_date`.
+As we can see, it defines an `insertion_date` partition, which determines how to store data into the table; *measurements* with the same `insertion_date`, are held together into the same partition, allowing Hive to efficiently retrieve data that satisfy specified criteria based on the `insertion_date`.
 
 #### Apache Hive ingestion
 
@@ -294,12 +303,12 @@ DISTRIBUTE BY insertion_date;
 
 #### Apache Druid datasource optimization
 
-On Apache Druid, data was ingested using *insertion_timestamp* as the primary datasource timestamp, with a *month* granularity.
-This means that *measurements* registered within the same month are stored into the same *time chunks* (with a *time chunks* containing one or more segments).
+On Apache Druid, data was ingested using *insertion_timestamp* as the primary datasource timestamp, with a *month* granularity;
+*measurements* registered within the same month are stored into the same *time chunks* (with a *time chunks* containing one or more segments).
 
 #### Apache Druid ingestion
 
-Druid ingestion is configured by submitting an *[ingestion task](https://druid.apache.org/docs/latest/ingestion/ingestion-spec.html)* spec to the Druid Coordinator; the process was more accessible since it can be achieved by using Druid's [web console](https://druid.apache.org/docs/latest/operations/druid-console.html).
+Druid ingestion is configured by submitting an *[ingestion task](https://druid.apache.org/docs/latest/ingestion/ingestion-spec.html)* spec to the Druid Coordinator; the overall process was more accessible since I can achieve it by using Druid's [web console](https://druid.apache.org/docs/latest/operations/druid-console.html).
 Data was loaded from the temporary HDFS folder on the NameNode using the following spec:
 
 ```json
@@ -391,8 +400,7 @@ Data was loaded from the temporary HDFS folder on the NameNode using the followi
 | ------------ | ------------- | -------------- |
 | Apache Hive  | 1462 partions | 02:55:8        |
 | Apache Druid | 51 segments   | 01:17:15       |
-
-[Table 1]
+<sub>Table 1: Ingestion numbers</sub>
 
 Table 1 reports the number of partitions and the computed ingestion time for each database.
 Apache Druid was 55,8% faster than Apache Hive to import 50 million rows.
@@ -524,10 +532,10 @@ GROUP BY sensor_id, location_id, location_cultivation_name;
 
 I used JMeter to assess single-user query performance; only one thread was employed to run the test plan.
 The motivation under this choice is that Data Lake platforms are very different from application databases that need to support hundreds or thousands of concurrent connections under heavy load.
-Especially for small to mid organizations, Data Lake platforms are intended to run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.
+Especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.
 
 The performance testing was intended to run against each database HTTP API.
-Sadly, [Apache Hive](https://hive.apache.org/) doesn't expose a set of REST API to interact with, similarly to other more recent platforms. This means that a client is forced to use Hive JDBC drivers or Hive Thrift drivers to perform TCP connections. 
+Sadly, [Apache Hive](https://hive.apache.org/) doesn't expose a set of REST API to interact with, similarly to other more recent platforms. Instead, a client is forced to use Hive JDBC drivers or Hive Thrift drivers to perform TCP connections. 
 To work around this problem, I decided to write an application that works as an HTTP layer on top of [Javascript Hive driver](https://www.npmjs.com/package/hive-driver), so that a client can execute Hive SQL statements via HTTP.
 The application code is hosted on SESAR Lab Github's organization: [https://github.com/SESARLab/hive-http-proxy](https://github.com/SESARLab/hive-http-proxy).
 
@@ -535,13 +543,46 @@ JMeter ran with the following conditions:
 
 - The query cache for each database was disabled
 - Single user testing
-- Each query was run 10 times to have 10 samples per query
-- Each request consisted of all 6 queries run in succession
-- For each request, Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation were calculated
+- Each query was configured to run 10 times (to have 10 samples per query) in a separate Thread Group 
+- Each Thread Group ran consecutively (one at a time) to avoid side effects on other requests
+
+All tests were executed in [CLI Mode](https://jmeter.apache.org/usermanual/get-started.html#non_gui), to [reduce resource usages](https://jmeter.apache.org/usermanual/best-practices.html#lean_mean), on a MacBook Pro Mid 2015 with these specs:
+
+- CPU 2,8 GHz Intel Core i7, 4 core/8 threads
+- 16 GB 1600 MHz DDR3 memory
+- 512 SSD storage
+- macOS 12.1 Monterey operative system 
+
+The reason behind the choice to run performance testing on a laptop instead of running JMeter on the same network of the cluster (to minimize request latency) is simple;
+I decided to simulate an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ## 3. Test results
 
-Show and compare tests results using Apache JMeter charts.
+Each JMeter execution produced a CSV dataset containing the test results for each platform (one for Hive, the other for Druid);
+I imported test results in JMeter to calculate, for each sample: Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation.
+
+Also, I compared each query Average response time with [ResultsComparator](https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki) plugin, to quantify the performance difference between Apache Hive and Apache Druid executions by calculating  [Cohen's *d*](https://en.wikipedia.org/wiki/Effect_size#Cohen's_d) of the samplers, which is one of the most popular measures of the effect size.
+Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data; 
+The magnitude of *d*, namely the difference between the means, is described by the table below:
+
+| d           | Effect size |
+| ----------- | ----------- |
+| 0           | Similar     |
+| < 0.01      | Negligible  |
+| [0.01-0.19] | Very small  |
+| [0.20-0.49] | Small       |
+| [0.50-0.79] | Medium      |
+| [0.80-1.19] | Large       |
+| [1.20-1.99] | Very large  |
+| >= 2.0      | Huge        |
+
+JMeter test results are downloadable from this repository hosted on SESAR Lab Github's organization:
+
+[https://github.com/SESARLab/mfh-dl-performace-testing](https://github.com/SESARLab/mfh-dl-performace-testing)
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 3.1 Query 1
 
@@ -549,22 +590,21 @@ Show and compare tests results using Apache JMeter charts.
 <sub>Figure 1: Average response time for Query 1</sub>
 
 
-
-
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 1  | 382     | 346  | 457  | 39,50     |
 | Druid - Query 1 | 160     | 148  | 229  | 23,22     |
-<sub>Table 2:  Query 1 </sub>
-
-
+<sub>Table 2: Query 1  numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ------- | --------- | ------------------ |
 | Query 1 | 6.87      | Huge decrease      |
-<sub>Table 3:  Performance difference for Query 1</sub>
+<sub>Table 3: Performance evaluation for Query 1</sub>
 
+Query 1 execution is fast on both platforms, staying under a 500 milliseconds threshold since it takes advantage of time partitions on Apache Hive and time segmentations on Apache Druid.
+Using Apache Druid, we can see a considerable decrease in Average response time value, making this platform greatly performant than Hive.
 
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 3.2 Query 2
 
@@ -572,21 +612,20 @@ Show and compare tests results using Apache JMeter charts.
 <sub>Figure 1: Average response time for Query 2</sub>
 
 
-
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 2  | 376     | 359  | 401  | 13,55     |
 | Druid - Query 2 | 152     | 148  | 163  | 4,17      |
-<sub>Table 4:  Query 2</sub>
-
-
+<sub>Table 4: Query 2  numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
 | Query 2     | 22.37     | Huge decrease      |
-<sub>Table 5:  Performance difference for Query 2</sub>
+<sub>Table 5: Performance evaluation for Query 2</sub>
 
+Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segmentations on Apache Druid, making its execution fast on both platforms. But, again, using Apache Druid, we can see a vast decrease in the Average response time value.
 
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 3.3 Query 3
 
@@ -594,21 +633,21 @@ Show and compare tests results using Apache JMeter charts.
 <sub>Figure 1: Average response time for Query 3</sub>
 
 
-
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 3  | 363     | 350  | 383  | 12,67     |
 | Druid - Query 3 | 154     | 148  | 168  | 5,99      |
-<sub>Table 6:  Query 3</sub>
-
-
+<sub>Table 6: Query 3 numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
 | Query 3     | 21.15     | Huge decrease      |
-<sub>Table 7:  Performance difference for Query 3</sub>
+<sub>Table 7: Performance evaluation for Query 3</sub>
 
+Query 3 follows the same trends, achieving a massive decrease in Average response time value for its execution on Apache Druid.
+We can notice how the behaviour of all time queries is the same on both platforms, with a similar Average response time between Query 1, Query 2 and Query 3 per database and minor Standard Deviation.
 
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 3.4 Query 4
 
@@ -616,20 +655,27 @@ Show and compare tests results using Apache JMeter charts.
 <sub>Figure 1: Average response time for Query 4</sub>
 
 
-
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 4  | 521931  | 518235 | 526918 | 3157,38   |
 | Druid - Query 4 | 2027    | 2020   | 2038   | 6,53      |
-<sub>Table 8:  Query 1</sub>
-
-
+<sub>Table 8: Query 1 numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
 | Query 4     | 232.87    | Huge decrease      |
-<sub>Table 9:  Performance difference for Query 4</sub>
+<sub>Table 9: Performance evaluation for Query 4</sub>
 
+Query 4 requires grouping four different columns and showing another behaviour between the platforms; 
+While Apache Druid execution for Query 4 is sensibly slower than time queries, with an Average response time of 2 seconds circa, Apache Hive is enormously slower, requesting 8,69 minutes to query the data. 
+Two factors essentially cause this: 
+
+1. The query doesn't use any partitions, forcing Hive to do a full table scan to select and group the requested values 
+2. The query uses 61 Mapper and 62 reducers for its execution, so it requires a discrete amount of I/O synchronization between the Mappers and Reducers, resulting in different disk writing operations that are notoriously slow
+
+On the other side, Apache Druid uses an in [memory algorithm](https://druid.apache.org/docs/latest/querying/groupbyquery.html#strategies) to aggregate data from the segments, streaming the results back directly from the Broker to the client, resulting in high-speed query execution.
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 3.5 Query 5
 
@@ -637,20 +683,22 @@ Show and compare tests results using Apache JMeter charts.
 <sub>Figure 1: Average response time for Query 5</sub>
 
 
-
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 5  | 511250  | 503896 | 518260 | 3898,01   |
 | Druid - Query 5 | 1417    | 1401   | 1449   | 12,75     |
-<sub>Table 10:  Query  5</sub>
+<sub>Table 10:  Query  5 numbers</sub>
 
+| Performance | Cohen's d | Average Difference |
+| ----------- | --------- | ------------------ |
+| Query 5     | 184.97    | Huge decrease      |
+<sub>Table 11: Performance evaluation for Query 5</sub>
 
+Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in 
+an Average response time of 8,52 minutes circa per query execution.
+Apache Druid is exceedingly performant, remaining under the 2 seconds threshold for Query 5 completion.
 
-| Performance | Hive   | Druid | Cohen's d | Average Difference |
-| ----------- | ------ | ----- | --------- | ------------------ |
-| Query 5     | 511250 | 1417  | 184.97    | Huge decrease      |
-<sub>Table 11:  Performance difference for Query 5</sub>
-
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 3.6 Query 6
 
@@ -658,21 +706,24 @@ Show and compare tests results using Apache JMeter charts.
 <sub>Figure 1: Average response time for Query 6</sub>
 
 
-
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 6  | 580362  | 575520 | 585806 | 2952,75   |
 | Druid - Query 6 | 266     | 264    | 271    | 2,01      |
-<sub>Table 12:  Query 6</sub>
-
-
+<sub>Table 12: Query 6 numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
 | Query 6     | 277.84    | Huge decrease      |
-<sub>Table 13:  Performance difference for Query 6</sub>
+<sub>Table 13: Performance evaluation for Query 6</sub>
 
+Query 6 behave the same in Apache Hive, bound to a full table scan that requests 9,67 minutes to accomplish its execution.
+Apache Druid acts differently from  Query 4 and Query 5, with Query 6 Average response time of only 264 milliseconds.
 
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ## 4. Conclusions
 
+Thesis conclusions
+
+## 5. References
