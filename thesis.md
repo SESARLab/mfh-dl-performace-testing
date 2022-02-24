@@ -65,41 +65,48 @@ The results show how Apache Druid is a strong, better alternative to Apache Hive
 
 ## 1. Introduction
 
-MIND Foods HUB [1] is an international, interdisciplinary project led by various public and private subjects (including TIM, and Università degli Studi di Milano) that operates in the context of the Milan Innovation District [2].
-Its goal is to "implement a computational infrastructure to model, engineer and distribuite data about plants phenotyping" [3].
-The project, divided in different phases, plans to:
+MIND Foods HUB [1] is an international, interdisciplinary project led by various public and private subjects (including Università Degli Studi di Milano, TIM and others) that operates in the context of the Milan Innovation District [2].
+Its goal is to "implement a computational infrastructure to model, engineer and distribute data about plants phenotyping" [3].
+The project, split into different stages, plans to:
 
 1. Identify crops with optimal nutritional profiles
-2. Farming of the selected species in protected enviroment (greenhouses and vertical farms) 
-3. Apply high-throughput phenotyping applications on the plants cultivations
-4. Create a computing infrastracture by employng smart devices and sensors, 5G communication networks, and Big Data platforms
-5. The analysis of the data to study the nutritional properties and bioactive components of the selected species, and to develop prediction models of nutritional and functional value
+2. Farm the selected species in protected environments (greenhouses and vertical farms) 
+3. Apply high-throughput phenotyping applications on the plant's cultivations
+4. Create a computing infrastructure by employing smart devices and sensors, 5G communication networks, and Big Data platforms
+5. Analyze the collected data to study the nutritional properties and bioactive components of the selected species and develop prediction models of nutritional and functional value
 
-<img src="C:\Users\Gabriele\AppData\Roaming\Typora\typora-user-images\image-20220219125423784.png" alt="image-20220219125423784" style="zoom:67%;" />
+<figure>
+    <img src="./content/MFH Architecture.jpg" alt="MIND Food HUB Architecture" />
+    <figcaption>Figure 1: MIND Foods Hub computing infrastructure</figcaption>
+</figure>
 
-<sub>Figure 4: MIND Foods Hub computing infrastructure</sub>
+The computing infrastructure, made by different modules, consists in:
 
-The computing infrastracture, made by different modules, consists in:
+- A rover, equipped with different phenotyping sensors that take on-fields measurements on plants cultivation
+- Various on-field sensors that register weather or environmental data, like air temperature and humidity, soil temperature, leaf wetness, etc.
+- A 5G communicating network to support the sensor's data transmission
+- Different software collection agents collect data from the rover and the on-field sensors and upload them to the Data Lake
+- A Data Lake platform to store sensor's data and supports data analysis
+- An hybrid GraphQL/REST API developed in Rust to access and consume data stored in the Data Lake platform
 
-- A rover, equipped with different phenotyping sensors, that take on-fields measurements on plants cultivation
-- Various on-field sensors that registers meteo or environmental data, like air temperature and humidity, soil temperatire, leaf wetness, etc.
-- A 5G communicating network to support sensor's data transmission
-- Different software agents that collects data from sensors and upload them to the Data Lake
-- A Data Lake platform to store sensor's data, implemented and managed by SESAR Lab, (SEcure Service-oriented Architectures Research Lab) [4], a research department within Dipartimento d'Informatica of Università degli Studi di Milano
-- An hybryd GraphQL/REST API developed in Rust to access and consume data stored in the Data Lake platform
+The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network and the on-field sensors.
+Multiple departments of Università Degli Studi di Milano have been involved in the MIND Foods HUB project. 
+The Dipartimento di Scienza Agrarie e Ambientale (**DISAA**) designed and implemented the rover, its sensors, and the algorithms that analyze the nutritional properties of the chosen species.
+The SEcure Service-oriented Architectures Research Lab (**SESAR** Lab) planned and implemented all software modules of the computing infrastructure: the collection agents, the GraphQL/REST API, the data model to structure sensor's data and the Data Lake platform.
+The MIND Foods HUB Data Lake platform is based, among other components, on Hadoop [5], a framework for parallel and distributed processing of large data sets and Apache Hive [6]. This software allows reading, writing, and managing large data-sets in distributed storage using SQL. 
 
-MIND Foods HUB Data Lake is based, among other components, on Hadoop [5], a framework for parallel and distributed processing of large data sets and Apache Hive [6], a software that allows reading, writing, and managing large datasets residing in distributed storage using SQL. 
+When I joined the project, the SESAR Lab team was already investigating faster alternatives to Hive due to its poor reading performance on even simple aggregations queries. That's where I started to study and test Apache Druid [7], a real-time database, as a viable, more performant solution than Hive to improve MIND Foods HUB Data Lake efficiency.
 
-When I joined the project, SESAR Lab team was already investigating faster alternatives to Hive, due to its poor reading performance on even simple aggregations query.  That's where I started to study and test Apache Druid [7], a real-time database, as a viable more perfomant solution than Hive, with the goal to improve MIND Foods HUB Data Lake Data Lake efficiency.
-
-In section 1.1, I shortly describe Big Data and Data Lake systems. In section 1.2 and 1.3 I introduce the Hadoop architecture and the design of Apache Hive. Then, in section 1.4, I introduce Apache Druid, explaining its key concepts and use cases.
-In section 2, I illustrate the testing methodologies employed to test both Apache Hive and Apache Druid with JMeter [8]; in section 3, I finally show the results of my testing, discussed in section 4, the conclusion of this paper.
+Section 1.1 shortly describe Big Data and Data Lake systems. Then, sections 1.2 and 1.3 introduce the Hadoop architecture and the design of Apache Hive. Section 1.4 presents Apache Druid, explaining its key concepts and use cases.
+Section 2 demonstrates the testing methodologies employed to test Apache Hive and Apache Druid with JMeter [8]; Section 3 illustrates the testing results, while section 4 concludes this paper.
 
 ### 1.1 Big Data and Data Lake systems
 
 We live in the age of data: mobile phones, smart devices, sensors, social networks, etc., all concur in a scenario where all information is digital and needs to be processed, stored and analyzed. 
 According to statistics, a person produces 1.7 MB of data per second [9]; globally, 44 zettabytes of data are generated daily. Based on research [10] led by Seagate and IDC, the amount of global data will reach 175 zettabytes by the end of 2025. 
-This exponential explosion of data generation directly impacts organizations facing the challenge of managing a massive amount of data, coming from multiple sources at an ever-increasing rate; days are gone when a single database serves as the primary source of truth of an entire business.  That's where new Big Data technologies can make the difference in how organizations make business decisions based on their data.
+This exponential explosion of data generation directly impacts organizations facing the challenge of managing a massive amount of data, coming from multiple sources at an ever-increasing rate; days are gone when a single database serves as the primary source of truth of an entire business. That's where new Big Data technologies can make the difference in how organizations make business decisions based on their data.
+
+#### Big Data
 
 Big Data is a universal term [11] that refers to data that is "too big, too fast, or too hard" [12] to be processed or analyzed by traditional methods or technologies. To be so considered, Big Data is characterized by the "three Vs", a concept formulated by Doug Laney from Meta (now Gartner) in 2001 [13]: *Volume*, *Velocity*, *Variety*.
 
@@ -107,66 +114,160 @@ Big Data is a universal term [11] that refers to data that is "too big, too fast
 - *Velocity* refers to the speed at which data is generated and processed. Generally, data processing happens in batch, where a large volume of data within a specific time is processed, on in a stream mode, where data is processed in real-time as it is produced.
 - *Variety* is a property that refers to different types of data produced by multiple sources; usually, types fall in one of these three categories: structured data (relational data with an enforced data model, often stored in tables), semi-structured data (like XML or JSON), and unstructured data (data not arranged according to a data model, for example, text, images, video, etc.)
 
-<img src="C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Big Data - 3Vs.jpg" style="zoom: 67%;" />
+<figure>
+    <img src="./content/Big Data - 3Vs.jpg" style="width: 50%" />
+    <figcaption>Figure 2: Big Data three Vs</subfigcaption
+</figure>
 
-<sub>Figure 1: Big Data three Vs</sub>
 
-These Big Data concepts heavily changed the shape of traditional data management systems, like Data Warehouses, that now need to support parallel data processing, complex analytical workflow, resilient and flexible storage capable of efficiently persisting data from several sources. Also, with the emerge of new Big Data technologies, new models to store and analyze data have been developed to take advantage of the emerging new Big Data tecnologies; one for all: Data Lake systems.
+#### Data Lake systems
 
-Historically, organizations that need to reconcile data from different, OLTP (**O**nline Transaction **P**rocessiong) data sources, employed a Data Warehouse system.
-A Data Warehouse is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [14], typically used by business end-users to support management’s decision.
-Since data ingested into Data Warehouses usually comes from relational OLTP systems, the most used data processing paradigm in data warehousing is ETL (**E**xtract, **T**ransform, **L**oad).
+These Big Data concepts heavily changed the shape of traditional data management systems, like Data Warehouses, that now need to support parallel data processing, complex analytical workflow, resilient and flexible storage capable of efficiently persisting data from several sources. Also, with the rise of new Big Data technologies, further models to store and analyze data have been developed to take advantage of the emerging new Big Data technologies; one for all: Data Lake systems.
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Mind Foods HUB Data Lake - Data Warehouse.jpg)
+Historically, organizations that need to reconcile data from different Online Transaction Processing (**OLTP**) data sources employed a Data Warehouse system.
+A Data Warehouse is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [14], typically operated by business end-users to support management's decision.
+Since data ingested into Data Warehouses usually comes from relational OLTP systems, the most used data processing paradigm in data warehousing is Extract, Transform, Load (**ETL )**.
 
-<sub>Figure 2: ETL</sub>
+<figure>
+    <img src="./content/Data Warehouse.jpg"/>
+    <figcaption>Figure 3: ETL</subfigcaption
+</figure>
 
-The standard ETL approach expects to extract data from different sources, apply some data transformation to adhere to the schema adopted to structure the data and finally load it into the Data Warehouse. This process, also known as schema-on-write, allows efficient and fast reads operations, at the cost of designing and maintaining a schema that describes the shape of the data.
+The standard ETL approach expects to extract data from different sources, apply some data transformation to adhere to the schema adopted to structure the data, and finally load it into the Data Warehouse. This process, also known as schema-on-write, allows efficient and fast reads operations at the cost of designing and maintaining a schema that describes the shape of the data.
 
 Data Lake is a term coined in 2011 by James Dixon [15], founder and former CTO of Pentaho: a Data Lake is a repository that stores large quantities and varieties of data in their raw format, independently from their source or structure. 
-Unlike traditional Data Warehouses, that follows an ETL approach, Data Lake systems use an ELT (**E**xtract, **L**oad, **T**ransform) data processing paradigm. 
+Unlike traditional Data Warehouses, which pursues an ETL approach, Data Lake systems use an Extract, Load, Transform (**ELT**) data processing paradigm. 
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Mind Foods HUB Data Lake - Data Lake.jpg)
-
-<sub>Figure 3: ELT</sub>
-
-ELT doesn't apply any prior data transformation since a Data Lake can store structured, semi-structured or unstructured data. Instead, data is ingested as soon as it becomes available in its raw format, allowing for fast write operations and with the advantage of preserving the original data format. 
+<figure>
+    <img src="./content/Data Lake.jpg"/>
+    <figcaption>Figure 4: ELT</subfigcaption
+</figure>
+ELT doesn't apply any prior data transformation since a Data Lake can store structured, semi-structured or unstructured data. Instead, data is ingested as soon as it becomes available in its raw format, allowing for fast write operations and the advantage of preserving the original data structure. 
 Then, only during a particular analysis the required data is extracted and transformed in a structure suited to be interpreted, applying what is described as a schema-on-read process.
 
 ### 1.2 Hadoop
 
-Hadoop is an open source framework that enable reliable, scalable, distributed computing.
-Started in 2002 as an open source project by Doug Cutting and Mike Cafarella, that were developing a search engine capable to index 1 bilion pages, the first version of Hadoop implemented two powerful computing concepts introduced by Google in 2003 and 2004: GFS (Google File System) [16], a scalable distributed file system for large distributed data-intensive applications, and MapReduce [17], a progamming model for processing and generating large data sets.
+Hadoop is an open-source framework that enables reliable, scalable, distributed computing.
+Started in 2002 as an open-source project by Doug Cutting and Mike Cafarella, that was developing a search engine capable to index 1 billion pages, the first version of Hadoop implemented two powerful computing concepts introduced by Google in 2003 and 2004: Google File System (**GFS**) [16], a scalable distributed file system for large distributed data-intensive applications, and MapReduce [17], a programming model for processing and generating large data sets.
 
-So, at its core, Hadoop is composed by two modules: storage and processing. The storage component is HDFS (Hadoop Distributed File System), while the processing component is MapReduce.
+So, at its core, Hadoop is composed of two modules: storage and processing. The storage component is the Hadoop Distributed File System (**HDFS**), while the processing component is **MapReduce**.
 
 #### HDFS
 
-HDFS is a highly fault-tolerant, scalable, and distributed file system, and is designed to run on commodity hardware; HDFS provides high throughput access to application data and is suitable for applications that need to compute large data sets.
+HDFS is a highly fault-tolerant, scalable, and distributed file system designed to run on commodity hardware; HDFS provides high throughput access to application data and is suitable for applications that need to compute large data sets.
 The goals of HDFS are:
 
 1. Processing of extremely large files, from multiple gigabytes to petabytes. HDFS supports small files but is not optimized for them
-2. Enable streaming of data to applications that runs on HDFS, allowing high throughput of data access rather than low latency of data access
-3. Capability to execute the file system on low-cost hardware; an HDFS cluster can run on hundreds or thousands of server machines, each storing part of the file system’s data, making hardware failure the norm instead of an exception
-4. Move the computation near the data, to avoid the network transfer of large data sets, that is a notoriously slow and costly operation
-
-<img src="C:\Users\Gabriele\AppData\Roaming\Typora\typora-user-images\image-20220219170413357.png" alt="image-20220219170413357" style="zoom:67%;" />
-
-<sub>Figure 5: HDFS Architecture</sub>
+2. Enable streaming of data to applications that run on HDFS, allowing high throughput of data access rather than low latency of data access
+3. Capability to execute the file system on low-cost hardware; an HDFS cluster can run on hundreds or thousands of server machines, each storing part of the file system's data, making hardware failure the norm rather than an exception
+4. Move the computation near the data to avoid the network transfer of large data sets, which is a notoriously slow and costly operation
 
 HDFS is based on a master/slave architecture.
-The master server is called **NameNode**, and it manages the file system namespace, and regulates client access to files. In HDFS a file is splitted into one or more blocks of equal size (default is 128 megabytes); these blocks are stored and replicated in a set of DataNodes.
-Its NameNode responsability to handle the mapping of blocks between DataNodes; also the NameNode executes file system namespace operations, like opening, closing, and renaming files and directories.
-**DataNodes** manage the data and the storage attached to the nodes on wich the they run; they are responsible of serving read and write requests from the file system’s clients. Also, DataNodes, when instructed from a NameNode, perform block creation, deletion an replication.
-A typical HDFS cluster can have thousands of DataNodes and tens of thousands of HDFS clients per cluster, since each DataNode may execute multiple application tasks simultaneously; as we can see in Figure 5, to guarantee high throughput of data, data never flows through the NameNode, but is directly served from the DataNodes.
+The master server is called **NameNode**, and it manages the file system namespace and regulates client access to files. In HDFS, a file is split into one or more blocks of equal size (default is 128 megabytes); these blocks are stored and replicated in a set of DataNodes.
+NameNode responsibility is to handle the mapping of blocks between DataNodes; also, NameNode manages file system namespace operations, like opening, closing, and renaming files and directories, instructing DataNodes on their execution.
+
+**DataNodes** manage the data and the storage attached to the nodes on which they run; they are responsible for serving read and write requests from the file system's clients. Also, DataNodes, when instructed from a NameNode, perform block creation, deletion, and replication.
+A typical HDFS cluster can have thousands of DataNodes and tens of thousands of HDFS clients per cluster since each DataNode may execute multiple application tasks simultaneously.
+
+<figure>
+    <img src="./content/HDFS Architecture.jpg" alt="HDFS Architecture" />
+    <figcaption>Figure 5: HDFS Architecture and data flow</figcaption>
+</figure>
+
+Figure 5 shows the HDFS architecture and the flow of I/O operations.
+
+1. An HDFS client wishing to read a file contact the NameNode to determine where the actual data is stored
+2. The NameNode returns: the relevant block ids and the location where the blocks are held (i.e., on which DataNodes)
+3. The client then contacts the DataNode to retrieve the data
+
+As we can see, to guarantee high data throughput, data never flows through the NameNode but is directly served from the DataNodes.
 
 #### MapReduce
 
-MapReduce is a programming model and an associated implementation for processing and generating large data sets. Users specify a map function that processes a key/value pair to generate a set of intermediate key/value pairs, and a reduce function that merges all intermediate values associated with the same intermediate key. 
+MapReduce is a programming model for processing and generating large data sets. Developed by Google and implemented by Hadoop, its goal is to enable the parallelization of heavy computation tasks, data distribution and failure handling of large amounts of data across hundred or thousand of machines.
 
-### 1. 3 Apache Hive
+The MapReduce model is based on two simple functional programming primitives: **Map** and **Reduce**.
 
-what is Apache Hive, its key concepts
+```
+map(k1, v1) -> list(k2, v2)
+reduce(k2, list(v2)) -> list(v2)
+```
+
+The Map function is written by the user and takes a key/value pair as input to generate a set of intermediate key/value pairs. All intermediate values with the same intermediate key are grouped and passed to the Reduce function.
+
+The Reduce function accepts an intermediate key and a set of values for that key. Then, it merges these values to form a smaller set of values; typically, zero or one output value is produced per Reduce invocation. 
+The intermediate values are supplied to the user's reduce function via an iterator that allows handling lists of too large values to fit in memory.
+
+<figure>
+    <img src="./content/MapReduce.jpg" alt="MapReduce" />
+    <figcaption>Figure 6: MapReduce architecture</figcaption>
+</figure>
+Hadoop implements MapReduce as a framework to process data stored on HDFS.
+A MapReduce job splits the input data-set into independent chunks processed in parallel by the Map tasks. Next, the framework sorts the outputs of the Maps, which are then input to the Reduce tasks. Usually, both the job's input and output are stored on HDFS. 
+The compute nodes and the storage nodes are the same, so the MapReduce framework and HDFS run on the same set of nodes; this allows to move the computation where the data is already stored to avoid the network transfer of large data sets across the cluster.
+
+#### YARN
+
+MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (**YARN**) [18], an Hadoop layer that decouples the programming model from the resource management infrastructure, and delegates many scheduling functions to per-application components.
+YARN, at its core, is composed by two processes: the **ResourceManager** and the **NodeManager**. 
+The ResourceManager is process that runs on a dedicated node, and is responsible to arbitrate cluster's resources among various contending jobs, and to schedule job execution depeding on resources availability.
+YARN resources are called *containers*, a logical set of resources (for example: 2 GB of RAM, 1 CPU) bound to a specific node of the cluster, and reserved for the execution of a MapReduce job.
+A  ResourceManager  accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution. 
+NodeManager processes, one per each Hadoop's node, are responsible for container lifecycle: they launch the container, monitor its execution and the resource usage (in terms of CPU, memory, disk, network), and report the information to the ResourceManager.
+The ResourceManager, collecting information from all NodeManagers, can assemble the global status of the cluster and schedule job execution.
+
+It's worth mentioning another component of the YARN architecture: the **TimelineServer** (previously known as the Application History Server).
+
+
+
+### 1.3 Apache Hive
+
+Apache Hive is an open-source Data Warehouse system designed for querying and analyzing large data-sets stored in Hadoop. Hive provides standard SQL functionality with HiveQL, a declarative language that enables users to do ad-hoc querying, aggregation and data analysis.
+Apache Hive offers many advantages over working directly on Hadoop: 
+
+- SQL is familiar to many developers and analysts; instead of writing complex MapReduce jobs in Java, a user can submit SQL queries to Hive to compute data stored on HDFS. 
+- A mechanism to impose structure, using relational database abstractions, on a variety of data formats
+- Since HDFS can hold structured, semi-structured and unstructured data, Hive can read and store table data in various formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, and others.
+
+#### Design
+
+<img src="https://data-flair.training/blogs/wp-content/uploads/sites/2/2020/02/hive-architecture-and-its-components.jpg" alt="hive architecture and hive components" style="zoom: 67%;" />
+
+Figure 7 shows the major components of Apache Hive that are:
+
+- **Hive Client**: any kind of client that wants to interact with Hive by running HiveQL queries. Clients usually use Apache Thrift, JDBC or ODBC drivers to connect and communicate with Hive
+- **Driver**: the component that receives those queries and handles the communication with the Compiler, the Optimizer and the Execution engine. It internally uses **HiveServer2**, a process that enables multi-client concurrency and client authentication. HiveServer2 uses a thread pool, allocating a worker thread for each TCP connection instantiated by a client.
+- **Compiler**: the component that parses the queries, apply semantic analysis on each query block and expression and, by retrieving table and partitions metadata from the Metastore, eventually generates a query execution plan in the form of a Directed Acyclic Graph (**DAG**).
+- **Optimizer**: the component that applies further transformations on the execution plan to optimize query execution.
+- **Metastore**: the component that stores all schema's tables, partitions and buckets metadata, including the list of columns, columns type, data location on HDFS, serialization and deserialization strategies required to read and write data from and to tables. Metadata is usually stored on an external relation database, like MySQL or PostgreSQL, and not directly on HDFS. 
+- **Execution engine**: the component which executes the execution plan on Hadoop
+
+When the Driver receives a query from a client, it creates a session handle for that client and forwards the query to the Compiler:
+
+1. The Compiler retrieves the necessary metadata from the Metastore; metadata is used to type-check the query expressions and prune partitions data based on query predicates.
+2. The Compiler produces a DAG, where each vertex is a MapReduce job, with each ob submitted to Hadoop for parallel processing.
+3. Row data is read from HDFS files, deserialized and returned to the client.
+
+#### Data Model and Storage
+
+In order of granularity, data in Apache Hive is organized into:
+
+- **Databases**: namespaces that group tables, views, partitions, columns etc.
+- **Tables**: similarly to relational databases tables, they are homogenous units of data within the same schema. All data of a table is stored in `/user/hive/warehouse/databasename.db/tablename/` directory of HDFS; 
+  Apache Hive also supports **external** tables, or instead tables created on preexisting files or directories in HDFS.
+- **Partitions**: each table can have one or more partitions keys that determine how the data is stored on HDFS; all data with the same partition key are held together into the same partition. For example, in a table T, with a `date` partition, all data for a particular date are stored in the `T/data=<date>` directory on HDFS. Partitions allow users to retrieve data that satisfies specific predicates efficiently. 
+For example, a query on T that satisfies the predicate `T.date='2022-02-02` would only look at files stored in `T/data=2022-02-02/` directory on HDFS.
+- **Buckets**: data in each partition may be further divided into buckets based on the hash of a column in the table; each bucket is stored as a file in the partition directory. Bucketing allows the system to evaluate queries that depend on a sample of data efficiently.
+
+#### SQL capabilities
+
+HiveQL supports all basic DDL and DML operations to work with tables and partitions: the ability to select only specific columns using a `SELECT` clause, rows filtering using a `WHERE` clause, equi-joins between tables, data aggregations with multiple `GROUP BY` columns, store the results of a query into another table, manage table and partitions with `CREATE`, `DROP` and `ALTER` statements.
+
+#### Ingestion
+
+There are multiple ways to ingest data into Apache Hive using SQL statements, but since the Compiler translates these into MapReduce jobs, all data ingestion occurs in a batch mode.
+To load data into Apache Hive, a user can create an external table that points to a specified location within HDFS and then copy the data into any other Hive table.
+Additionally, Hive supports statements that load data in various formats directly from HDFS into a table; finally, data can be appended into an existing table using the INSERT statement.
 
 ### 1.4 Apache Druid
 
@@ -196,10 +297,10 @@ To provision both solutions, I used a Vmware virtual machine hosted on the SESAR
 - 48 GiB of memory
 
 - 512 GiB storage
-- Debian GNU/Linux 11 (bullseye) operative system.
+- Debian GNU/Linux 11 (bullseye) operating system.
 
 With the machine adequately provisioned, I had to replicate the MIND Foods HUB environment; 
-Provisioning was achieved using a dockerized multi-node Hadoop cluster configured as close to the one running in production.
+Provisioning was achieved using a dockerized multi-node Hadoop cluster configured as close as possible to the one running in production.
 The Hadoop cluster is composed by:
 
 - A single NameNode
@@ -207,7 +308,7 @@ The Hadoop cluster is composed by:
 - A ResourceManager
 - A NodeManager
 - An HistoryServer
-- A Zookeeper instance to handle the cluster high availability
+- A Zookeeper instance to handle the cluster's high availability
 
 #### Apache Hive provisioning
 
@@ -232,15 +333,16 @@ I configured Apache Druid to run as a clustered deployment and consists of the f
 - A MiddleManager, that handles ingestion of new data into the cluster
 
 As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from a Hadoop cluster.
-Since one of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place, I configured the Druid cluster to work with HDFS by using [druid-hdfs-storage extensions](https://druid.apache.org/docs/latest/development/extensions-core/hdfs.html);
-Instead of using a local mount, Apache Druid directly used HDFS to store data segments.
+One of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. To adhere to this requirement, I configured the Druid cluster to work with HDFS using [druid-hdfs-storage extensions](https://druid.apache.org/docs/latest/development/extensions-core/hdfs.html); Instead of using a local mount, Apache Druid directly used HDFS to store data segments.
+Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS and exploit its essential peculiarity in terms of distributed storage, scalability, fault tolerance, and integration with the other MIND Foods HUB Data Lake components.
+The choice to use HDFS for batch data ingestion has a few drawbacks: the architecture is more complex since Apache Druids depend on an external Hadoop cluster and, more important, the waive to streaming ingestion mode, which enables users to perform real-time analytics on data.
 
 ### 2.2 Data generation
 
 To test both Druid and Hive, I generated 50 million rows (approximately 15 GB) of random, synthetic test data that can be downloaded from:
 
-At the time of this writing MIND Foods HUB project was starting to ingest data into the Apache Hive cluster, so I had a relatively small dataset that was not suited to test the performances of Big Data systems like Hive and Druid.
-To solve this problem, I wrote a Node.js application to generate random synthetic data that still respect the logical and semantic constraints of MIND Foods HUB Data Lake schema and to provide a realistic dataset to work with.
+At the time of this writing MIND Foods HUB project was starting to ingest data into the Apache Hive cluster, so I had a relatively small data-set that was not suited to test the performances of Big Data systems like Hive and Druid.
+To solve this problem, I wrote a Node.js application to generate random synthetic data that still respect the logical and semantic constraints of MIND Foods HUB Data Lake schema and to provide a realistic data-set to work with.
 The application code is hosted on SESAR Lab Github's organization: [https://github.com/SESARLab/mfh-measurements-generator]( https://github.com/SESARLab/mfh-measurements-generator).
 
 MIND Foods HUB data are stored in a single table, named `dl_measurements`, that follows a denormalized data model to avoid expensive join operations.
@@ -300,14 +402,14 @@ Both `start_timestamp` and `end_timestamp` times are calculated, while `measure_
 `measure_timestamp` is calculated, while `start_timestamp` and `end_timestamp` are `NULL`
 
 While measurements values were randomly generated, *sensor* related data (`sensor_id`, `sensor_type`, `sensor_desc_name`, `unit_of_measure` ) were dumped from the MIND Foods HUB Hive production cluster and randomly picked for each generated row.
-With [Mockaroo](https://www.mockaroo.com/), an online service that allows generating synthetic data comprehensive of commons and scientific plant names, I produced a set of 100 locations, randomly picked for each generated row of the dataset.
+With [Mockaroo](https://www.mockaroo.com/), an online service that allows generating synthetic data comprehensive of commons and scientific plant names, I produced a set of 100 locations, randomly picked for each generated row of the data-set.
 
-Finally, to simulate a dataset of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
+Finally, to simulate a data-set of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
 
 ### 2.3 Data ingestion
 
 Before querying data, I created tables for both databases and ingested the synthetic generated CSV data.
-The first step consisted in loading the generated dataset in a temporary HDFS folder on the Hadoop Namenode server to serve as the primary source for the ingestion process.
+The first step consisted in loading the generated data-set in a temporary HDFS folder on the Hadoop Namenode server to serve as the primary source for the ingestion process.
 
 Unlike the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some table optimizations to test each database at the top of their performance capability, using Hive partitions and Druid segments.
 Each *measurement* is stored depending on its `insertion_timestamp`, allowing each platform to retrieve data based on temporal criteria efficiently.
@@ -491,19 +593,19 @@ Data was loaded from the temporary HDFS folder on the NameNode using the followi
 
 #### Ingestion performance
 
-| Database     | Partitions    | Ingestion time |
-| ------------ | ------------- | -------------- |
-| Apache Hive  | 1462 partions | 02:55:8        |
-| Apache Druid | 51 segments   | 01:17:15       |
+| Database                              | Partitions    | HDFS data size | HDFS replication size | Ingestion time |
+| ------------------------------------- | ------------- | -------------- | --------------------- | -------------- |
+| Apache Hive                           | 1462 partions | 14.6 GB        | 43.9 GB               | 02:55:8        |
+| Apache Druid                          | 51 segments   | 9.9 GB         | 29.8 GB               | 01:17:15       |
 <sub>Table 1: Ingestion numbers</sub>
 
-Table 1 reports the number of partitions and the computed ingestion time for each database.
+Table 1 reports the number of partitions, the data size on HDFS and the total disk space used for data replication, the computed ingestion time for each database. 
+It's worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 [18] and Roaring [19] algorithms.
 Apache Druid was 55,8% faster than Apache Hive to import 50 million rows.
-
 
 ### 2.4 Queries
 
-To benchmark Apache Hive and Apache Druid, I used the most common query executed by MIND Foods Hub front-end;
+To benchmark Apache Hive and Apache Druid, I used the most common queries executed by MIND Foods Hub front-end;
 In this way, the benchmark is as close as possible to the actual scenario use cases.
 The queries are, where feasible, slightly optimized for each database to make use of Apache Hive table partitions and Apache Druid time segments.
 
@@ -630,7 +732,7 @@ The motivation under this choice is that Data Lake platforms are very different 
 Especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.
 
 The performance testing was intended to run against each database HTTP API.
-Sadly, [Apache Hive](https://hive.apache.org/) doesn't expose a set of REST API to interact with, similarly to other more recent platforms. Instead, a client is forced to use Hive JDBC drivers or Hive Thrift drivers to perform TCP connections. 
+Sadly, [Apache Hive](https://hive.apache.org/) doesn't expose a set of REST API to interact with, contrary to other more recent platforms. Instead, a client is forced to use Hive JDBC drivers or Hive Thrift drivers to perform TCP connections. 
 To work around this problem, I decided to write an application that works as an HTTP layer on top of [Javascript Hive driver](https://www.npmjs.com/package/hive-driver), so that a client can execute Hive SQL statements via HTTP.
 The application code is hosted on SESAR Lab Github's organization: [https://github.com/SESARLab/hive-http-proxy](https://github.com/SESARLab/hive-http-proxy).
 
@@ -641,26 +743,29 @@ JMeter ran with the following conditions:
 - Each query was configured to run 10 times (to have 10 samples per query) in a separate Thread Group 
 - Each Thread Group ran consecutively (one at a time) to avoid side effects on other requests
 
-All tests were executed in [CLI Mode](https://jmeter.apache.org/usermanual/get-started.html#non_gui), to [reduce resource usages](https://jmeter.apache.org/usermanual/best-practices.html#lean_mean), on a MacBook Pro Mid 2015 with these specs:
+Instead of running JMeter on the same network of the cluster to minimize request latency, I decided to simulate an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
+Therefore, all tests were executed in [CLI Mode](https://jmeter.apache.org/usermanual/get-started.html#non_gui), to [reduce resource usages](https://jmeter.apache.org/usermanual/best-practices.html#lean_mean), on a MacBook Pro Mid 2015 with these specs:
 
 - CPU 2,8 GHz Intel Core i7, 4 core/8 threads
 - 16 GB 1600 MHz DDR3 memory
 - 512 SSD storage
-- macOS 12.1 Monterey operative system 
-
-The reason behind the choice to run performance testing on a laptop instead of running JMeter on the same network of the cluster (to minimize request latency) is simple;
-I decided to simulate an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
+- macOS 12.1 Monterey operating system
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
 ## 3. Test results
 
-Each JMeter execution produced a CSV dataset containing the test results for each platform (one for Hive, the other for Druid);
+Each JMeter execution produced a CSV data-set containing the test results for each platform (one for Hive, the other for Druid);
 I imported test results in JMeter to calculate, for each sample: Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation.
 
-Also, I compared each query Average response time with [ResultsComparator](https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki) plugin, to quantify the performance difference between Apache Hive and Apache Druid executions by calculating  [Cohen's *d*](https://en.wikipedia.org/wiki/Effect_size#Cohen's_d) of the samplers, which is one of the most popular measures of the effect size.
-Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data; 
-The magnitude of *d*, namely the difference between the means, is described by the table below:
+Also, I compared each query's Average response time with ResultsComparator [18] plugin to quantify the performance difference between Apache Hive and Apache Druid executions by calculating Cohen's *d* [19] of the samplers, which is one of the most popular measures of the effect size.
+Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
+
+$$
+d=\frac{\bar{x}_{1}-\bar{x}_{2}}{s}
+$$
+
+The magnitude of *d*, namely the difference between the means, is described by the table [20] below:
 
 | d           | Effect size |
 | ----------- | ----------- |
@@ -681,9 +786,10 @@ JMeter test results are downloadable from this repository hosted on SESAR Lab Gi
 
 ### 3.1 Query 1
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 1.png)
-<sub>Figure 1: Average response time for Query 1</sub>
-
+<figure>
+    <img src="./content/Average response time - Query 1.png" alt="Average response time - Query 1" />
+    <figcaption>Figure 1: Average response time for Query 1</figcaption>
+</figure>
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
@@ -703,9 +809,10 @@ Using Apache Druid, we can see a considerable decrease in Average response time 
 
 ### 3.2 Query 2
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 2.png)
-<sub>Figure 1: Average response time for Query 2</sub>
-
+<figure>
+    <img src="./content/Average response time - Query 2.png" alt="Average response time - Query 2" />
+    <figcaption>Figure 1: Average response time for Query 2</figcaption>
+</figure>
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
@@ -724,9 +831,10 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 
 ### 3.3 Query 3
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 3.png)
-<sub>Figure 1: Average response time for Query 3</sub>
-
+<figure>
+    <img src="./content/Average response time - Query 3.png" alt="Average response time - Query 3" />
+    <figcaption>Figure 1: Average response time for Query 3</figcaption>
+</figure>
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
@@ -746,9 +854,10 @@ We can notice how the behaviour of all time queries is the same on both platform
 
 ### 3.4 Query 4
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 4.png)
-<sub>Figure 1: Average response time for Query 4</sub>
-
+<figure>
+    <img src="./content/Average response time - Query 4.png" alt="Average response time - Query 4" />
+    <figcaption>Figure 1: Average response time for Query 4</figcaption>
+</figure>
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
@@ -774,9 +883,10 @@ On the other side, Apache Druid uses an in [memory algorithm](https://druid.apac
 
 ### 3.5 Query 5
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 5.png)
-<sub>Figure 1: Average response time for Query 5</sub>
-
+<figure>
+    <img src="./content/Average response time - Query 5.png" alt="Average response time - Query 5" />
+    <figcaption>Figure 1: Average response time for Query 5</figcaption>
+</figure>
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
@@ -797,9 +907,10 @@ Apache Druid is exceedingly performant, remaining under the 2 seconds threshold 
 
 ### 3.6 Query 6
 
-![](C:\Users\Gabriele\code\mind\mfh-dl-performace-testing\content\Average response time - Query 6.png)
-<sub>Figure 1: Average response time for Query 6</sub>
-
+<figure>
+    <img src="./content/Average response time - Query 6.png" alt="Average response time - Query 6" />
+    <figcaption>Figure 1: Average response time for Query 6</figcaption>
+</figure>
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
@@ -831,21 +942,21 @@ Thesis conclusions
 
 [4] SESAR Lab. [Internet]. Available from:  https://sesar.di.unimi.it/
 
-[5] The Apache Software foundation, "Apache Hadoop". [Internet]. Available from: https://hadoop.apache.org/
+[5] The Apache Software Foundation, "Apache Hadoop". [Internet]. Available from: https://hadoop.apache.org/
 
-[6] The Apache Software foundation, "Apache Hive". [Internet]. Available from: https://hive.apache.org/
+[6] The Apache Software Foundation, "Apache Hive". [Internet]. Available from: https://hive.apache.org/
 
-[7] The Apache Software foundation, "Apache Druid". [Internet]. Available from: https://druid.apache.org/
+[7] The Apache Software Foundation, "Apache Druid". [Internet]. Available from: https://druid.apache.org/
 
-[8] The Apache Software foundation, "Apache JMeter". [Internet]. Available from: https://jmeter.apache.org/
+[8] The Apache Software Foundation, "Apache JMeter". [Internet]. Available from: https://jmeter.apache.org/
 
-[9] Arne von See, "Volume of data/information created, captured, copied, and consumed worldwide from 2010 to 2025” 2020.[Internet]. Available from: https://www.statista.com/statistics/871513/worldwide-data-created/
+[9] Arne von See, "Volume of data/information created, captured, copied, and consumed worldwide from 2010 to 2025" 2020.[Internet]. Available from: https://www.statista.com/statistics/871513/worldwide-data-created/
 
-[10] D. Reinsel, J. Gantz and J. Rydning, ”Data Age 2025: The Digitization of the World From Edge to Core” International Data Corporation, 2018.
+[10] D. Reinsel, J. Gantz and J. Rydning," Data Age 2025: The Digitization of the World From Edge to Core" International Data Corporation, 2018.
 
-[11] J. S. Ward and A. Barker, “Undefined By Data: A Survey of Big Data Definitions.,” CoRR, vol. abs/1309.5821, 2013.
+[11] J. S. Ward and A. Barker, "Undefined By Data: A Survey of Big Data Definitions.," CoRR, vol. abs/1309.5821, 2013.
 
-[12] S. Madden, “From Databases to Big Data,” IEEE Internet Computing, vol. 16, no. 3, pp. 4–6, 2012.
+[12] S. Madden, "From Databases to Big Data," IEEE Internet Computing, vol. 16, no. 3, pp. 4–6, 2012.
 
 [13] L. Douglas, "3d data management: Controlling data volume, velocity and variety", Meta Group, 2001.
 
@@ -856,3 +967,16 @@ Thesis conclusions
 [16] S. Ghemawat, H. Gobioff, S. Leung, "The Google File System", "Proceedings of the 19th ACM Symposium on Operating Systems Principles", ACM, Bolton Landing, NY, pp. 20-43. 2003. [Internet] Available from: https://research.google/pubs/pub51/
 
 [17] J. Dean, S. Ghemawat, "MapReduce: Simplified Data Processing on Large Clusters", "OSDI 04: Sixth Symposium on Operating System Design and Implementation", San Francisco, CA, pp. 137-150, 2004. [Internet] Available from: https://research.google/pubs/pub62/
+
+[18] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, 
+"Apache Hadoop YARN: Yet another resource negotiator",  In: Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp 5: 1–5:16.  2013
+
+[18] Y. Collet, "LZ4 - extremely fast compression". [Online]. Available from: https://lz4.github.io/lz4/
+
+[19] D. Lemire, G. Ssi-Yan-Kai, and O. Kaser, "Consistently faster and smaller compressed bitmaps with Roaring", Software: Practice and Experience, 46(11): pp- 1547–1569. 2016
+
+[18] rbourga, Results Comparator Plugin. [Internet] Available from: https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki
+
+[18] J. Cohen, "Statistical Power Analysis for the Behavioral Sciences", Routledge, 1988.
+
+[19]  S Sawilowsky, "New effect size rules of thumb", Journal of Modern Applied Statistical Methods, Vol. 8: Iss. 2, 2009 [Internet] Available from: https://digitalcommons.wayne.edu/jmasm/vol8/iss2/26/
