@@ -70,6 +70,7 @@ Its goal is to "implement a computational infrastructure to model, engineer and 
 The project, split into different stages, plans to:
 
 1. Identify crops with optimal nutritional profiles
+1.  Creation of a Germplasm bank of the selected species
 2. Farm the selected species in protected environments (greenhouses and vertical farms) 
 3. Apply high-throughput phenotyping applications on the plant's cultivations
 4. Create a computing infrastructure by employing smart devices and sensors, 5G communication networks, and Big Data platforms
@@ -88,8 +89,9 @@ The computing infrastructure, made by different modules, consists in:
 - Different software collection agents collect data from the rover and the on-field sensors and upload them to the Data Lake
 - A Data Lake platform to store sensor's data and supports data analysis
 - An hybrid GraphQL/REST API developed in Rust to access and consume data stored in the Data Lake platform
+- A client application to visualize raw and processed sensors data and by reading a QRcode that identifies a specific cultivation
 
-The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network and the on-field sensors.
+The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network, the on-field sensors, and the client application.
 Multiple departments of Università Degli Studi di Milano have been involved in the MIND Foods HUB project. 
 The Dipartimento di Scienza Agrarie e Ambientale (**DISAA**) designed and implemented the rover, its sensors, and the algorithms that analyze the nutritional properties of the chosen species.
 The SEcure Service-oriented Architectures Research Lab (**SESAR** Lab) planned and implemented all software modules of the computing infrastructure: the collection agents, the GraphQL/REST API, the data model to structure sensor's data and the Data Lake platform.
@@ -119,6 +121,11 @@ Big Data is a universal term [11] that refers to data that is "too big, too fast
     <figcaption>Figure 2: Big Data three Vs</subfigcaption
 </figure>
 
+Over time the three Vs concepts of Big Data have been complemented by two additional properties: *Veracity* [14] and *Value*.
+
+- *Veracity* is a property that refers to the degree of reliability associated with certain data types. For example, some data is inherently uncertain or unpredictable (sentiments in social media, weather, economics) regardless of the data cleansing method applied; yet, these data types still contain valuable information.
+
+- *Value* is a property that refers to the social or economic value generated from the data. Value is the desired outcome of Big Data processing since data has no inherent value without any process that analyzes the data to understand how to employ them.
 
 #### Data Lake systems
 
@@ -142,6 +149,7 @@ Unlike traditional Data Warehouses, which pursues an ETL approach, Data Lake sys
     <img src="./content/Data Lake.jpg"/>
     <figcaption>Figure 4: ELT</subfigcaption
 </figure>
+
 ELT doesn't apply any prior data transformation since a Data Lake can store structured, semi-structured or unstructured data. Instead, data is ingested as soon as it becomes available in its raw format, allowing for fast write operations and the advantage of preserving the original data structure. 
 Then, only during a particular analysis the required data is extracted and transformed in a structure suited to be interpreted, applying what is described as a schema-on-read process.
 
@@ -193,32 +201,39 @@ map(k1, v1) -> list(k2, v2)
 reduce(k2, list(v2)) -> list(v2)
 ```
 
-The Map function is written by the user and takes a key/value pair as input to generate a set of intermediate key/value pairs. All intermediate values with the same intermediate key are grouped and passed to the Reduce function.
+The Map function is written by the user and takes a key/value pair as input to generate a set of intermediate key/value pairs. All intermediate values with the same intermediate key are grouped together and passed to the Reduce function.
 
 The Reduce function accepts an intermediate key and a set of values for that key. Then, it merges these values to form a smaller set of values; typically, zero or one output value is produced per Reduce invocation. 
 The intermediate values are supplied to the user's reduce function via an iterator that allows handling lists of too large values to fit in memory.
 
 <figure>
-    <img src="./content/MapReduce.jpg" alt="MapReduce" />
-    <figcaption>Figure 6: MapReduce architecture</figcaption>
+    <img src="./content/MapReduce.jpg" alt="MapReduce flow" />
+    <figcaption>Figure 6: MapReduce flow</figcaption>
 </figure>
+The power of the MapReduce model is that it enables the parallel execution of computation since the Map invocations are distributed across multiple machines of a cluster. 
+Figure 6 shows the typical execution flow of a MapReduce application. First, the input data is split into a set of *M* splits; each input splits is processed in parallel by different Map functions, running on different machines. Next, the Map functions' intermediate key/value pairs are passed to the *R* available Reduce functions. The number *R* of  Reducer is obtained by applying a partitioning function on the intermediate key (for example:  `hash(key) mod R`).
+The user specifies the number of partitions (R) and the partitioning function; the use of the partitioning function guarantee that the output of the various Map invocations is evenly distributed across the Reducers.
+
 Hadoop implements MapReduce as a framework to process data stored on HDFS.
-A MapReduce job splits the input data-set into independent chunks processed in parallel by the Map tasks. Next, the framework sorts the outputs of the Maps, which are then input to the Reduce tasks. Usually, both the job's input and output are stored on HDFS. 
-The compute nodes and the storage nodes are the same, so the MapReduce framework and HDFS run on the same set of nodes; this allows to move the computation where the data is already stored to avoid the network transfer of large data sets across the cluster.
+A MapReduce job is typically implemented in Java; it splits the input data-set into independent chunks processed in parallel by the Map tasks. Next, the framework sorts the outputs of the Maps, which are then input to the Reduce tasks. Usually, both the job's input and output are stored on HDFS. 
+The computing and storage nodes are the same, so the MapReduce framework and HDFS run on the same set of nodes; this allows the framework to take advantage of data locality, moving the computation where the data already resides. As a result, data locality helps minimize network congestion because it avoids the transfer of large data sets across the cluster and improves the overall computation throughput.
 
 #### YARN
 
-MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (**YARN**) [18], an Hadoop layer that decouples the programming model from the resource management infrastructure, and delegates many scheduling functions to per-application components.
-YARN, at its core, is composed by two processes: the **ResourceManager** and the **NodeManager**. 
-The ResourceManager is process that runs on a dedicated node, and is responsible to arbitrate cluster's resources among various contending jobs, and to schedule job execution depeding on resources availability.
-YARN resources are called *containers*, a logical set of resources (for example: 2 GB of RAM, 1 CPU) bound to a specific node of the cluster, and reserved for the execution of a MapReduce job.
-A  ResourceManager  accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution. 
-NodeManager processes, one per each Hadoop's node, are responsible for container lifecycle: they launch the container, monitor its execution and the resource usage (in terms of CPU, memory, disk, network), and report the information to the ResourceManager.
+MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (**YARN**) [18]. This Hadoop layer decouples the programming model from the resource management infrastructure and delegates many scheduling functions to per-application components.
+YARN, at its core, is composed of two processes: the **ResourceManager** and the **NodeManager**. 
+The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
+YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.
+A  ResourceManager accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution.  NodeManager processes, one per each Hadoop node, are responsible for container lifecycle: they launch the container, monitor its execution and its resources usage (in terms of CPU, memory, disk, network), and reports the information to the ResourceManager.
 The ResourceManager, collecting information from all NodeManagers, can assemble the global status of the cluster and schedule job execution.
 
-It's worth mentioning another component of the YARN architecture: the **TimelineServer** (previously known as the Application History Server).
+It's worth mentioning another component of the YARN architecture: the **TimelineServer** (previously known as the Application History Server), a process that runs on a dedicated node of the cluster.
+The TimelineServer collects the historical states for each completed MapReduce job and provides various YARN related metrics  accessible via REST APIs, including:
 
-
+- The number of Map and Reduce tasks employed for a specific job
+- The elapsed time for the job execution
+- The final status of the job (succeeded, failed, etc.)
+- The allocated memory and virtual cores per container
 
 ### 1.3 Apache Hive
 
@@ -229,24 +244,36 @@ Apache Hive offers many advantages over working directly on Hadoop:
 - A mechanism to impose structure, using relational database abstractions, on a variety of data formats
 - Since HDFS can hold structured, semi-structured and unstructured data, Hive can read and store table data in various formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, and others.
 
+Apache Hive is not designed for OLTP workloads or to support real-time analytics due to its batch-oriented nature. It is best suited for traditional data warehousing tasks: data analysis and distributed processing of massive volumes of data.
+Apache Hive is engineered to be scalable, as more machines can be dynamically added to the Hadoop cluster as needed, fault-tolerant, and loosely coupled with its input formats.
+
 #### Design
 
-<img src="https://data-flair.training/blogs/wp-content/uploads/sites/2/2020/02/hive-architecture-and-its-components.jpg" alt="hive architecture and hive components" style="zoom: 67%;" />
+<figure>
+    <img src="./content/Apache Hive Architecture - Horizontal.jpg" alt="Query execution flow in Apache Hive" style="zoom: 67%;" />
+    <figcaption>Figure 7: Apache Hive architecture</figcaption>
+</figure>
 
-Figure 7 shows the major components of Apache Hive that are:
+Figure 7 shows the architecture of Apache Hive and its main components:
 
-- **Hive Client**: any kind of client that wants to interact with Hive by running HiveQL queries. Clients usually use Apache Thrift, JDBC or ODBC drivers to connect and communicate with Hive
+- **Hive Client**: any kind of client that wants to interact with Hive by running HiveQL queries. Clients usually use Apache Thrift, JDBC or ODBC drivers to connect and communicate with Hive.
 - **Driver**: the component that receives those queries and handles the communication with the Compiler, the Optimizer and the Execution engine. It internally uses **HiveServer2**, a process that enables multi-client concurrency and client authentication. HiveServer2 uses a thread pool, allocating a worker thread for each TCP connection instantiated by a client.
 - **Compiler**: the component that parses the queries, apply semantic analysis on each query block and expression and, by retrieving table and partitions metadata from the Metastore, eventually generates a query execution plan in the form of a Directed Acyclic Graph (**DAG**).
 - **Optimizer**: the component that applies further transformations on the execution plan to optimize query execution.
-- **Metastore**: the component that stores all schema's tables, partitions and buckets metadata, including the list of columns, columns type, data location on HDFS, serialization and deserialization strategies required to read and write data from and to tables. Metadata is usually stored on an external relation database, like MySQL or PostgreSQL, and not directly on HDFS. 
-- **Execution engine**: the component which executes the execution plan on Hadoop
+- **Metastore**: the component that stores all schema's tables, partitions and buckets metadata, including the list of columns, columns type, data location on HDFS, serialization and deserialization strategies required to read and write data from and to tables. Metadata is usually stored on an external relational database, like MySQL or PostgreSQL and not directly on HDFS. 
+- **Execution engine**: the component which instructs Hadoop to perform the execution plan.
+- **SerDe**: "Serializer and Deserializer" (**SerDe**) is the primary interface used by Hive to perform I/O operations on HDFS. One of the core principles of Hive is that it doesn't own HDFS file format; a user could store data in HDFS in various file formats, and Hive uses SerDe to read and write data back and forth to HDFS supporting that specific file format.
+
+#### Query execution
+
 
 When the Driver receives a query from a client, it creates a session handle for that client and forwards the query to the Compiler:
 
-1. The Compiler retrieves the necessary metadata from the Metastore; metadata is used to type-check the query expressions and prune partitions data based on query predicates.
-2. The Compiler produces a DAG, where each vertex is a MapReduce job, with each ob submitted to Hadoop for parallel processing.
-3. Row data is read from HDFS files, deserialized and returned to the client.
+1. The Compiler retrieves the necessary metadata from the Metastore; metadata is used to type-check the query expressions and eventually prune partitions data based on query predicates.
+2. The Compiler produces a query execution plan in the form of a DAG, where each vertex is a MapReduce job to be executed
+2. The Optimizer apply column pruning and other optimizations to the query execution plan
+2. The Execution engine submits each MapReduce job of the query execution plan to Hadoop for parallel processing
+2. In each task, the SerDe deserializer associated with the table is used to read the rows from HDFS files and to return data to the client
 
 #### Data Model and Storage
 
@@ -256,22 +283,102 @@ In order of granularity, data in Apache Hive is organized into:
 - **Tables**: similarly to relational databases tables, they are homogenous units of data within the same schema. All data of a table is stored in `/user/hive/warehouse/databasename.db/tablename/` directory of HDFS; 
   Apache Hive also supports **external** tables, or instead tables created on preexisting files or directories in HDFS.
 - **Partitions**: each table can have one or more partitions keys that determine how the data is stored on HDFS; all data with the same partition key are held together into the same partition. For example, in a table T, with a `date` partition, all data for a particular date are stored in the `T/data=<date>` directory on HDFS. Partitions allow users to retrieve data that satisfies specific predicates efficiently. 
-For example, a query on T that satisfies the predicate `T.date='2022-02-02` would only look at files stored in `T/data=2022-02-02/` directory on HDFS.
+For example, a query on T that satisfies the predicate `T.date='2022-02-02` would only look at files stored in the `T/data=2022-02-02/` directory on HDFS.
 - **Buckets**: data in each partition may be further divided into buckets based on the hash of a column in the table; each bucket is stored as a file in the partition directory. Bucketing allows the system to evaluate queries that depend on a sample of data efficiently.
 
 #### SQL capabilities
 
-HiveQL supports all basic DDL and DML operations to work with tables and partitions: the ability to select only specific columns using a `SELECT` clause, rows filtering using a `WHERE` clause, equi-joins between tables, data aggregations with multiple `GROUP BY` columns, store the results of a query into another table, manage table and partitions with `CREATE`, `DROP` and `ALTER` statements.
+HiveQL supports all basic DDL and DML operations to work with tables and partitions; to name a few: the ability to select only specific columns using a `SELECT` clause, rows filtering using a `WHERE` clause, equi-joins between tables, data aggregations with multiple `GROUP BY` columns, store the results of a query into another table, manage databases, tables and partitions with the `CREATE`, `DROP` and `ALTER` statements.
 
 #### Ingestion
 
 There are multiple ways to ingest data into Apache Hive using SQL statements, but since the Compiler translates these into MapReduce jobs, all data ingestion occurs in a batch mode.
-To load data into Apache Hive, a user can create an external table that points to a specified location within HDFS and then copy the data into any other Hive table.
-Additionally, Hive supports statements that load data in various formats directly from HDFS into a table; finally, data can be appended into an existing table using the INSERT statement.
+To load data into Apache Hive, a user can:
+
+1. Create an external table that points to a specified location within HDFS and then copy the data into any other Hive table. As previously mentioned, Apache Hive can store table data in various file formats; when a user creates a table, could specify the format of the files stored on HDFS. 
+For example, the following statements create an external table `T` that points to the `/user/data` directory in HDFS, storing JSON files, and load the data into the `V` table.
+
+   ```sql
+   CREATE EXTERNAL TABLE T (
+       key string,
+       value double,
+   )
+   STORED AS JSONFILE
+   LOCATION 'hdfs://namenode:9000/user/data';
+   
+   FROM T
+   INSERT OVERWRITE TABLE V
+   SELECT *;
+   ```
+
+2. Use a `LOAD DATA` statement to load data in various formats from HDFS into a Hive table. The following example shows how `file.json` is loaded into table V.
+
+   ```sql
+   LOAD DATA INPATH 'hdfs://namenode:9000/user/data/file.json' INTO TABLE V;
+   ```
+
+3. Append data into an existing Hive table using the `INSERT` statement. For example, the following statements insert a row into the table `V`:
+
+   ```
+   INSERTO INTO V VALUES('Pi', 3.1415)
+   ```
 
 ### 1.4 Apache Druid
 
-Introduce Apache Druid with a short explanation of its key concepts.
+Apache Druid is an open-source distributed data store that supports various modern applications, like real-time analytics on large data-sets and fast data aggregations for highly concurrent APIs.
+Apache Druid offers many advantages over traditional Data Warehouse systems:
+
+- Real-time data ingestion in streaming mode, even if batch mode ingestion is supported
+- Low latency real-time queries
+- Default time-based partitioning on data, which enables performant time-based queries
+- Native supports for semi-structured and nested data in different formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, Protobuf, and others.
+
+Apache Druid architecture combines ideas from different storage systems (Data Warehouse systems, Timeseries databases, Search engines). At its core, Druid uses a columnar storage format only to load the exact columns needed for a particular query instead of the entire row. Also, ingested data is automatically time partitioned into what are known as **segments**.  As we will see in the "Data model and storage section", segments are stored in Druid's distributed storage; time-based queries only access segments that match the query's time range, allowing Druid to provide data to the clients efficiently.
+
+#### Design
+
+Apache Druid is a multi-process distributed data store designed to be deployed in a cluster. Each system component can be configured and scaled independently depending on the system's needs.
+Apache Druid processes are the following:
+
+- **Coordinator**: it is responsible for managing data availability and distribution on the cluster. The Coordinator instructs the Historical process to load new segments, drop outdated segments, ensure that segments are correctly replicated across the Historical process, and distribute segments between Historical nodes to keep the latter evenly loaded.
+- **Router**: it is an optional process that acts as an API gateway. The Router receives queries from external clients and routes them to the Brokers. Additionally, the Router runs the Druid Console, a management Web UI to run SQL or native Druid queries and manage the Druid cluster.
+- **Broker**: it is responsible for forwarding queries to the Historical processes, depending on the location of the segments.
+  A Broker understands what segments exist on what Historical processes depending on the time partitioning and route queries to execute them on the correct nodes. The Broker also merges the result sets of a query from all individual Historical involved in the load operation.
+- **Historical**: it stores historical queryable data. Since Druid data is time partitioned into segments, each Historical process, usually multiple per cluster, is responsible for loading and serving data about a specific segment when instructed by the Coordinator or the Broker. Data is generally stored in a distributed file system and loaded into Historical memory every time a read/write operation is requested.
+**Overlord**: it is responsible for accepting ingestion tasks, assigning them to the MiddleManagers and coordinating data publishing on the distributed storage.
+- **MiddleManager**: it handles ingestion of new data into the cluster; MiddleManagers are responsible for reading data from external sources and publishing new Druid segments.
+
+<figure>
+    <img src="https://druid.apache.org/docs/latest/assets/druid-architecture.png" alt="Apache Druid architecture" style="zoom: 67%;" />
+    <figcaption>Figure 7: Apache Druid architecture</figcaption>
+</figure>
+
+Druid processes are typically organized into logical units, following a **Master**, **Query** and **Data** server topology; figure 7 shows the architecture of a representative Apache Druid cluster.
+Master servers manage data ingestion and availability; they are composed of the Coordinator and the Overlord processes. Query servers, formed by the Broker and the Router processes, expose the endpoints that users and client applications interact with; they route queries to the Data servers. Finally, data servers execute ingestion jobs and store the data into the distributed storage. Data servers are composed of the Historical and the MiddleManager processes.
+
+Apache Druid also relies on three external dependencies: **Deep storage**, covered in the related section, **Metadata** **storage**, and **ZooKeeper**.
+The Metadata storage stores various system metadata, like the number of segments available on the cluster and their usage, internal task status, etc. It is typically employed as an external relational database on clustered deployments, like MySQL or PostgreSQL.
+
+ZooKeeper is an open-source coordination service [19] used to maintain centralized configuration, naming, and synchronization for distributed applications. For example, Apache Druid uses ZooKeeper for internal service discovery, coordination between the processes, and leader election.
+
+#### Query Execution
+
+Apache Druid query execution follows a Scatter/Gather [20] approach to retrieve data from the Historical processes;
+The execution flow is the following:
+
+1. The Broker identifies
+
+#### Data model and Storage
+
+Apache Druid data model
+
+#### SQL capabilities
+
+Apache Druid SQL
+
+#### Ingestion
+
+Apache Druid ingestion
 
 ### 1.5 Apache JMeter
 
@@ -307,7 +414,7 @@ The Hadoop cluster is composed by:
 - Three DataNode
 - A ResourceManager
 - A NodeManager
-- An HistoryServer
+- A TimelineServer
 - A Zookeeper instance to handle the cluster's high availability
 
 #### Apache Hive provisioning
@@ -755,8 +862,7 @@ Therefore, all tests were executed in [CLI Mode](https://jmeter.apache.org/userm
 
 ## 3. Test results
 
-Each JMeter execution produced a CSV data-set containing the test results for each platform (one for Hive, the other for Druid);
-I imported test results in JMeter to calculate, for each sample: Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation.
+Each JMeter execution produced a CSV data-set containing the test results for each platform (one for Hive, the other for Druid); I imported test results in JMeter to calculate, for each sample: Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation.
 
 Also, I compared each query's Average response time with ResultsComparator [18] plugin to quantify the performance difference between Apache Hive and Apache Druid executions by calculating Cohen's *d* [19] of the samplers, which is one of the most popular measures of the effect size.
 Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
@@ -899,8 +1005,7 @@ On the other side, Apache Druid uses an in [memory algorithm](https://druid.apac
 | Query 5     | 184.97    | Huge decrease      |
 <sub>Table 11: Performance evaluation for Query 5</sub>
 
-Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in 
-an Average response time of 8,52 minutes circa per query execution.
+Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in an Average response time of 8,52 minutes circa per query execution.
 Apache Druid is exceedingly performant, remaining under the 2 seconds threshold for Query 5 completion.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
@@ -930,7 +1035,7 @@ Apache Druid acts differently from  Query 4 and Query 5, with Query 6 Average re
 
 ## 4. Conclusions
 
-Thesis conclusions
+Thesis conclusions.
 
 ## 5. References
 
@@ -960,6 +1065,8 @@ Thesis conclusions
 
 [13] L. Douglas, "3d data management: Controlling data volume, velocity and variety", Meta Group, 2001.
 
+[14] M. Schroeck, R. Shockley, J. Smart, D. Romero-Morales, P. Tufano, "Analytics: The Real-World Use of Big Data: How Innovative Enterprises Extract Value from Uncertain Data. Executive Report", IBM, 2012. [Online]. Available from: https://www.bdvc.nl/images/Rapporten/GBE03519USEN.PDF
+
 [14] W. Inmon, "Building the Data Warehouse", John Wiley and Sons, 2005.
 
 [15] J. Dixon, "Pentaho, Hadoop, and Data Lakes", 2010. [Internet]. Available from: https://jamesdixon.wordpress.com/2010/10/14/pentaho-hadoop-and-data-lakes/
@@ -968,8 +1075,11 @@ Thesis conclusions
 
 [17] J. Dean, S. Ghemawat, "MapReduce: Simplified Data Processing on Large Clusters", "OSDI 04: Sixth Symposium on Operating System Design and Implementation", San Francisco, CA, pp. 137-150, 2004. [Internet] Available from: https://research.google/pubs/pub62/
 
-[18] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, 
-"Apache Hadoop YARN: Yet another resource negotiator",  In: Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp 5: 1–5:16.  2013
+[18] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, "Apache Hadoop YARN: Yet another resource negotiator", Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp 5: 1–5:16.  2013
+
+[19] D. R. Cutting, D. R. Karger, J. O. Pedersen, J. W. Tukey, “Scatter / Gather: Browsing A Cluster-based Large Document Collections", Sigir '92, pp. 318–329, 1992
+
+[20] The Apache Software Foundation, "Apache ZooKeeper". [Internet]. Available from: https://zookeeper.apache.org/
 
 [18] Y. Collet, "LZ4 - extremely fast compression". [Online]. Available from: https://lz4.github.io/lz4/
 
