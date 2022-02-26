@@ -5,7 +5,7 @@ subject: Evaluating performances of enterprise data lake solutions for MIND Food
 keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 ---
 
-<img src="C:\Users\Gabriele\AppData\Roaming\Typora\typora-user-images\image-20220202212948471.png" alt="image-20220202212948471" />
+<img src="./content/logo_statale.png" alt="Università degli Studi di Milano" />
 
 
 
@@ -89,7 +89,7 @@ The computing infrastructure, made by different modules, consists in:
 - Different software collection agents collect data from the rover and the on-field sensors and upload them to the Data Lake
 - A Data Lake platform to store sensor's data and supports data analysis
 - An hybrid GraphQL/REST API developed in Rust to access and consume data stored in the Data Lake platform
-- A client application to visualize raw and processed sensors data and by reading a QRcode that identifies a specific cultivation
+- FoodsAPP, a client application: a user could scan QRcode that identifies a specific cultivation to visualize its raw and processed sensors data
 
 The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network, the on-field sensors, and the client application.
 Multiple departments of Università Degli Studi di Milano have been involved in the MIND Foods HUB project. 
@@ -132,7 +132,7 @@ Over time the three Vs concepts of Big Data have been complemented by two additi
 These Big Data concepts heavily changed the shape of traditional data management systems, like Data Warehouses, that now need to support parallel data processing, complex analytical workflow, resilient and flexible storage capable of efficiently persisting data from several sources. Also, with the rise of new Big Data technologies, further models to store and analyze data have been developed to take advantage of the emerging new Big Data technologies; one for all: Data Lake systems.
 
 Historically, organizations that need to reconcile data from different Online Transaction Processing (**OLTP**) data sources employed a Data Warehouse system.
-A Data Warehouse is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [14], typically operated by business end-users to support management's decision.
+A Data Warehouse is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [15], typically operated by business end-users to support management's decision.
 Since data ingested into Data Warehouses usually comes from relational OLTP systems, the most used data processing paradigm in data warehousing is Extract, Transform, Load (**ETL )**.
 
 <figure>
@@ -142,21 +142,22 @@ Since data ingested into Data Warehouses usually comes from relational OLTP syst
 
 The standard ETL approach expects to extract data from different sources, apply some data transformation to adhere to the schema adopted to structure the data, and finally load it into the Data Warehouse. This process, also known as schema-on-write, allows efficient and fast reads operations at the cost of designing and maintaining a schema that describes the shape of the data.
 
-Data Lake is a term coined in 2011 by James Dixon [15], founder and former CTO of Pentaho: a Data Lake is a repository that stores large quantities and varieties of data in their raw format, independently from their source or structure. 
+Data Lake is a term coined in 2011 by James Dixon [16], founder and former CTO of Pentaho: a Data Lake is a repository that stores large quantities and varieties of data in their raw format, independently from their source or structure. 
 Unlike traditional Data Warehouses, which pursues an ETL approach, Data Lake systems use an Extract, Load, Transform (**ELT**) data processing paradigm. 
 
 <figure>
     <img src="./content/Data Lake.jpg"/>
     <figcaption>Figure 4: ELT</subfigcaption
 </figure>
-
 ELT doesn't apply any prior data transformation since a Data Lake can store structured, semi-structured or unstructured data. Instead, data is ingested as soon as it becomes available in its raw format, allowing for fast write operations and the advantage of preserving the original data structure. 
 Then, only during a particular analysis the required data is extracted and transformed in a structure suited to be interpreted, applying what is described as a schema-on-read process.
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 1.2 Hadoop
 
 Hadoop is an open-source framework that enables reliable, scalable, distributed computing.
-Started in 2002 as an open-source project by Doug Cutting and Mike Cafarella, that was developing a search engine capable to index 1 billion pages, the first version of Hadoop implemented two powerful computing concepts introduced by Google in 2003 and 2004: Google File System (**GFS**) [16], a scalable distributed file system for large distributed data-intensive applications, and MapReduce [17], a programming model for processing and generating large data sets.
+Started in 2002 as an open-source project by Doug Cutting and Mike Cafarella, that was developing a search engine capable to index 1 billion pages, the first version of Hadoop implemented two powerful computing concepts introduced by Google in 2003 and 2004: Google File System (**GFS**) [17], a scalable distributed file system for large distributed data-intensive applications, and MapReduce [18], a programming model for processing and generating large data sets.
 
 So, at its core, Hadoop is composed of two modules: storage and processing. The storage component is the Hadoop Distributed File System (**HDFS**), while the processing component is **MapReduce**.
 
@@ -220,7 +221,7 @@ The computing and storage nodes are the same, so the MapReduce framework and HDF
 
 #### YARN
 
-MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (**YARN**) [18]. This Hadoop layer decouples the programming model from the resource management infrastructure and delegates many scheduling functions to per-application components.
+MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (**YARN**) [19]. This Hadoop layer decouples the programming model from the resource management infrastructure and delegates many scheduling functions to per-application components.
 YARN, at its core, is composed of two processes: the **ResourceManager** and the **NodeManager**. 
 The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
 YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.
@@ -234,6 +235,8 @@ The TimelineServer collects the historical states for each completed MapReduce j
 - The elapsed time for the job execution
 - The final status of the job (succeeded, failed, etc.)
 - The allocated memory and virtual cores per container
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 1.3 Apache Hive
 
@@ -250,9 +253,10 @@ Apache Hive is engineered to be scalable, as more machines can be dynamically ad
 #### Design
 
 <figure>
-    <img src="./content/Apache Hive Architecture - Horizontal.jpg" alt="Query execution flow in Apache Hive" style="zoom: 67%;" />
+    <img src="./content/Apache Hive Architecture - Horizontal.jpg" alt="Query execution flow in Apache Hive" />
     <figcaption>Figure 7: Apache Hive architecture</figcaption>
 </figure>
+
 
 Figure 7 shows the architecture of Apache Hive and its main components:
 
@@ -266,12 +270,11 @@ Figure 7 shows the architecture of Apache Hive and its main components:
 
 #### Query execution
 
-
 When the Driver receives a query from a client, it creates a session handle for that client and forwards the query to the Compiler:
 
 1. The Compiler retrieves the necessary metadata from the Metastore; metadata is used to type-check the query expressions and eventually prune partitions data based on query predicates.
 2. The Compiler produces a query execution plan in the form of a DAG, where each vertex is a MapReduce job to be executed
-2. The Optimizer apply column pruning and other optimizations to the query execution plan
+2. The Optimizer applies column pruning and other optimizations to the query execution plan
 2. The Execution engine submits each MapReduce job of the query execution plan to Hadoop for parallel processing
 2. In each task, the SerDe deserializer associated with the table is used to read the rows from HDFS files and to return data to the client
 
@@ -288,7 +291,7 @@ For example, a query on T that satisfies the predicate `T.date='2022-02-02` woul
 
 #### SQL capabilities
 
-HiveQL supports all basic DDL and DML operations to work with tables and partitions; to name a few: the ability to select only specific columns using a `SELECT` clause, rows filtering using a `WHERE` clause, equi-joins between tables, data aggregations with multiple `GROUP BY` columns, store the results of a query into another table, manage databases, tables and partitions with the `CREATE`, `DROP` and `ALTER` statements.
+HiveQL supports all basic DDL, DQL and DML operations to work with tables and partitions; to name a few: the ability to select only specific columns using a `SELECT` clause, rows filtering using a `WHERE` clause, equi-joins between tables, data aggregations with multiple `GROUP BY` columns, store the results of a query into another table, manage databases, tables and partitions with the `CREATE`, `DROP` and `ALTER` statements.
 
 #### Ingestion
 
@@ -323,6 +326,8 @@ For example, the following statements create an external table `T` that points t
    INSERTO INTO V VALUES('Pi', 3.1415)
    ```
 
+<div style="page-break-after: always; visibility: hidden;"></div>
+
 ### 1.4 Apache Druid
 
 Apache Druid is an open-source distributed data store that supports various modern applications, like real-time analytics on large data-sets and fast data aggregations for highly concurrent APIs.
@@ -337,7 +342,7 @@ Apache Druid architecture combines ideas from different storage systems (Data Wa
 
 #### Design
 
-Apache Druid is a multi-process distributed data store designed to be deployed in a cluster. Each system component can be configured and scaled independently depending on the system's needs.
+Apache Druid is a multi-process distributed data store designed to be deployed in a cluster. Each system component can be configured and scaled independently based on the system's needs.
 Apache Druid processes are the following:
 
 - **Coordinator**: it is responsible for managing data availability and distribution on the cluster. The Coordinator instructs the Historical process to load new segments, drop outdated segments, ensure that segments are correctly replicated across the Historical process, and distribute segments between Historical nodes to keep the latter evenly loaded.
@@ -345,7 +350,7 @@ Apache Druid processes are the following:
 - **Broker**: it is responsible for forwarding queries to the Historical processes, depending on the location of the segments.
   A Broker understands what segments exist on what Historical processes depending on the time partitioning and route queries to execute them on the correct nodes. The Broker also merges the result sets of a query from all individual Historical involved in the load operation.
 - **Historical**: it stores historical queryable data. Since Druid data is time partitioned into segments, each Historical process, usually multiple per cluster, is responsible for loading and serving data about a specific segment when instructed by the Coordinator or the Broker. Data is generally stored in a distributed file system and loaded into Historical memory every time a read/write operation is requested.
-**Overlord**: it is responsible for accepting ingestion tasks, assigning them to the MiddleManagers and coordinating data publishing on the distributed storage.
+- **Overlord**: it is responsible for accepting ingestion tasks, assigning them to the MiddleManagers and coordinating data publishing on the distributed storage.
 - **MiddleManager**: it handles ingestion of new data into the cluster; MiddleManagers are responsible for reading data from external sources and publishing new Druid segments.
 
 <figure>
@@ -359,26 +364,41 @@ Master servers manage data ingestion and availability; they are composed of the 
 Apache Druid also relies on three external dependencies: **Deep storage**, covered in the related section, **Metadata** **storage**, and **ZooKeeper**.
 The Metadata storage stores various system metadata, like the number of segments available on the cluster and their usage, internal task status, etc. It is typically employed as an external relational database on clustered deployments, like MySQL or PostgreSQL.
 
-ZooKeeper is an open-source coordination service [19] used to maintain centralized configuration, naming, and synchronization for distributed applications. For example, Apache Druid uses ZooKeeper for internal service discovery, coordination between the processes, and leader election.
+ZooKeeper is an open-source coordination service [20] used to maintain centralized configuration, naming, and synchronization for distributed applications. For example, Apache Druid uses ZooKeeper for internal service discovery, coordination between the processes, and leader election.
 
 #### Query Execution
 
 Apache Druid query execution follows a Scatter/Gather [20] approach to retrieve data from the Historical processes;
 The execution flow is the following:
 
-1. The Broker identifies
+1. A client submits a query to the Broker (or the Router) via HTTP or by using the Apache Avatica JDBC drivers
+1. The Broker identifies which segments are pertinent to the query based on the time interval specified by the query
+1. The Broker eventually prune the identified segments based on the `WHERE` clause
+1. The Broker forwards the query to the relevant Historical processes
+1. Historicals process each segment in parallel and generate a partial result
+1. The Broker receives partial results from each Historical, merge them into the final results set and return the data to the caller
 
 #### Data model and Storage
 
-Apache Druid data model
+Apache Druid data is organized into **datasources**, similar to relational databases tables: homogenous units of data within the same schema. A datasource must always include a primary timestamp that Druid stores in the `__time` column of the datasource. The primary timestamp is used to partition, sort, and manage the data across the Historical processes.
+
+Datasources columns are of two types: **dimensions** and **metrics**. Dimensions are columns that Druid stores in their original format, and represents the relevant and descriptive attributes of the data; they can be filtered, grouped, and aggregated at query time. Metrics are columns that Druid stores in an aggregated form; during ingestion, a user can apply an aggregation function (count, sum, min/max, etc.) to each computed row.
+
+Datasources are time partitioned: each time interval, for example, a month, is called a chunk;  a chunk is additionally partitioned into one or more segments. Formally, a segment is defined as a collection of rows of data, typically 5–10 million, that span an interval of time [21]. A segment comprises different files that store various data structures to arrange columns data so that Apache Druid can extract only those needed for a query.
+Depending on the column data type, two compression algorithms, LZ4 [22] and Roaring [23], are used to reduce the cost of storing a column in memory and on disk.
+Deep storage is an external, shared file system accessible by the cluster; Apache Druid uses Deep storage to store segments; typically, in a clustered deployment, Deep storage is a distributed file system like HDFS.
+It's important to note that Druid never accesses the Deep storage at query time: Historical processes load segments from the Deep storage when instructed by the Coordinator and serve them from their local disk as well from memory when the Broker requests a query.
 
 #### SQL capabilities
 
-Apache Druid SQL
+Apache Druid supports two query languages: Druid SQL, a declarative language similar to SQL, and native queries, which are JSON objects that describe how to filter, group, or aggregate data. Apache Druid automatically translates Druid SQL into a native query every time a query hits a Broker.
+Druid SQL capabilities are limited: it only supports `SELECT` queries. This means that DDL statements like CREATE`, `ALTER or DROP, or typical DML statements like `INSERT` and `UPDATE` are not supported. Also, Druid SQL only supports equality `JOIN` between native datasources.
 
 #### Ingestion
 
 Apache Druid ingestion
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 1.5 Apache JMeter
 
@@ -707,7 +727,7 @@ Data was loaded from the temporary HDFS folder on the NameNode using the followi
 <sub>Table 1: Ingestion numbers</sub>
 
 Table 1 reports the number of partitions, the data size on HDFS and the total disk space used for data replication, the computed ingestion time for each database. 
-It's worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 [18] and Roaring [19] algorithms.
+It's worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 and Roaring algorithms.
 Apache Druid was 55,8% faster than Apache Hive to import 50 million rows.
 
 ### 2.4 Queries
@@ -864,9 +884,8 @@ Therefore, all tests were executed in [CLI Mode](https://jmeter.apache.org/userm
 
 Each JMeter execution produced a CSV data-set containing the test results for each platform (one for Hive, the other for Druid); I imported test results in JMeter to calculate, for each sample: Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation.
 
-Also, I compared each query's Average response time with ResultsComparator [18] plugin to quantify the performance difference between Apache Hive and Apache Druid executions by calculating Cohen's *d* [19] of the samplers, which is one of the most popular measures of the effect size.
+Also, I compared each query's Average response time with ResultsComparator [] plugin to quantify the performance difference between Apache Hive and Apache Druid executions by calculating Cohen's *d* [] of the samplers, which is one of the most popular measures of the effect size.
 Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
-
 $$
 d=\frac{\bar{x}_{1}-\bar{x}_{2}}{s}
 $$
@@ -1055,7 +1074,7 @@ Thesis conclusions.
 
 [8] The Apache Software Foundation, "Apache JMeter". [Internet]. Available from: https://jmeter.apache.org/
 
-[9] Arne von See, "Volume of data/information created, captured, copied, and consumed worldwide from 2010 to 2025" 2020.[Internet]. Available from: https://www.statista.com/statistics/871513/worldwide-data-created/
+[9] Arne von See, "Volume of data/information created, captured, copied, and consumed worldwide from 2010 to 2025" 2020. [Internet]. Available from: https://www.statista.com/statistics/871513/worldwide-data-created/
 
 [10] D. Reinsel, J. Gantz and J. Rydning," Data Age 2025: The Digitization of the World From Edge to Core" International Data Corporation, 2018.
 
@@ -1065,28 +1084,30 @@ Thesis conclusions.
 
 [13] L. Douglas, "3d data management: Controlling data volume, velocity and variety", Meta Group, 2001.
 
-[14] M. Schroeck, R. Shockley, J. Smart, D. Romero-Morales, P. Tufano, "Analytics: The Real-World Use of Big Data: How Innovative Enterprises Extract Value from Uncertain Data. Executive Report", IBM, 2012. [Online]. Available from: https://www.bdvc.nl/images/Rapporten/GBE03519USEN.PDF
+[14] M. Schroeck, R. Shockley, J. Smart, D. Romero-Morales, P. Tufano, "Analytics: The Real-World Use of Big Data: How Innovative Enterprises Extract Value from Uncertain Data. Executive Report", IBM, 2012. [Internet]. Available from: https://www.bdvc.nl/images/Rapporten/GBE03519USEN.PDF
 
-[14] W. Inmon, "Building the Data Warehouse", John Wiley and Sons, 2005.
+[15] W. Inmon, "Building the Data Warehouse", John Wiley and Sons, 2005.
 
-[15] J. Dixon, "Pentaho, Hadoop, and Data Lakes", 2010. [Internet]. Available from: https://jamesdixon.wordpress.com/2010/10/14/pentaho-hadoop-and-data-lakes/
+[16] J. Dixon, "Pentaho, Hadoop, and Data Lakes", 2010. [Internet]. Available from: https://jamesdixon.wordpress.com/2010/10/14/pentaho-hadoop-and-data-lakes/
 
-[16] S. Ghemawat, H. Gobioff, S. Leung, "The Google File System", "Proceedings of the 19th ACM Symposium on Operating Systems Principles", ACM, Bolton Landing, NY, pp. 20-43. 2003. [Internet] Available from: https://research.google/pubs/pub51/
+[17] S. Ghemawat, H. Gobioff, S. Leung, "The Google File System", "Proceedings of the 19th ACM Symposium on Operating Systems Principles", ACM, Bolton Landing, NY, pp. 20-43. 2003. [Internet] Available from: https://research.google/pubs/pub51/
 
-[17] J. Dean, S. Ghemawat, "MapReduce: Simplified Data Processing on Large Clusters", "OSDI 04: Sixth Symposium on Operating System Design and Implementation", San Francisco, CA, pp. 137-150, 2004. [Internet] Available from: https://research.google/pubs/pub62/
+[18] J. Dean, S. Ghemawat, "MapReduce: Simplified Data Processing on Large Clusters", "OSDI 04: Sixth Symposium on Operating System Design and Implementation", San Francisco, CA, pp. 137-150, 2004. [Internet]. Available from: https://research.google/pubs/pub62/
 
-[18] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, "Apache Hadoop YARN: Yet another resource negotiator", Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp 5: 1–5:16.  2013
+[19] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, "Apache Hadoop YARN: Yet another resource negotiator", Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp 5: 1–5:16.  2013
 
-[19] D. R. Cutting, D. R. Karger, J. O. Pedersen, J. W. Tukey, “Scatter / Gather: Browsing A Cluster-based Large Document Collections", Sigir '92, pp. 318–329, 1992
+[20] D. R. Cutting, D. R. Karger, J. O. Pedersen, J. W. Tukey, “Scatter / Gather: Browsing A Cluster-based Large Document Collections", Sigir '92, pp. 318–329, 1992
 
-[20] The Apache Software Foundation, "Apache ZooKeeper". [Internet]. Available from: https://zookeeper.apache.org/
+[21] The Apache Software Foundation, "Apache ZooKeeper". [Internet]. Available from: https://zookeeper.apache.org/
 
-[18] Y. Collet, "LZ4 - extremely fast compression". [Online]. Available from: https://lz4.github.io/lz4/
+[22] F. Yang, E. Tschetter, X. Léauté, N. Ray, G. Merlino, D. Ganguli, "Druid: A real-time analytical data store", Proceedings of the ACM SIGMOD International Conference on Management of Data. 2014
 
-[19] D. Lemire, G. Ssi-Yan-Kai, and O. Kaser, "Consistently faster and smaller compressed bitmaps with Roaring", Software: Practice and Experience, 46(11): pp- 1547–1569. 2016
+[] Y. Collet, "LZ4 - extremely fast compression". [Internet]. Available from: https://lz4.github.io/lz4/
 
-[18] rbourga, Results Comparator Plugin. [Internet] Available from: https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki
+[] D. Lemire, G. Ssi-Yan-Kai, and O. Kaser, "Consistently faster and smaller compressed bitmaps with Roaring", Software: Practice and Experience, 46(11): pp- 1547–1569. 2016
 
-[18] J. Cohen, "Statistical Power Analysis for the Behavioral Sciences", Routledge, 1988.
+[] rbourga, Results Comparator Plugin. [Internet]. Available from: https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki
 
-[19]  S Sawilowsky, "New effect size rules of thumb", Journal of Modern Applied Statistical Methods, Vol. 8: Iss. 2, 2009 [Internet] Available from: https://digitalcommons.wayne.edu/jmasm/vol8/iss2/26/
+[] J. Cohen, "Statistical Power Analysis for the Behavioral Sciences", Routledge, 1988.
+
+[]  S Sawilowsky, "New effect size rules of thumb", Journal of Modern Applied Statistical Methods, Vol. 8: Iss. 2, 2009 [Internet]. Available from: https://digitalcommons.wayne.edu/jmasm/vol8/iss2/26/
