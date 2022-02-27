@@ -253,9 +253,10 @@ Apache Hive is engineered to be scalable, as more machines can be dynamically ad
 #### Design
 
 <figure>
-    <img src="./content/Apache Hive Architecture - Horizontal.jpg" alt="Query execution flow in Apache Hive" />
+    <img src="./content/Apache Hive Architecture.jpg" alt="Apache Hive architecture" />
     <figcaption>Figure 7: Apache Hive architecture</figcaption>
 </figure>
+
 
 
 Figure 7 shows the architecture of Apache Hive and its main components:
@@ -274,7 +275,7 @@ When the Driver receives a query from a client, it creates a session handle for 
 
 1. The Compiler retrieves the necessary metadata from the Metastore; metadata is used to type-check the query expressions and eventually prune partitions data based on query predicates.
 2. The Compiler produces a query execution plan in the form of a DAG, where each vertex is a MapReduce job to be executed
-2. The Optimizer applies column pruning and other optimizations to the query execution plan
+2. The Optimizer applies columns pruning and other optimizations to the query execution plan
 2. The Execution engine submits each MapReduce job of the query execution plan to Hadoop for parallel processing
 2. In each task, the SerDe deserializer associated with the table is used to read the rows from HDFS files and to return data to the client
 
@@ -336,7 +337,7 @@ Apache Druid offers many advantages over traditional Data Warehouse systems:
 - Real-time data ingestion in streaming mode, even if batch mode ingestion is supported
 - Low latency real-time queries
 - Default time-based partitioning on data, which enables performant time-based queries
-- Native supports for semi-structured and nested data in different formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, Protobuf, and others.
+- Native support for semi-structured and nested data in different formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, Protobuf, and others.
 
 Apache Druid architecture combines ideas from different storage systems (Data Warehouse systems, Timeseries databases, Search engines). At its core, Druid uses a columnar storage format only to load the exact columns needed for a particular query instead of the entire row. Also, ingested data is automatically time partitioned into what are known as **segments**.  As we will see in the "Data model and storage section", segments are stored in Druid's distributed storage; time-based queries only access segments that match the query's time range, allowing Druid to provide data to the clients efficiently.
 
@@ -368,7 +369,7 @@ ZooKeeper is an open-source coordination service [20] used to maintain centraliz
 
 #### Query Execution
 
-Apache Druid query execution follows a Scatter/Gather [20] approach to retrieve data from the Historical processes;
+Apache Druid query execution follows a Scatter/Gather [21] approach to retrieve data from the Historical processes;
 The execution flow is the following:
 
 1. A client submits a query to the Broker (or the Router) via HTTP or by using the Apache Avatica JDBC drivers
@@ -384,19 +385,29 @@ Apache Druid data is organized into **datasources**, similar to relational datab
 
 Datasources columns are of two types: **dimensions** and **metrics**. Dimensions are columns that Druid stores in their original format, and represents the relevant and descriptive attributes of the data; they can be filtered, grouped, and aggregated at query time. Metrics are columns that Druid stores in an aggregated form; during ingestion, a user can apply an aggregation function (count, sum, min/max, etc.) to each computed row.
 
-Datasources are time partitioned: each time interval, for example, a month, is called a chunk;  a chunk is additionally partitioned into one or more segments. Formally, a segment is defined as a collection of rows of data, typically 5–10 million, that span an interval of time [21]. A segment comprises different files that store various data structures to arrange columns data so that Apache Druid can extract only those needed for a query.
-Depending on the column data type, two compression algorithms, LZ4 [22] and Roaring [23], are used to reduce the cost of storing a column in memory and on disk.
+Datasources are time partitioned: each time interval, for example, a month, is called a chunk;  a chunk is additionally partitioned into one or more segments. Formally, a segment is defined as a collection of rows of data, typically 5–10 million, that span an interval of time [22]. A segment comprises different files that store various data structures to arrange columns data so that Apache Druid can extract only those needed for a query.
+Depending on the column data type, two compression algorithms, LZ4 [23] and Roaring [24], are used to reduce the cost of storing a column in memory and on disk.
 Deep storage is an external, shared file system accessible by the cluster; Apache Druid uses Deep storage to store segments; typically, in a clustered deployment, Deep storage is a distributed file system like HDFS.
 It's important to note that Druid never accesses the Deep storage at query time: Historical processes load segments from the Deep storage when instructed by the Coordinator and serve them from their local disk as well from memory when the Broker requests a query.
 
 #### SQL capabilities
 
-Apache Druid supports two query languages: Druid SQL, a declarative language similar to SQL, and native queries, which are JSON objects that describe how to filter, group, or aggregate data. Apache Druid automatically translates Druid SQL into a native query every time a query hits a Broker.
+Apache Druid supports two query languages: Druid SQL, a declarative language similar to SQL, and native queries, JSON objects that describe how to filter, group, or aggregate data. Apache Druid automatically translates Druid SQL into a native query every time a query hits a Broker.
 Druid SQL capabilities are limited: it only supports `SELECT` queries. This means that DDL statements like CREATE`, `ALTER or DROP, or typical DML statements like `INSERT` and `UPDATE` are not supported. Also, Druid SQL only supports equality `JOIN` between native datasources.
 
 #### Ingestion
 
-Apache Druid ingestion
+Apache Druid supports both streaming and batch ingestion; for each ingestion method, the Middlemanager loads the raw data from the source, stores the segments to Deep storage, and publishes it by writing a record to the Metadata store.
+The Coordinator polls the Metadata store periodically, by default every minute; when it finds a new segment, the Coordinator chooses a Historical process and instruct it to load the segment.
+
+<figure>
+    <img src="./content/Apache Druid ingestion.jpg" alt="Apache Druid ingestion" />
+    <figcaption>Figure 8: Apache Druid ingestion</figcaption>
+</figure>
+
+With stream ingestion, Apache Druid reads raw data from the data stream and makes segments queryable as soon as they are available. Apache Druid supports two methods of stream ingestion: read from an Apache Kafka [25] stream or an Amazon Kinesis [26] stream.
+
+With batch ingestion Apache Druid reads raw data from files in a one- time job; segments are queryable only when the ingestion job is completed. Apache Druid supports three methods of batch ingestion: native batch, which reads raw data in parallel using multiple worker threads; native batch simple, which reads raw data within a single thread; and Hadoop based, which reads raw data from HDFS and uses MapReduce jobs to compute the ingestion.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -1096,15 +1107,19 @@ Thesis conclusions.
 
 [19] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, "Apache Hadoop YARN: Yet another resource negotiator", Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp 5: 1–5:16.  2013
 
-[20] D. R. Cutting, D. R. Karger, J. O. Pedersen, J. W. Tukey, “Scatter / Gather: Browsing A Cluster-based Large Document Collections", Sigir '92, pp. 318–329, 1992
+[20] The Apache Software Foundation, "Apache ZooKeeper". [Internet]. Available from: https://zookeeper.apache.org/
 
-[21] The Apache Software Foundation, "Apache ZooKeeper". [Internet]. Available from: https://zookeeper.apache.org/
+[21] D. R. Cutting, D. R. Karger, J. O. Pedersen, J. W. Tukey, “Scatter / Gather: Browsing A Cluster-based Large Document Collections", Sigir '92, pp. 318–329, 1992
 
 [22] F. Yang, E. Tschetter, X. Léauté, N. Ray, G. Merlino, D. Ganguli, "Druid: A real-time analytical data store", Proceedings of the ACM SIGMOD International Conference on Management of Data. 2014
 
-[] Y. Collet, "LZ4 - extremely fast compression". [Internet]. Available from: https://lz4.github.io/lz4/
+[23] Y. Collet, "LZ4 - extremely fast compression". [Internet]. Available from: https://lz4.github.io/lz4/
 
-[] D. Lemire, G. Ssi-Yan-Kai, and O. Kaser, "Consistently faster and smaller compressed bitmaps with Roaring", Software: Practice and Experience, 46(11): pp- 1547–1569. 2016
+[24] D. Lemire, G. Ssi-Yan-Kai, and O. Kaser, "Consistently faster and smaller compressed bitmaps with Roaring", Software: Practice and Experience, 46(11): pp- 1547–1569. 2016
+
+[25] The Apache Software Foundation, "Apache Kafka". [Internet]. Available from: https://kafka.apache.org/
+
+[26] Amazon, "Amazon Kinesis". [Internet]. Available from: https://aws.amazon.com/it/kinesis/
 
 [] rbourga, Results Comparator Plugin. [Internet]. Available from: https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki
 
