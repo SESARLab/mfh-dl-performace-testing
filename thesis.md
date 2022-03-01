@@ -5,7 +5,7 @@ subject: Evaluating performances of enterprise data lake solutions for MIND Food
 keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 ---
 
-<img src="./content/logo_statale.png" alt="Università degli Studi di Milano" />
+<img src="./content/Logo_Università_degli_Studi_di_Milano.svg" alt="Università degli Studi di Milano" style="width: 340px"/>
 
 
 
@@ -37,20 +37,24 @@ keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 
 0. Abstract
 1. Introduction
-    1.1 Big Data and Data Lake systems
-    1.2 Hadoop
-    1.3 Apache Hive
-    1.4 Apache Druid
-    1.5 Apache JMeter
-2. Performance Testing and methodology
-    2.1 Provision of each solution
-    2.2 Data generation
-    2.3 Data ingestion
-    2.4 Queries
-    2.5 Performance testing using Apache JMeter
-3. Test results
-4. Conclusions
-4. References
+   1. Goals of the research
+
+2. Big Data technologies
+   1. Data Lake systems
+   2. Hadoop
+   3. Apache Hive
+   4. Apache Druid
+3. Performance testing of Big Data techonologies
+4. Apache Hive and Apache Druid performance testing
+   1. Provision of each solution
+   2. Data generation
+   3. Data ingestion
+   4. Queries
+   5. Performance testing using Apache JMeter
+5. Test results
+6. Conclusions
+7. Acknowledgements 
+8. References
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -89,26 +93,43 @@ The computing infrastructure, made by different modules, consists in:
 - Different software collection agents collect data from the rover and the on-field sensors and upload them to the Data Lake
 - A Data Lake platform to store sensor's data and supports data analysis
 - An hybrid GraphQL/REST API developed in Rust to access and consume data stored in the Data Lake platform
-- FoodsAPP, a client application: a user could scan QRcode that identifies a specific cultivation to visualize its raw and processed sensors data
+- FoodsApp, a client application: a user could scan QRcode that identifies a specific cultivation to visualize its raw and processed sensors data
 
 The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network, the on-field sensors, and the client application.
-Multiple departments of Università Degli Studi di Milano have been involved in the MIND Foods HUB project. 
-The Dipartimento di Scienza Agrarie e Ambientale (**DISAA**) designed and implemented the rover, its sensors, and the algorithms that analyze the nutritional properties of the chosen species.
-The SEcure Service-oriented Architectures Research Lab (**SESAR** Lab) planned and implemented all software modules of the computing infrastructure: the collection agents, the GraphQL/REST API, the data model to structure sensor's data and the Data Lake platform.
+Multiple departments of Università Degli Studi di Milano are actively  involved in the MIND Foods HUB project. 
+The Dipartimento di Scienza Agrarie e Ambientale (DISAA) designed and implemented the rover, its sensors, and the algorithms that analyze the nutritional properties of the chosen species.
+The SEcure Service-oriented Architectures Research Lab (SESAR Lab) planned and implemented all software modules of the computing infrastructure: the collection agents, the GraphQL/REST API, the data model to structure sensor's data and the Data Lake platform.
 The MIND Foods HUB Data Lake platform is based, among other components, on Hadoop [5], a framework for parallel and distributed processing of large data sets and Apache Hive [6]. This software allows reading, writing, and managing large data-sets in distributed storage using SQL. 
 
-When I joined the project, the SESAR Lab team was already investigating faster alternatives to Hive due to its poor reading performance on even simple aggregations queries. That's where I started to study and test Apache Druid [7], a real-time database, as a viable, more performant solution than Hive to improve MIND Foods HUB Data Lake efficiency.
+### 1.1 Goals of the research
+
+In MIND Foods HUB project, the Data Lake platform is a core component of the computing infrastructure, since it must support various stakeholders and use cases: the uploading of raw sensors data, the algorithmic analisys of the collected data, the serving the client application through the hybrid GraphQL/REST API. So, as every architectural core component, the Data Lake platform must conform to non-functional requirements in terms of quality attributes: availability, scalability, maintainability and, not least, performance.
+
+When I joined the project, the SESAR Lab team was already investigating faster and better alternatives to Apache Hive due to its poor reading performance on even simple aggregations queries. Also, 
+
+In software, performance testing is a type of non-functional testing that tests a system's behaviour under satisfactory and unsatisfactory conditions [27]. The goal of performance testing is to check the quality attributes of a system in terms of:
+
+- *Speed*: refers to how fast a system responds to a given request, or command
+- *Scalability*: determines the ability of a system to perform gracefully as the client's requests increase over time [28]
+- *Reliability*: refers to the capacity of a system to continue to function over time without failure [29]
+
+For each of these characteristics, especially for software that uses the network to transfer data, performance testing collects various time-related metrics, like response time, throughput, success and failure rate, 
+One traditional way to accomplish performance testing is to develop a benchmark: a workload representative of how the system is used in the field and then run the system on those benchmarks. Then, with a typical benchmark available, it is necessary to collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful.
+
+
+
+
+
+That's where I started to study and test Apache Druid [7], a real-time database, as a viable, more performant solution than Hive to improve MIND Foods HUB Data Lake efficiency.
 
 Section 1.1 shortly describe Big Data and Data Lake systems. Then, sections 1.2 and 1.3 introduce the Hadoop architecture and the design of Apache Hive. Section 1.4 presents Apache Druid, explaining its key concepts and use cases.
 Section 2 demonstrates the testing methodologies employed to test Apache Hive and Apache Druid with JMeter [8]; Section 3 illustrates the testing results, while section 4 concludes this paper.
 
-### 1.1 Big Data and Data Lake systems
+## 2. Big Data technologies
 
 We live in the age of data: mobile phones, smart devices, sensors, social networks, etc., all concur in a scenario where all information is digital and needs to be processed, stored and analyzed. 
 According to statistics, a person produces 1.7 MB of data per second [9]; globally, 44 zettabytes of data are generated daily. Based on research [10] led by Seagate and IDC, the amount of global data will reach 175 zettabytes by the end of 2025. 
 This exponential explosion of data generation directly impacts organizations facing the challenge of managing a massive amount of data, coming from multiple sources at an ever-increasing rate; days are gone when a single database serves as the primary source of truth of an entire business. That's where new Big Data technologies can make the difference in how organizations make business decisions based on their data.
-
-#### Big Data
 
 Big Data is a universal term [11] that refers to data that is "too big, too fast, or too hard" [12] to be processed or analyzed by traditional methods or technologies. To be so considered, Big Data is characterized by the "three Vs", a concept formulated by Doug Laney from Meta (now Gartner) in 2001 [13]: *Volume*, *Velocity*, *Variety*.
 
@@ -127,13 +148,13 @@ Over time the three Vs concepts of Big Data have been complemented by two additi
 
 - *Value* is a property that refers to the social or economic value generated from the data. Value is the desired outcome of Big Data processing since data has no inherent value without any process that analyzes the data to understand how to employ them.
 
-#### Data Lake systems
+### 2.1 Data Lake systems
 
 These Big Data concepts heavily changed the shape of traditional data management systems, like Data Warehouses, that now need to support parallel data processing, complex analytical workflow, resilient and flexible storage capable of efficiently persisting data from several sources. Also, with the rise of new Big Data technologies, further models to store and analyze data have been developed to take advantage of the emerging new Big Data technologies; one for all: Data Lake systems.
 
 Historically, organizations that need to reconcile data from different Online Transaction Processing (**OLTP**) data sources employed a Data Warehouse system.
 A Data Warehouse is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [15], typically operated by business end-users to support management's decision.
-Since data ingested into Data Warehouses usually comes from relational OLTP systems, the most used data processing paradigm in data warehousing is Extract, Transform, Load (**ETL )**.
+Since data ingested into Data Warehouses usually comes from relational OLTP systems, the most used data processing paradigm in data warehousing is Extract, Transform, Load (**ETL)**.
 
 <figure>
     <img src="./content/Data Warehouse.jpg"/>
@@ -154,7 +175,7 @@ Then, only during a particular analysis the required data is extracted and trans
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 1.2 Hadoop
+### 2.2 Hadoop
 
 Hadoop is an open-source framework that enables reliable, scalable, distributed computing.
 Started in 2002 as an open-source project by Doug Cutting and Mike Cafarella, that was developing a search engine capable to index 1 billion pages, the first version of Hadoop implemented two powerful computing concepts introduced by Google in 2003 and 2004: Google File System (**GFS**) [17], a scalable distributed file system for large distributed data-intensive applications, and MapReduce [18], a programming model for processing and generating large data sets.
@@ -238,7 +259,7 @@ The TimelineServer collects the historical states for each completed MapReduce j
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 1.3 Apache Hive
+### 2.3 Apache Hive
 
 Apache Hive is an open-source Data Warehouse system designed for querying and analyzing large data-sets stored in Hadoop. Hive provides standard SQL functionality with HiveQL, a declarative language that enables users to do ad-hoc querying, aggregation and data analysis.
 Apache Hive offers many advantages over working directly on Hadoop: 
@@ -329,7 +350,7 @@ For example, the following statements create an external table `T` that points t
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 1.4 Apache Druid
+### 2.4 Apache Druid
 
 Apache Druid is an open-source distributed data store that supports various modern applications, like real-time analytics on large data-sets and fast data aggregations for highly concurrent APIs.
 Apache Druid offers many advantages over traditional Data Warehouse systems:
@@ -373,11 +394,10 @@ Apache Druid query execution follows a Scatter/Gather [21] approach to retrieve 
 The execution flow is the following:
 
 1. A client submits a query to the Broker (or the Router) via HTTP or by using the Apache Avatica JDBC drivers
-1. The Broker identifies which segments are pertinent to the query based on the time interval specified by the query
-1. The Broker eventually prune the identified segments based on the `WHERE` clause
+1. The Broker identifies which segments are pertinent to the query based on the time interval specified by the query and eventually prune the identified segments based on the `WHERE` clause
 1. The Broker forwards the query to the relevant Historical processes
 1. Historicals process each segment in parallel and generate a partial result
-1. The Broker receives partial results from each Historical, merge them into the final results set and return the data to the caller
+1. The Broker receives partial results from each Historical, merges them into the final results set and returns the data to the caller
 
 #### Data model and Storage
 
@@ -407,17 +427,11 @@ The Coordinator polls the Metadata store periodically, by default every minute; 
 
 With stream ingestion, Apache Druid reads raw data from the data stream and makes segments queryable as soon as they are available. Apache Druid supports two methods of stream ingestion: read from an Apache Kafka [25] stream or an Amazon Kinesis [26] stream.
 
-With batch ingestion Apache Druid reads raw data from files in a one- time job; segments are queryable only when the ingestion job is completed. Apache Druid supports three methods of batch ingestion: native batch, which reads raw data in parallel using multiple worker threads; native batch simple, which reads raw data within a single thread; and Hadoop based, which reads raw data from HDFS and uses MapReduce jobs to compute the ingestion.
+With batch ingestion Apache Druid reads raw data from files in a one-time job; segments are queryable only when the ingestion job is completed. Apache Druid supports three methods of batch ingestion: native batch, which reads raw data in parallel using multiple worker threads; native batch simple, which reads raw data with a single thread; and Hadoop based, which reads raw data from HDFS and uses MapReduce jobs to compute the ingestion.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 1.5 Apache JMeter
-
-A super short introduction to Apache JMeter.
-
-<div style="page-break-after: always; visibility: hidden;"></div>
-
-## 2. Performance Testing and methodology
+## 4. Apache Hive and Apache Druid performance testing
 
 To evaluate the performance of Apache Hive and Apache Druid and to achieve a reproducible test, I followed five significant steps for each database:
 
@@ -427,7 +441,7 @@ To evaluate the performance of Apache Hive and Apache Druid and to achieve a rep
 4. Prepare the test queries
 5. Run the performance testing using Apache JMeter
 
-### 2.1 Provision each solution
+### 4.1 Provision each solution
 
 To provision both solutions, I used a Vmware virtual machine hosted on the SESAR Lab cluster with the following configuration:
 
@@ -457,25 +471,24 @@ Apache Hive was configured to run on the same Hadoop dockerized cluster and cons
 - A MySQL 8.2 instance to persists Metastore's metadata
 
 During the test execution of queries involving a big data set, I encountered various timeouts and `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB.
-After some research and various attempts, I increased the maximum heap size of the Hive Server to 4096 MiB. 
-I also configured the Hive CLI JVM heap size to 8192 MiB.
+After some research and various attempts, I increased the maximum heap size of the Hive Server to 4096 MiB; I also configured the Hive CLI JVM heap size to 8192 MiB.
 
 #### Apache Druid provisioning
 
 I configured Apache Druid to run as a clustered deployment and consists of the following servers:
 
-- A Coordinator, responsible for handling the metadata and coordination of the various processes of the cluster
-- A Broker that receives and forwards queries to the data servers
-- A Router that acts as an API gateway, receives queries from external clients  and routes them to the Broker
-- An Historical server, that handles the data storage and runs queries on historical, segmented data
-- A MiddleManager, that handles ingestion of new data into the cluster
+- A Coordinator
+- A Broker
+- A Router
+- An Historical server
+- A MiddleManager
 
 As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from a Hadoop cluster.
-One of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. To adhere to this requirement, I configured the Druid cluster to work with HDFS using [druid-hdfs-storage extensions](https://druid.apache.org/docs/latest/development/extensions-core/hdfs.html); Instead of using a local mount, Apache Druid directly used HDFS to store data segments.
+One of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. To adhere to this requirement, I configured the Druid cluster to work with HDFS using druid-hdfs-storage extensions; Instead of using a local mount, Apache Druid directly uses HDFS to store data segments.
 Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS and exploit its essential peculiarity in terms of distributed storage, scalability, fault tolerance, and integration with the other MIND Foods HUB Data Lake components.
 The choice to use HDFS for batch data ingestion has a few drawbacks: the architecture is more complex since Apache Druids depend on an external Hadoop cluster and, more important, the waive to streaming ingestion mode, which enables users to perform real-time analytics on data.
 
-### 2.2 Data generation
+### 4.2 Data generation
 
 To test both Druid and Hive, I generated 50 million rows (approximately 15 GB) of random, synthetic test data that can be downloaded from:
 
@@ -544,7 +557,7 @@ With [Mockaroo](https://www.mockaroo.com/), an online service that allows genera
 
 Finally, to simulate a data-set of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
 
-### 2.3 Data ingestion
+### 4.3 Data ingestion
 
 Before querying data, I created tables for both databases and ingested the synthetic generated CSV data.
 The first step consisted in loading the generated data-set in a temporary HDFS folder on the Hadoop Namenode server to serve as the primary source for the ingestion process.
@@ -638,8 +651,7 @@ DISTRIBUTE BY insertion_date;
 
 #### Apache Druid datasource optimization
 
-On Apache Druid, data was ingested using *insertion_timestamp* as the primary datasource timestamp, with a *month* granularity;
-*measurements* registered within the same month are stored into the same *time chunks* (with a *time chunks* containing one or more segments).
+On Apache Druid, data was ingested using *insertion_timestamp* as the primary datasource timestamp, with a *month* granularity; *measurements* registered within the same month are stored into the same *time chunks* (with a *time chunks* containing one or more segments).
 
 #### Apache Druid ingestion
 
@@ -737,11 +749,11 @@ Data was loaded from the temporary HDFS folder on the NameNode using the followi
 | Apache Druid                          | 51 segments   | 9.9 GB         | 29.8 GB               | 01:17:15       |
 <sub>Table 1: Ingestion numbers</sub>
 
-Table 1 reports the number of partitions, the data size on HDFS and the total disk space used for data replication, the computed ingestion time for each database. 
+Table 1 reports the number of partitions, the data size on HDFS, the total disk space used for data replication, and the computed ingestion time for each platform. 
 It's worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 and Roaring algorithms.
 Apache Druid was 55,8% faster than Apache Hive to import 50 million rows.
 
-### 2.4 Queries
+### 4.4 Queries
 
 To benchmark Apache Hive and Apache Druid, I used the most common queries executed by MIND Foods Hub front-end;
 In this way, the benchmark is as close as possible to the actual scenario use cases.
@@ -863,26 +875,43 @@ AND location_cultivation_name = 'Rubiaceae'
 GROUP BY sensor_id, location_id, location_cultivation_name;
 ```
 
-### 2.5 Performance testing using Apache JMeter
+### 4.5 Performance testing using Apache JMeter
 
-I used JMeter to assess single-user query performance; only one thread was employed to run the test plan.
-The motivation under this choice is that Data Lake platforms are very different from application databases that need to support hundreds or thousands of concurrent connections under heavy load.
-Especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.
+To test the performance of Apache Hive and Apache JMeter on an average workload, I used Apache JMeter, an open-source Java application designed to measure performance and load test applications. It can simulate workloads on servers, networks or applications to analyze the overall performance under different load types. In addition, Apache JMeter supports performance testing for various applications and protocols: TCP, HTTP and HTTPS, FTP, Database via JDBC, SOAP and others.
 
-The performance testing was intended to run against each database HTTP API.
-Sadly, [Apache Hive](https://hive.apache.org/) doesn't expose a set of REST API to interact with, contrary to other more recent platforms. Instead, a client is forced to use Hive JDBC drivers or Hive Thrift drivers to perform TCP connections. 
-To work around this problem, I decided to write an application that works as an HTTP layer on top of [Javascript Hive driver](https://www.npmjs.com/package/hive-driver), so that a client can execute Hive SQL statements via HTTP.
-The application code is hosted on SESAR Lab Github's organization: [https://github.com/SESARLab/hive-http-proxy](https://github.com/SESARLab/hive-http-proxy).
+In JMeter, performance testing is defined by a *Test Plan*, which specifies a series of steps that JMeter executes on each run. For each Test Plan, a user can configure one or more *Thread Groups*, the number of threads JMeter will use to complete the performance test. Apache JMeter employs a multi-thread architecture: each Thread Group executes the Test Plan independently of the other threads; multi-threading allows JMeter to simulate concurrent connections from multiple users to the system under test. Thread Groups are composed of one or more *Sampler*. A Sampler is a JMeter component that performs the actual work by sending the requests to the system and collecting the responses and various related samples. Apache JMeter offers different built-in, configurable, Samplers to test an application across multiple applications and protocols, notably: FTP requests, HTTP requests, JDBC Requests, JDBC Request, OS Process request, and other. Another critical component of JMeter is *Listeners* that provide access to sample results by gathering information while JMeter runs. Various types of Listeners exists for different purposes: "Graph Results" listener plots response times on a graph, while "Aggregate Report" listener reports, for each request various aggregated information, like the Average Response Time, throughput, the percent of requests with errors, and others. 
+
+Apache JMeter can run in "Graphical User Interface" (GUI) mode, offering a full-featured interface to configure and run a Test Plan. However, since the GUI and the test Listeners consume a generous amount of memory while the Test Plan is running, it is common to run JMeter in "Command Line Interface" (CLI) mode to reduce resource usage and to avoid altering sample results. 
+
+After a Test Plan is complete, JMeter can output the results to a file, usually CSV or XML, containing all registered samples; this file can be successively imported with the GUI for later processing and analysis.
+
+#### Hive HTTP Proxy
+
+The performance testing was intended to run against each database HTTP API. Sadly, Apache Hive doesn't expose a set of REST APIs to interact with, contrary to other more recent platforms. Instead, a client is forced to use Hive JDBC drivers or Hive Thrift APIs to perform TCP connections to the database. At the time of this writing, the only available REST API for Hive is *WebHCat* [XXX], a web application layer on top of HCatalog, a table and storage management layer for Hadoop. While WebHCat is installed with Hive, starting with Hive release 0.11.0, its capabilities are pretty limited: a client can run a Hive query or set of commands via the http://hostname/templeton/v1/hive endpoint, but the response contains only the ID of a job that runs on background on Hadoop, and an optional callback property, that defines a URL called upon job completion. This behaviour makes it very hard to test Apache Hive with JMeter unless configuring the latter to connect to Hive via JDBC, a not viable option due to the configuration difficulties.
+
+I decided to write *Hive HTTP Proxy* [XXX], a Node.js application that works as an HTTP layer on top of Apache Hive, to work around this problem. Hive HTTP Proxy working is simple: internally, it uses *Hive Driver*, a Javascript implementation of the Hive Thrift APIs to connect to Hive, and exposes a single HTTP endpoint on port 10001. A client willing to execute Hive SQL statements can do a POST HTTP call with a JSON payload, containing the required statement, to Hive HTTP Proxy; the following example shows how to perform a simple SQL statement:
+
+```bash
+$ curl -X POST -d '{ "statement": "SELECT 1" }' http://localhost:10001
+```
+
+Hive HTTP Proxy source code is hosted on SESAR Lab Github's organization and is released under Apache License 2.0 license.
+
+#### JMeter and test configuration
+
+I configured JMeter to assess single-user query performance testing; only one thread was employed to run the test plan. The motivation under this choice is that Data Lake platforms are very different from application databases that need to support hundreds or thousands of concurrent connections under heavy load. 
+Instead, especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.
 
 JMeter ran with the following conditions:
 
-- The query cache for each database was disabled
+- The query cache for each database was disabled.
+- Vectorization was enabled for Apache Druid queries. With vectorization, query execution is faster by processing batches of 512 rows instead of one row at a time. Apache Hive supports vectorized query execution only for data stored in ORC format.
 - Single user testing
-- Each query was configured to run 10 times (to have 10 samples per query) in a separate Thread Group 
-- Each Thread Group ran consecutively (one at a time) to avoid side effects on other requests
+- Each query was configured to run 10 times (to have 10 samples per query) in a separate Thread Group. 
+- Each Thread Group ran consecutively (one at a time) to avoid side effects on other requests.
 
 Instead of running JMeter on the same network of the cluster to minimize request latency, I decided to simulate an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
-Therefore, all tests were executed in [CLI Mode](https://jmeter.apache.org/usermanual/get-started.html#non_gui), to [reduce resource usages](https://jmeter.apache.org/usermanual/best-practices.html#lean_mean), on a MacBook Pro Mid 2015 with these specs:
+Therefore, all tests were executed in CLI mode, to reduce resource usage, on a MacBook Pro Mid 2015 with these specs:
 
 - CPU 2,8 GHz Intel Core i7, 4 core/8 threads
 - 16 GB 1600 MHz DDR3 memory
@@ -891,7 +920,7 @@ Therefore, all tests were executed in [CLI Mode](https://jmeter.apache.org/userm
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-## 3. Test results
+## 5. Test results
 
 Each JMeter execution produced a CSV data-set containing the test results for each platform (one for Hive, the other for Druid); I imported test results in JMeter to calculate, for each sample: Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation.
 
@@ -920,7 +949,7 @@ JMeter test results are downloadable from this repository hosted on SESAR Lab Gi
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 3.1 Query 1
+### 5.1 Query 1
 
 <figure>
     <img src="./content/Average response time - Query 1.png" alt="Average response time - Query 1" />
@@ -943,7 +972,7 @@ Using Apache Druid, we can see a considerable decrease in Average response time 
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 3.2 Query 2
+### 5.2 Query 2
 
 <figure>
     <img src="./content/Average response time - Query 2.png" alt="Average response time - Query 2" />
@@ -965,7 +994,7 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 3.3 Query 3
+### 5.3 Query 3
 
 <figure>
     <img src="./content/Average response time - Query 3.png" alt="Average response time - Query 3" />
@@ -988,7 +1017,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 3.4 Query 4
+### 5.4 Query 4
 
 <figure>
     <img src="./content/Average response time - Query 4.png" alt="Average response time - Query 4" />
@@ -1017,7 +1046,7 @@ On the other side, Apache Druid uses an in [memory algorithm](https://druid.apac
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 3.5 Query 5
+### 5.5 Query 5
 
 <figure>
     <img src="./content/Average response time - Query 5.png" alt="Average response time - Query 5" />
@@ -1040,7 +1069,7 @@ Apache Druid is exceedingly performant, remaining under the 2 seconds threshold 
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-### 3.6 Query 6
+### 5.6 Query 6
 
 <figure>
     <img src="./content/Average response time - Query 6.png" alt="Average response time - Query 6" />
@@ -1063,11 +1092,15 @@ Apache Druid acts differently from  Query 4 and Query 5, with Query 6 Average re
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
-## 4. Conclusions
+## 6. Conclusions
 
 Thesis conclusions.
 
-## 5. References
+## 7. Acknowledgements
+
+Thesis scknowledgements.
+
+## 8. References
 
 [1] "MIND Foods HUB". [Internet]. Available from: https://www.mindfoodshub.com/il-progetto/
 
@@ -1105,7 +1138,7 @@ Thesis conclusions.
 
 [18] J. Dean, S. Ghemawat, "MapReduce: Simplified Data Processing on Large Clusters", "OSDI 04: Sixth Symposium on Operating System Design and Implementation", San Francisco, CA, pp. 137-150, 2004. [Internet]. Available from: https://research.google/pubs/pub62/
 
-[19] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, "Apache Hadoop YARN: Yet another resource negotiator", Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp 5: 1–5:16.  2013
+[19] Vavilapalli VK, Murthy AC, Douglas C, Agarwal S, Konar M, Evans R, Graves T, Lowe J, Shah H, Seth S, "Apache Hadoop YARN: Yet another resource negotiator", Proceedings of the 4th Annual Symposium on Cloud Computing, Santa Clara, CA, USA, 1–3 October. ACM, New York, NY, USA, pp. 5: 1–5:16.  2013
 
 [20] The Apache Software Foundation, "Apache ZooKeeper". [Internet]. Available from: https://zookeeper.apache.org/
 
@@ -1115,11 +1148,21 @@ Thesis conclusions.
 
 [23] Y. Collet, "LZ4 - extremely fast compression". [Internet]. Available from: https://lz4.github.io/lz4/
 
-[24] D. Lemire, G. Ssi-Yan-Kai, and O. Kaser, "Consistently faster and smaller compressed bitmaps with Roaring", Software: Practice and Experience, 46(11): pp- 1547–1569. 2016
+[24] D. Lemire, G. Ssi-Yan-Kai, and O. Kaser, "Consistently faster and smaller compressed bitmaps with Roaring", Software: Practice and Experience, 46(11): pp. 1547–1569. 2016
 
 [25] The Apache Software Foundation, "Apache Kafka". [Internet]. Available from: https://kafka.apache.org/
 
 [26] Amazon, "Amazon Kinesis". [Internet]. Available from: https://aws.amazon.com/it/kinesis/
+
+
+
+[28] A. Bondi, "Characteristics of Scalability and Their Impact on Performance.", Proceedings of the 2nd International Workshop on Software and Performance, ACM, pp. 195–203. 2000
+
+[29] J. D. Musa, A. Iannino, and K. Okumoto, "Software Reliability: Measurement, Prediction, Application", McGraw-Hill. 1987
+
+[30] E.J Weyuker, F.I. Vokolos, "Performance testing of software systems", WOSP '98: Proceedings of the 1st international workshop on Software and performance, pp. 80–87. 1998
+
+[] Gabriele D'Arrigo, "Hive HTTP Proxy". [Internet]. Available from: https://github.com/SESARLab/hive-http-proxy
 
 [] rbourga, Results Comparator Plugin. [Internet]. Available from: https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki
 
