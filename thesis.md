@@ -138,11 +138,11 @@ The MIND Foods HUB Data Lake platform is based, among other components, on Hadoo
 
 In the MIND Foods HUB project, the Data Lake platform is a core component of the computing infrastructure. It must support various stakeholders and use cases: the uploading of raw sensors data, the algorithmic analysis of the collected data, the serving of the client application through the hybrid GraphQL/REST API. So, like every architectural core component, the Data Lake platform must conform to non-functional requirements in terms of quality attributes [7]: scalability, maintainability and, not least, performance.
 
-*Scalability* determines the ability of a system to perform gracefully as the client's requests increase over time [8]. *Maintainability* is defined as the ease with which a system can be modified to improve its performance, correct defects, or adapt to new requirements [9]. *Finally, performance* is defined as the amount of work a system must perform in a unit of time within given constraints, such as speed, accuracy, or memory usage [9].
+*Scalability* determines the ability of a system to perform gracefully as the client's requests increase over time [8]. *Maintainability* is defined as the ease with which a system can be modified to improve its performance, correct defects, or adapt to new requirements [9]. Finally, *performance* is defined as the amount of work a system must perform in a unit of time within given constraints, such as speed, accuracy, or memory usage [9].
 
-When I joined the project, the SESAR Lab team was not pleased with at least two of these properties: Apache Hive reading performance has proven poor even on simple aggregations queries. Also, the maintainability of the Data Lake infrastructure was not satisfying since it relies on a complex multi-container Docker application, using custom images with various bash scripts and configuration files to define the Hadoop and Apache Hive services. So, they started investigating for faster and maintainable alternatives to Apache Hive, including Apache Druid [10], a real-time database that supports modern analytics applications. The requirements that the alternative platform must satisfy are:
+When I joined the project, the SESAR Lab team was not pleased with at least two of these properties: Apache Hive reading performance has proven poor even on simple aggregations queries. Also, the maintainability of the Data Lake infrastructure was not satisfying since it relies on a complex multi-container Docker application, using custom images with various bash scripts and configuration files to define the Hadoop and Apache Hive services. So, they started investigating for faster and more maintainable alternatives to Apache Hive, including Apache Druid [10], a real-time database that supports modern analytics applications. The requirements that the alternative platform must satisfy are:
 
-1. Scalability: adding more resources to the platform to support an increase in the average workload should be easy
+1. Scalability: adding more resources to the platform to support an increase in the average workload should be effortless
 2. Maintainability: the platform must be easy to configure and deploy on the MIND Foods HUB Hadoop cluster
 3. Performance: the platform should provide sub-second aggregations queries
 
@@ -178,9 +178,9 @@ Over time the three Vs concepts of Big Data have been complemented by two additi
 
 These Big Data concepts heavily changed the shape of traditional data management systems, like Data Warehouses, that now need to support parallel data processing, complex analytical workflow, resilient and flexible storage capable of efficiently persisting data from several sources. Also, with the rise of new Big Data technologies, further models to store and analyze data have been developed to take advantage of the emerging new Big Data technologies; one for all: Data Lake systems.
 
-Historically, organizations that need to reconcile data from different Online Transaction Processing (**OLTP**) data sources employed a Data Warehouse system.
+Historically, organizations that need to reconcile data from different Online Transaction Processing (OLTP) data sources employed a Data Warehouse system.
 A Data Warehouse is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [15], typically operated by business end-users to support management's decision.
-Since data ingested into Data Warehouses usually comes from relational OLTP systems, the most used data processing paradigm in data warehousing is Extract, Transform, Load (**ETL)**.
+Since data ingested into Data Warehouses usually comes from relational OLTP systems, the most used data processing paradigm in data warehousing is Extract, Transform, Load (ETL).
 
 <figure>
     <img src="./content/Data Warehouse.jpg"/>
@@ -460,15 +460,35 @@ With batch ingestion Apache Druid reads raw data from files in a one-time job; s
 ## 3. Apache Hive and Apache Druid performance testing
 
 In software, performance testing is a type of non-functional testing that measures a system's behaviour under satisfactory and unsatisfactory conditions [27]. 
-The performance of a system, especially for those that uses the network to transfer data, are assessed by collecting various time-related metrics, like response time, throughput, and concurrency.
+The performance of a system, especially for those that use the network to transfer data, is assessed by collecting various time-related metrics, like response time, throughput, and concurrency.
 We define *response time* as the measure of time a system takes to respond to a given  business request, or command; *Throughput* refers to the amount of work, that is the number of requests, that an application can process in a unit of time, while *concurrency* is defined as the property of a system to respond to several requests that potentially interact with each other, simultaneously. 
+Usually, for response time, various standard statistical measures are calculated, like the median, the average and the standard deviation. Another useful metric for response time is Cohen's *d* [] of the samplers, which is a commonly recognized way to measure the effect size
+Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
+$$
+d=\frac{\bar{x}_{1}-\bar{x}_{2}}{s}
+$$
 
-One traditional way to accomplish performance testing is to develop a benchmark: a workload representative of how the system is used in the field and then run the system on those benchmarks.
-Then, with a typical benchmark available, it is necessary to collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful. 
-The requirements of the research are:
+The magnitude of *d*, namely the difference between the means, is described by the table [20] below:
 
-1. Maintainability: the platform under test must be easy to configure and should integrate well on the actual MIND Foods HUB Hadoop cluster
-2. Performance: the platform under test should provide sub-second aggregations queries
+| d           | Effect size |
+| ----------- | ----------- |
+| 0           | Similar     |
+| < 0.01      | Negligible  |
+| [0.01-0.19] | Very small  |
+| [0.20-0.49] | Small       |
+| [0.50-0.79] | Medium      |
+| [0.80-1.19] | Large       |
+| [1.20-1.99] | Very large  |
+| >= 2.0      | Huge        |
+
+One traditional way to accomplish performance testing is to first collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful. 
+The requirements of the this research are:
+
+1. Scalability: adding more resources to the platform should be effortless
+2. Maintainability: the platform under test must be easy to configure and should integrate well on the actual MIND Foods HUB Hadoop cluster
+3. Performance: the platform under test should provide sub-second aggregations queries
+
+Then, with the requirements available, it is necessary to develop a benchmark: a workload representative of how the system is used in the field and then run the system on those benchmarks.
 
 To evaluate the maintainability and the performance of Apache Hive and Apache Druid and to achieve a reproducible test, I followed five significant steps, extensively described in the next sections:
 
@@ -496,44 +516,55 @@ To deploy Hadoop, I used a Docker Compose [28], a tool for defining and running 
 - A TimelineServer
 - A Zookeeper instance
 
-The choice to use Docker Compose to deploy Hadoop, Hive and Druid on the same machine is suboptimal because even if each service runs in an isolated environment (container), they all concur to the same resource usage. Furthermore, with this configuration, horizontal scalability is fictional since adding more nodes doesn't augment the capacity of the cluster to serve an increasing number of requests. 
+The choice to use Docker Compose to deploy Hadoop, Hive and Druid on the same machine is suboptimal because even if each service runs in an isolated environment (container), they all concur to the same resource usage. Furthermore, with this configuration, horizontal scalability is fictional since adding more nodes to the cluster doesn't augment its capacity to serve an increasing number of requests. However, during the various test execution the virtual machine never suffered from resources depletion, so the horizontal scalability is just a theorical problem bound to the hardware resources that were available for the research.
 
 #### Apache Hive provisioning
 
-Apache Hive was configured to run on the same Hadoop dockerized cluster and consists in:
+Apache Hive was configured to run on the same Hadoop dockerized cluster;
+ The set-up used for the performance testing consists in the following Docker Compose services:
 
 - A single HiveServer
 - A Metastore server
 - A MySQL 8.2 instance to persists Metastore's metadata
 
-During the test execution of queries involving a big data set, I encountered various timeouts and `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB.
+Apache Hive provisioning wasn't smooth as presumed; Apache Software Foundation doesn't provide any official Docker image for Hive, and not even related documentation to work with Docker, so each service was defined by custom Docker images, along various bash scripts, maintained by the SESAR Lab team and published on their internal registry.
+This set-up led to a low maintainability of the platform: each change to the Hive configuration, for example new Hive versions, or security patches, requires the revision, the rebuild and the publish of each image, as well as the integrations tests with the existing Hadoop infrastructure.
+Finally it needs to be said the the official Hive documentation is quite fragmented and makes its configuration more harder than expected.
+
+After the provisioning I did various preliminal perfomance tests, during wich I encountered various timeouts and `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB.
 After some research and various attempts, I increased the maximum heap size of the Hive Server to 4096 MiB; I also configured the Hive CLI JVM heap size to 8192 MiB.
+Finally I configured Hive to enable dynamic partitioning of data, and disabled the query result cache to not alter the samples of the test.
 
 #### Apache Druid provisioning
 
-I configured Apache Druid to run as a clustered deployment and consists of the following servers:
+Apache Druid could be configured  for single-machine deployments, with each process running on the same machine, or for clustered deployment, where Druid processes are distributed with the architecture illustrated in section 2.4.
+Then, the Apache Software Foundation provides Druid's official Docker images and the related documentation to configure a Druid cluster via Docker Compose.
+The Apache Druid set-up used for the performance testing consists in the following Docker Compose services:
 
 - A Coordinator
 - A Broker
 - A Router
-- An Historical server
+- An Historical
 - A MiddleManager
+- A PostgreSQL instance to persists Druid's metadata
 
-As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from a Hadoop cluster.
-One of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. To adhere to this requirement, I configured the Druid cluster to work with HDFS using druid-hdfs-storage extensions; Instead of using a local mount, Apache Druid directly uses HDFS to store data segments.
-Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS and exploit its essential peculiarity in terms of distributed storage, scalability, fault tolerance, and integration with the other MIND Foods HUB Data Lake components.
-The choice to use HDFS for batch data ingestion has a few drawbacks: the architecture is more complex since Apache Druids depend on an external Hadoop cluster and, more important, the waive to streaming ingestion mode, which enables users to perform real-time analytics on data.
+As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from HDFS.
+One of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. To adhere to this requirement, I configured the Druid cluster to work with HDFS using druid-hdfs-storage extensions.
+Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS, and to store segments in it, exploiting HDFS peculiarities in terms of distributed storage, scalability, and fault tolerance.
+The choice to use HDFS for batch data ingestion has a few drawbacks: the overall architecture is more complex since Apache Druids depend on an external Hadoop cluster and, more important, the waive to streaming ingestion mode, which enables users to perform real-time analytics on data.
+
+The provisioning of Apache Druid was simple and the cluster didn't encoutered any errors or fault during the preliminar performance tests. The overall maintaibility of the platform is satisfactory, since the official Druid's Docker images worked well out of the box without any custom configuration. Also, Druid documentation cover in depth every use case of the platform, making its deployment pretty straightforward.
 
 ### 3.2 Data generation
 
-To test both Druid and Hive, I generated 50 million rows (approximately 15 GB) of random, synthetic test data that can be downloaded from:
+With both Apache Hive and Apache Druid adequately provisioned, an extensive and representative data-set that respects the *volume* and *variety* properties of Big Data was needed to perform the performance testing.
 
 At the time of this writing MIND Foods HUB project was starting to ingest data into the Apache Hive cluster, so I had a relatively small data-set that was not suited to test the performances of Big Data systems like Hive and Druid.
-To solve this problem, I wrote a Node.js application to generate random synthetic data that still respect the logical and semantic constraints of MIND Foods HUB Data Lake schema and to provide a realistic data-set to work with.
-The application code is hosted on SESAR Lab Github's organization: [https://github.com/SESARLab/mfh-measurements-generator]( https://github.com/SESARLab/mfh-measurements-generator).
+To solve this problem, I wrote "MFH measurements generator" [29], a Node.js application able to generate random synthetic data that still respect the logical and semantic constraints of MIND Foods HUB Data Lake schema.
+The application source code is hosted on SESAR Lab Github's organization and is released under the Apache 2.0 License.
 
 MIND Foods HUB data are stored in a single table, named `dl_measurements`, that follows a denormalized data model to avoid expensive join operations.
-Each row of the table can have (`NULL`) values, depending on the type of measurement.
+Each row of the table can have `NULL` values, depending on the type of measurement.
 `dl_measurements` table schema is the following:
 
 ```sql
@@ -592,6 +623,8 @@ While measurements values were randomly generated, *sensor* related data (`senso
 With [Mockaroo](https://www.mockaroo.com/), an online service that allows generating synthetic data comprehensive of commons and scientific plant names, I produced a set of 100 locations, randomly picked for each generated row of the data-set.
 
 Finally, to simulate a data-set of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
+
+To test both Druid and Hive, I generated 50 million rows (approximately 15 GB) of random, synthetic test data.
 
 ### 3.3 Data ingestion
 
@@ -931,7 +964,7 @@ I decided to write *Hive HTTP Proxy* [XXX], a Node.js application that works as 
 $ curl -X POST -d '{ "statement": "SELECT 1" }' http://localhost:10001
 ```
 
-Hive HTTP Proxy source code is hosted on SESAR Lab Github's organization and is released under Apache License 2.0 license.
+Hive HTTP Proxy source code is hosted on SESAR Lab Github's organization and is released under the Apache 2.0 License.
 
 #### JMeter and test configuration
 
@@ -947,7 +980,7 @@ JMeter ran with the following conditions:
 - Each Thread Group ran consecutively (one at a time) to avoid side effects on other requests.
 
 Instead of running JMeter on the same network of the cluster to minimize request latency, I decided to simulate an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
-Therefore, all tests were executed in CLI mode, to reduce resource usage, on a MacBook Pro Mid 2015 with these specs:
+Therefore, to reduce resource usage, all tests were executed in CLI mode and with all Listeners disabled, on a MacBook Pro Mid 2015 with these specs:
 
 - CPU 2,8 GHz Intel Core i7, 4 core/8 threads
 - 16 GB 1600 MHz DDR3 memory
@@ -958,30 +991,19 @@ Therefore, all tests were executed in CLI mode, to reduce resource usage, on a M
 
 ## 4. Test results
 
-Each JMeter execution produced a CSV data-set containing the test results for each platform (one for Hive, the other for Druid); I imported test results in JMeter to calculate, for each sample: Average response time, Minimum response time, Maximum response time, and Average response time Standard Deviation.
+Each JMeter execution produced a CSV data-set containing the test results for each platform, one for Apache Hive the other for Apache Druid. 
+First, to simplify the comparison of the two results, I merged the data-set in a single CSV file with the *Merge Results* plugin [].
+Then, I imported the combined results in *Summary Report* JMeter listener to calculate, for each sample: 
 
-Also, I compared each query's Average response time with ResultsComparator [] plugin to quantify the performance difference between Apache Hive and Apache Druid executions by calculating Cohen's *d* [] of the samplers, which is one of the most popular measures of the effect size.
-Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
-$$
-d=\frac{\bar{x}_{1}-\bar{x}_{2}}{s}
-$$
+- Average response time
+- Minimum response time
+- Maximum response time
+- Average response time standard deviation
 
-The magnitude of *d*, namely the difference between the means, is described by the table [20] below:
+Also, I compared each query's average response time with the *Results Comparator* [] plugin to quantify the performance difference between Apache Hive and Apache Druid by calculating Cohen's *d* effect size.
+Finally, I imported the combined results into Google Sheets to draw the bar graph that visually compares each query's average response time. The results for each query are illustrated in the following pages.
 
-| d           | Effect size |
-| ----------- | ----------- |
-| 0           | Similar     |
-| < 0.01      | Negligible  |
-| [0.01-0.19] | Very small  |
-| [0.20-0.49] | Small       |
-| [0.50-0.79] | Medium      |
-| [0.80-1.19] | Large       |
-| [1.20-1.99] | Very large  |
-| >= 2.0      | Huge        |
-
-JMeter test results are downloadable from this repository hosted on SESAR Lab Github's organization:
-
-[https://github.com/SESARLab/mfh-dl-performace-testing](https://github.com/SESARLab/mfh-dl-performace-testing)
+JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performace Testing" [] repository hosted on SESAR Lab Github's organization; they are released under the Apache 2.0 License.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -1004,7 +1026,7 @@ JMeter test results are downloadable from this repository hosted on SESAR Lab Gi
 <sub>Table 3: Performance evaluation for Query 1</sub>
 
 Query 1 execution is fast on both platforms, staying under a 500 milliseconds threshold since it takes advantage of time partitions on Apache Hive and time segmentations on Apache Druid.
-Using Apache Druid, we can see a considerable decrease in Average response time value, making this platform greatly performant than Hive.
+Using Apache Druid, we can see a considerable decrease in average response time value, making this platform greatly performant than Hive.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -1048,8 +1070,8 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 | Query 3     | 21.15     | Huge decrease      |
 <sub>Table 7: Performance evaluation for Query 3</sub>
 
-Query 3 follows the same trends, achieving a massive decrease in Average response time value for its execution on Apache Druid.
-We can notice how the behaviour of all time queries is the same on both platforms, with a similar Average response time between Query 1, Query 2 and Query 3 per database and minor Standard Deviation.
+Query 3 follows the same trends, achieving a massive decrease in average response time value for its execution on Apache Druid.
+We can notice how the behaviour of all time queries is the same on both platforms, with a similar Average response time between Query 1, Query 2 and Query 3 per database and minor standard deviation.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -1072,7 +1094,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 <sub>Table 9: Performance evaluation for Query 4</sub>
 
 Query 4 requires grouping four different columns and showing another behaviour between the platforms; 
-While Apache Druid execution for Query 4 is sensibly slower than time queries, with an Average response time of 2 seconds circa, Apache Hive is enormously slower, requesting 8,69 minutes to query the data. 
+While Apache Druid execution for Query 4 is sensibly slower than time queries, with an average response time of 2 seconds circa, Apache Hive is enormously slower, requesting 8,69 minutes to query the data. 
 Two factors essentially cause this: 
 
 1. The query doesn't use any partitions, forcing Hive to do a full table scan to select and group the requested values 
@@ -1100,7 +1122,7 @@ On the other side, Apache Druid uses an in [memory algorithm](https://druid.apac
 | Query 5     | 184.97    | Huge decrease      |
 <sub>Table 11: Performance evaluation for Query 5</sub>
 
-Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in an Average response time of 8,52 minutes circa per query execution.
+Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in an average response time of 8,52 minutes circa per query execution.
 Apache Druid is exceedingly performant, remaining under the 2 seconds threshold for Query 5 completion.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
@@ -1124,7 +1146,7 @@ Apache Druid is exceedingly performant, remaining under the 2 seconds threshold 
 <sub>Table 13: Performance evaluation for Query 6</sub>
 
 Query 6 behave the same in Apache Hive, bound to a full table scan that requests 9,67 minutes to accomplish its execution.
-Apache Druid acts differently from  Query 4 and Query 5, with Query 6 Average response time of only 264 milliseconds.
+Apache Druid acts differently from  Query 4 and Query 5, with Query 6 average response time of only 264 milliseconds.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -1196,16 +1218,20 @@ Thesis scknowledgements.
 
 [26] Amazon, "Amazon Kinesis". [Internet]. Available from: https://aws.amazon.com/it/kinesis/
 
-
-
 [27] E.J Weyuker, F.I. Vokolos, "Performance testing of software systems", WOSP '98: Proceedings of the 1st international workshop on Software and performance, pp. 80–87. 1998
 
 [28] "Docker Compose", [Internet]. Available from: https://docs.docker.com/compose/
 
-[] Gabriele D'Arrigo, "Hive HTTP Proxy". [Internet]. Available from: https://github.com/SESARLab/hive-http-proxy
+[29] G. D'Arrigo, "MFH measurements generator". [Internet]. Available from: [https://github.com/SESARLab/mfh-measurements-generator]( https://github.com/SESARLab/mfh-measurements-generator).
+
+[] G. D'Arrigo, "Hive HTTP Proxy". [Internet]. Available from: https://github.com/SESARLab/hive-http-proxy
+
+[] F. Henry, V. Daburon, "Merge Results". [Internet]. Available from: https://jmeter-plugins.org/wiki/MergeResults/#Merge-Results
 
 [] rbourga, Results Comparator Plugin. [Internet]. Available from: https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki
 
+[] G. D'Arrigo, "MIND Foods HUB Data Lake Performace Testing". [Internet]. Available from: https://github.com/SESARLab/mfh-dl-performace-testing
+
 [] J. Cohen, "Statistical Power Analysis for the Behavioral Sciences", Routledge, 1988.
 
-[]  S Sawilowsky, "New effect size rules of thumb", Journal of Modern Applied Statistical Methods, Vol. 8: Iss. 2, 2009 [Internet]. Available from: https://digitalcommons.wayne.edu/jmasm/vol8/iss2/26/
+[] S Sawilowsky, "New effect size rules of thumb", Journal of Modern Applied Statistical Methods, Vol. 8: Iss. 2, 2009 [Internet]. Available from: https://digitalcommons.wayne.edu/jmasm/vol8/iss2/26/
