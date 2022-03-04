@@ -269,11 +269,16 @@ The computing and storage nodes are the same, so the MapReduce framework and HDF
 #### YARN
 
 MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (**YARN**) [19]. This Hadoop layer decouples the programming model from the resource management infrastructure and delegates many scheduling functions to per-application components.
+
+<figure>
+    <img src="https://hadoop.apache.org/docs/stable/hadoop-yarn/hadoop-yarn-site/yarn_architecture.gif" alt="YARN Architecture" style="width: 67%" />
+    <figcaption>Figure 7: YARN Architecture</figcaption>
+</figure>
+
 YARN, at its core, is composed of two processes: the **ResourceManager** and the **NodeManager**. 
 The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
 YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.
-A  ResourceManager accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution.  NodeManager processes, one per each Hadoop node, are responsible for container lifecycle: they launch the container, monitor its execution and its resources usage (in terms of CPU, memory, disk, network), and reports the information to the ResourceManager.
-The ResourceManager, collecting information from all NodeManagers, can assemble the global status of the cluster and schedule job execution.
+A ResourceManager accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution. NodeManager processes, one per each Hadoop node, are responsible for container lifecycle: they launch the container, monitor its execution and its resources usage (in terms of CPU, memory, disk, network), and reports the information to the ResourceManager. The ResourceManager, collecting information from all NodeManagers, can assemble the global status of the cluster and schedule job execution.
 
 It's worth mentioning another component of the YARN architecture: the **TimelineServer** (previously known as the Application History Server), a process that runs on a dedicated node of the cluster.
 The TimelineServer collects the historical states for each completed MapReduce job and provides various YARN related metrics  accessible via REST APIs, including:
@@ -303,8 +308,6 @@ Apache Hive is engineered to be scalable, as more machines can be dynamically ad
     <img src="./content/Apache Hive Architecture.jpg" alt="Apache Hive architecture" />
     <figcaption>Figure 7: Apache Hive architecture</figcaption>
 </figure>
-
-
 
 Figure 7 shows the architecture of Apache Hive and its main components:
 
@@ -462,7 +465,7 @@ With batch ingestion Apache Druid reads raw data from files in a one-time job; s
 In software, performance testing is a type of non-functional testing that measures a system's behaviour under satisfactory and unsatisfactory conditions [27]. 
 The performance of a system, especially for those that use the network to transfer data, is assessed by collecting various time-related metrics, like response time, throughput, and concurrency.
 We define *response time* as the measure of time a system takes to respond to a given  business request, or command; *Throughput* refers to the amount of work, that is the number of requests, that an application can process in a unit of time, while *concurrency* is defined as the property of a system to respond to several requests that potentially interact with each other, simultaneously. 
-Usually, for response time, various standard statistical measures are calculated, like the median, the average and the standard deviation. Another useful metric for response time is Cohen's *d* [] of the samplers, which is a commonly recognized way to measure the effect size
+Usually, for response time, various standard statistical measures are calculated, like the median, the average and the standard deviation. Another useful metric for response time is Cohen's *d* [28] of the samplers, which is a commonly recognized way to measure the effect size
 Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
 $$
 d=\frac{\bar{x}_{1}-\bar{x}_{2}}{s}
@@ -481,22 +484,30 @@ The magnitude of *d*, namely the difference between the means, is described by t
 | [1.20-1.99] | Very large  |
 | >= 2.0      | Huge        |
 
-One traditional way to accomplish performance testing is to first collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful. 
-The requirements of the this research are:
+One traditional way to accomplish performance testing is first to collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful.
+For example, the requirements of this research are:
 
 1. Scalability: adding more resources to the platform should be effortless
 2. Maintainability: the platform under test must be easy to configure and should integrate well on the actual MIND Foods HUB Hadoop cluster
 3. Performance: the platform under test should provide sub-second aggregations queries
 
-Then, with the requirements available, it is necessary to develop a benchmark: a workload representative of how the system is used in the field and then run the system on those benchmarks.
+Then, with the requirements available, it is necessary to develop a benchmark: a workload representative of how the system is used in the field and then run the system on those benchmarks. Designing and implementing a valid performance benchmark is a complex process, often compromising between contrasting goals. To be considered adequate, a benchmark should implement at least two of these five properties, defined by Karl Huppler in his research [29]:
 
-To evaluate the maintainability and the performance of Apache Hive and Apache Druid and to achieve a reproducible test, I followed five significant steps, extensively described in the next sections:
+1. *Relevant*: the benchmark should be meaningful, and the collected metrics are understandable by the performance test's target audience. Also, the benchmark should realistically test the system's features, similar to the typical use of a stakeholder.
+2. *Repeatable*: the benchmark should produce the same results if it runs a second time within the same operational context
+3. *Fair*: the benchmark should equally test all systems under consideration.
+4. *Verifiable*: the results produced by the benchmark should represent the system's actual performance under test.
+5. *Economical*: a relevant, realistic benchmark could be expensive, so the organization that sponsor its development must afford its cost
+
+To evaluate the maintainability and the performance of Apache Hive and Apache Druid and to achieve a relevant, repeatable and verifiable test, I followed five significant steps, extensively described in the following sections:
 
 1. Provision of each solution
 2. Generate syntetic data
 3. Ingest data with specific schema optimization
 4. Prepare the test queries
 5. Run the performance testing using Apache JMeter
+
+The test of the scalability of Apache Hive and Apache Druid instead is out of the scope of this research: the available resources, both in time and commodity (hardware), were not enough to scale the two platforms to support a heavy workload. Nevertheless, we assume that Hive and Druid are designed to scale well on the increasing demand for storage or computation resources.
 
 ### 3.1 Provision each solution
 
@@ -516,55 +527,52 @@ To deploy Hadoop, I used a Docker Compose [28], a tool for defining and running 
 - A TimelineServer
 - A Zookeeper instance
 
-The choice to use Docker Compose to deploy Hadoop, Hive and Druid on the same machine is suboptimal because even if each service runs in an isolated environment (container), they all concur to the same resource usage. Furthermore, with this configuration, horizontal scalability is fictional since adding more nodes to the cluster doesn't augment its capacity to serve an increasing number of requests. However, during the various test execution the virtual machine never suffered from resources depletion, so the horizontal scalability is just a theorical problem bound to the hardware resources that were available for the research.
+The choice to use Docker Compose to deploy Hadoop, Hive and Druid on the same machine is suboptimal because even if each service runs in an isolated environment (container), they all concur to the same resource usage. Furthermore, horizontal scalability is fictional with this configuration since adding more nodes to the cluster doesn't augment its capacity to serve an increasing number of requests. However, during the various test execution, the virtual machine never suffered from resource depletion, so horizontal scalability is just a theoretical problem bound to the hardware resources available for the research.
 
 #### Apache Hive provisioning
 
-Apache Hive was configured to run on the same Hadoop dockerized cluster;
- The set-up used for the performance testing consists in the following Docker Compose services:
+Apache Hive was configured to run on the same Hadoop dockerized cluster.
+The setup used for the performance testing consists of the following Docker Compose services:
 
 - A single HiveServer
 - A Metastore server
 - A MySQL 8.2 instance to persists Metastore's metadata
 
-Apache Hive provisioning wasn't smooth as presumed; Apache Software Foundation doesn't provide any official Docker image for Hive, and not even related documentation to work with Docker, so each service was defined by custom Docker images, along various bash scripts, maintained by the SESAR Lab team and published on their internal registry.
-This set-up led to a low maintainability of the platform: each change to the Hive configuration, for example new Hive versions, or security patches, requires the revision, the rebuild and the publish of each image, as well as the integrations tests with the existing Hadoop infrastructure.
-Finally it needs to be said the the official Hive documentation is quite fragmented and makes its configuration more harder than expected.
+Apache Hive provisioning wasn't smooth as presumed. The Apache Software Foundation doesn't provide any official Docker image for Hive or related documentation to work with Docker. So, each service was defined by using custom Docker images and various bash scripts maintained by the SESAR Lab team and published on their internal registry. 
+This setup led to low maintainability of the platform: each change to the Hive configuration, for example, new Hive versions, or security patches, requires the revision, the rebuild, and the publishing of each image, as well as the integrations tests with the existing Hadoop infrastructure. 
+Eventually, it needs to be said that the official Hive documentation is quite fragmented and makes its configuration harder than expected.
 
-After the provisioning I did various preliminal perfomance tests, during wich I encountered various timeouts and `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB.
-After some research and various attempts, I increased the maximum heap size of the Hive Server to 4096 MiB; I also configured the Hive CLI JVM heap size to 8192 MiB.
-Finally I configured Hive to enable dynamic partitioning of data, and disabled the query result cache to not alter the samples of the test.
+After the provisioning, I did various preliminary performance tests, during which I encountered various timeouts and `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB. 
+After some research and multiple attempts, I increased the maximum heap size of the Hive Server to 4096 MiB; I also configured the Hive CLI JVM heap size to 8192 MiB. 
+Yet, I configured Hive to enable dynamic partitioning of data and disabled the query result cache not to alter the test samples.
 
 #### Apache Druid provisioning
 
-Apache Druid could be configured  for single-machine deployments, with each process running on the same machine, or for clustered deployment, where Druid processes are distributed with the architecture illustrated in section 2.4.
-Then, the Apache Software Foundation provides Druid's official Docker images and the related documentation to configure a Druid cluster via Docker Compose.
-The Apache Druid set-up used for the performance testing consists in the following Docker Compose services:
+Apache Druid deployments could be configured in two ways: single-machine deployment, with each process running on the same machine, or clustered deployment, where Druid processes are distributed with the architecture illustrated in section 2.4.  Clustered deployment could be accomplished with Docker since the Apache Software Foundation provides Druid's official Docker images and the related documentation to configure a Druid cluster via Docker Compose. 
+
+The Apache Druid set-up used for the performance testing consists of the following Docker Compose services:
 
 - A Coordinator
 - A Broker
 - A Router
-- An Historical
+- A Historical
 - A MiddleManager
 - A PostgreSQL instance to persists Druid's metadata
 
-As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from HDFS.
-One of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. To adhere to this requirement, I configured the Druid cluster to work with HDFS using druid-hdfs-storage extensions.
-Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS, and to store segments in it, exploiting HDFS peculiarities in terms of distributed storage, scalability, and fault tolerance.
-The choice to use HDFS for batch data ingestion has a few drawbacks: the overall architecture is more complex since Apache Druids depend on an external Hadoop cluster and, more important, the waive to streaming ingestion mode, which enables users to perform real-time analytics on data.
+As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from HDFS. 
+One of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. So, to adhere to this requirement, the Druid cluster was configured to work with HDFS using druid-hdfs-storage extensions. Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS and store segments in it, exploiting HDFS peculiarities in terms of distributed storage, scalability, and fault tolerance. 
+However, the choice to use HDFS for batch data ingestion has a few drawbacks: the overall architecture is more complex since Apache Druids depend on an external Hadoop cluster and, more important, the waive to streaming ingestion mode, which enables users to perform real-time analytics on data.
 
-The provisioning of Apache Druid was simple and the cluster didn't encoutered any errors or fault during the preliminar performance tests. The overall maintaibility of the platform is satisfactory, since the official Druid's Docker images worked well out of the box without any custom configuration. Also, Druid documentation cover in depth every use case of the platform, making its deployment pretty straightforward.
+The provisioning of Apache Druid was simple, and the cluster did not encounter any errors or faults during the preliminary performance tests. Furthermore, the overall maintainability of the platform is satisfactory since the official Druid's Docker images worked well out of the box without any custom configuration. Also, Druid documentation covers every use case of the platform in-depth, making its deployment pretty straightforward.
 
 ### 3.2 Data generation
 
-With both Apache Hive and Apache Druid adequately provisioned, an extensive and representative data-set that respects the *volume* and *variety* properties of Big Data was needed to perform the performance testing.
+One of the steps of testing database systems that process large volumes of data is to ingest them with a relevant, large dataset and benchmark their performances with a typical workload. 
+At the time of this writing MIND Foods HUB project was starting to ingest data into the Apache Hive cluster. The relatively small dataset that could be dumped was not suited to test the performances of Big Data systems like Hive and Druid.  Several systems have been studied to verify their capabilities using Star Schema Benchmark (SSB) [29], a benchmark designed to measure the performance of Data Warehouse systems employing a star schema. Instead of using a modified version of SSB, adapted to fit the denormalized schema of MIND Foods Hub Data Lake, I opted to keep the same data structure and randomly generate an extensive and representative dataset to ingest both Hive and Druid.
 
-At the time of this writing MIND Foods HUB project was starting to ingest data into the Apache Hive cluster, so I had a relatively small data-set that was not suited to test the performances of Big Data systems like Hive and Druid.
-To solve this problem, I wrote "MFH measurements generator" [29], a Node.js application able to generate random synthetic data that still respect the logical and semantic constraints of MIND Foods HUB Data Lake schema.
-The application source code is hosted on SESAR Lab Github's organization and is released under the Apache 2.0 License.
+The generated dataset should respect the *volume* and *variety* properties of Big Data illustrated in section 2.
 
 MIND Foods HUB data are stored in a single table, named `dl_measurements`, that follows a denormalized data model to avoid expensive join operations.
-Each row of the table can have `NULL` values, depending on the type of measurement.
 `dl_measurements` table schema is the following:
 
 ```sql
@@ -595,9 +603,12 @@ CREATE TABLE dl_measurements
 )
 ```
 
+Each row of the table represents a *measurement* for a given *location*, or rather cultivation, provided by a specific *sensor*; each measurement reports its *unit of measure* and the corresponding *timestamps* that states when it was taken.
+Instead, the insertion agent is the software agent that collected the measurement and sent it through the 5G communication network.
+
 MIND Foods HUB *sensors* are of three types:
 
-- Measurements, that register discrete, floating-point values (for example, temperature, humidity, wind speed, and others).
+- Measurements, that register discrete, floating-point values (for example, temperature, humidity, wind speed, and others). 
 This type of measurement is stored in the `double_value` column, while the measurement time is stored in the `measure_timestamp` column.
 
 - Phase sensors, that register a range of floating-point values in a given period.
@@ -606,9 +617,7 @@ This type of measurement is stored in the `str_value` column, while the time sta
 - Tag sensors, that register string-based values. 
 This type of measurement is stored in the `double_value` column, while the measurement time is stored in the `measure_timestamp` column.
 
-Each *sensor* provides measurements for a given *location*, or rather cultivation.
-
-To randomly generate data for `dl_measurements`, I needed to mock this relation between a sensor type and its measurement and guarantee these logical constraints:
+To randomly generate data for `dl_measurements`, the relation between a sensor type and its measurement should guarantee these logical constraints:
 
 - `double_value` is only populated for float-based measurements while `str_value` is `NULL`.
 `measure_timestamp` is calculated, while `start_timestamp` and `end_timestamp` are `NULL`
@@ -619,20 +628,17 @@ Both `start_timestamp` and `end_timestamp` times are calculated, while `measure_
 - For tag based measurement `str_value` is populated, while `double_value` is `NULL`.
 `measure_timestamp` is calculated, while `start_timestamp` and `end_timestamp` are `NULL`
 
-While measurements values were randomly generated, *sensor* related data (`sensor_id`, `sensor_type`, `sensor_desc_name`, `unit_of_measure` ) were dumped from the MIND Foods HUB Hive production cluster and randomly picked for each generated row.
-With [Mockaroo](https://www.mockaroo.com/), an online service that allows generating synthetic data comprehensive of commons and scientific plant names, I produced a set of 100 locations, randomly picked for each generated row of the data-set.
+I wrote "MFH measurements generator" [29] to solve this problem, a Node.js application to generate random synthetic data for performance testing; the application source code is hosted on SESAR Lab Github's organization and is released under the Apache 2.0 License.
+The application's working is simple: it iterates from 1 to *N*, where *N* is the desired number of rows. Each iteration produces a randomly generated measurement that respects the logical constraints reported above; the application's output is a CSV file containing the produced data. 
+To provide a certain degree of semantic to the random measurement, I defined some static datasets used as the basis for each generation. Sensors (sensor_id, sensor_type, sensor_desc_name, unit_of_measure) and collection agents (insertion_agent) were dumped from the MIND Foods HUB Hive production cluster and randomly picked for each generated row.  For the values of `location_name`, `location_botanic_name`, and `location_cultivation_name`, I used Mockaroo [30]. This online service allows generating synthetic data comprehensive of commons and scientific plant names, with whom I produced a set of 100 locations, randomly picked for each generated row.  Ultimately, to simulate a dataset of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in a temporal range of two years.
 
-Finally, to simulate a data-set of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in two years.
-
-To test both Druid and Hive, I generated 50 million rows (approximately 15 GB) of random, synthetic test data.
+Using "MFH measurements generator", I produced a CSV dataset containing 50 million rows (approximately 15 GB of size) of random, synthetic data to test Apache Hive and Apache Druid.
 
 ### 3.3 Data ingestion
 
-Before querying data, I created tables for both databases and ingested the synthetic generated CSV data.
-The first step consisted in loading the generated data-set in a temporary HDFS folder on the Hadoop Namenode server to serve as the primary source for the ingestion process.
-
-Unlike the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some table optimizations to test each database at the top of their performance capability, using Hive partitions and Druid segments.
-Each *measurement* is stored depending on its `insertion_timestamp`, allowing each platform to retrieve data based on temporal criteria efficiently.
+Before ingesting data, defining the tables for each platform was necessary. 
+Unlike the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some optimizations to test each platform at the top of their performance capability, using Hive partitions and Druid segments. 
+So, each *measurement* was stored depending on its `insertion_timestamp`, allowing each system to retrieve data based on temporal criteria efficiently.
 
 #### Apache Hive table optimization
 
@@ -670,11 +676,12 @@ CREATE TABLE dl_measurements
     TBLPROPERTIES ('bucketing_version' = '2');
 ```
 
-As we can see, it defines an `insertion_date` partition, which determines how to store data into the table; *measurements* with the same `insertion_date`, are held together into the same partition, allowing Hive to efficiently retrieve data that satisfy specified criteria based on the `insertion_date`.
+As we can see, it defines an `insertion_date` partition, which determines how to store data into the table; *measurements* with the same `insertion_date` are held together into the same partition, allowing Hive to efficiently retrieve data that satisfy specified criteria based on the `insertion_date`.
 
 #### Apache Hive ingestion
 
-To ingest data into Hive, I first loaded the CSV data from the temporary HDFS folder on the NameNode (i.e.: `/tmp/mfh`) into an external table:
+The first step for ingestion consisted in loading the generated data-set in a temporary HDFS folder (`/tmp/mfh`) on the Hadoop NameNode, to serve as the primary source for the ingestion process.
+Then I created an external table that points to the temporary folder:
 
 ```sql
 CREATE EXTERNAL TABLE IF NOT EXISTS dl_measurements_external
@@ -709,7 +716,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS dl_measurements_external
     TBLPROPERTIES ("skip.header.line.count"="1");
 ```
 
-Then I loaded the data from the external table into `dl_measurements`, computing the partition_date from  with the following SQL statement:
+Finally, data was loaded from the external table into `dl_measurements` with the following SQL statement that computes the belonging `insertion_date` partition starting from the `insertion_timestamp`.
 
 ```sql
 FROM dl_measurements_external
@@ -720,12 +727,12 @@ DISTRIBUTE BY insertion_date;
 
 #### Apache Druid datasource optimization
 
-On Apache Druid, data was ingested using *insertion_timestamp* as the primary datasource timestamp, with a *month* granularity; *measurements* registered within the same month are stored into the same *time chunks* (with a *time chunks* containing one or more segments).
+On Apache Druid, data was ingested using `insertion_timestamp` as the primary datasource timestamp, with a *month* granularity; *measurements* registered within the same month are stored into the same time chunks (with a time chunks containing one or more segments).
 
 #### Apache Druid ingestion
 
-Druid ingestion is configured by submitting an *[ingestion task](https://druid.apache.org/docs/latest/ingestion/ingestion-spec.html)* spec to the Druid Coordinator; the overall process was more accessible since I can achieve it by using Druid's [web console](https://druid.apache.org/docs/latest/operations/druid-console.html).
-Data was loaded from the temporary HDFS folder on the NameNode using the following spec:
+Apache Druid ingestion is configured by submitting an ingestion task spec to the Druid Coordinator; the overall process was more accessible since it could be obtained by just using Druid's web console.
+The ingestion spec used to load data from the temporary HDFS folder on the NameNode is the following.
 
 ```json
 {
@@ -818,19 +825,17 @@ Data was loaded from the temporary HDFS folder on the NameNode using the followi
 | Apache Druid                          | 51 segments   | 9.9 GB         | 29.8 GB               | 01:17:15       |
 <sub>Table 1: Ingestion numbers</sub>
 
-Table 1 reports the number of partitions, the data size on HDFS, the total disk space used for data replication, and the computed ingestion time for each platform. 
-It's worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 and Roaring algorithms.
-Apache Druid was 55,8% faster than Apache Hive to import 50 million rows.
+Table 1 reports the number of partitions, the data size on HDFS, the total disk space used for data replication, and the computed ingestion time for each platform. It's worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 and Roaring algorithms.
+Apache Druid was 55,8% faster than Apache Hive to import 50 million rows from Hadoop.
 
 ### 3.4 Queries
 
-To benchmark Apache Hive and Apache Druid, I used the most common queries executed by MIND Foods Hub front-end;
-In this way, the benchmark is as close as possible to the actual scenario use cases.
-The queries are, where feasible, slightly optimized for each database to make use of Apache Hive table partitions and Apache Druid time segments.
+The benchmark developed to test Apache Hive comprises six SQL queries chosen from the ones executed by MIND Foods Hub's front-end. These queries are the most representative of the analysis processes of MIND Foods HUB and make the performance testing similar to an actual production workload.
+The queries are, where feasible, slightly optimized for each platform to make use of Apache Hive table partitions and Apache Druid time segments.
 
 #### Query 1
 
-Query the first 100 measurements of `measurements` sensors in a month time range.  
+Query 1 selects the first 100 measurements of `measurements` sensors in a month time range.  
 
 Apache Hive
 
@@ -856,7 +861,7 @@ LIMIT 100;
 
 #### Query 2
 
-Query the first 100 measurements of `tag` sensors in a month's time range.  
+Query 2 selects the first 100 measurements of `tag` sensors in a month's time range.  
 
 Apache Hive:
 
@@ -884,7 +889,7 @@ LIMIT 100;
 
 #### Query 3
 
-Query the first 100 measurements of `phase` sensors in a month time range.  
+Query 3 selects the first 100 measurements of `phase` sensors in a month time range.  
 
 Apache Hive:
 
@@ -912,7 +917,7 @@ LIMIT 100;
 
 #### Query 4
 
-Group and count all locations that are cultivated in "cassoni sx".  
+Query 4 groups and counts all locations that are cultivated in "cassoni sx".  
 
 ```sql
 SELECT location_id, location_name, location_botanic_name, location_cultivation_name, COUNT(*) AS number_of_measurements
@@ -923,7 +928,7 @@ GROUP BY location_id, location_name, location_botanic_name, location_cultivation
 
 #### Query 5
 
-Group and count all available sensors.  
+Query 5 groups and counts all available sensors.  
 
 ```sql
 SELECT sensor_id, sensor_type, sensor_desc_name, COUNT(*) AS number_of_measurements
@@ -933,7 +938,7 @@ GROUP BY sensor_id, sensor_type, sensor_desc_name;
 
 #### Query 6
 
-Calculate the average of all measurements of a specific sensor.  
+Query 6 calculate the average of all measurements of the "TS_0310B473-depth_soiltemperature" sensor.  
 
 ```sql
 SELECT sensor_id, location_cultivation_name, AVG(double_value) AS average
@@ -968,19 +973,19 @@ Hive HTTP Proxy source code is hosted on SESAR Lab Github's organization and is 
 
 #### JMeter and test configuration
 
-I configured JMeter to assess single-user query performance testing; only one thread was employed to run the test plan. The motivation under this choice is that Data Lake platforms are very different from application databases that need to support hundreds or thousands of concurrent connections under heavy load. 
-Instead, especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.
+Data Lake platforms are very different from application databases that support hundreds or thousands of concurrent connections under heavy load. Instead, especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days. 
+This characteristic led to the decision of configuring JMeter to assess single-user query performance testing, simulating an average worload; only one thread for each query was employed to run the Test Plan. 
 
 JMeter ran with the following conditions:
 
 - The query cache for each database was disabled.
 - Vectorization was enabled for Apache Druid queries. With vectorization, query execution is faster by processing batches of 512 rows instead of one row at a time. Apache Hive supports vectorized query execution only for data stored in ORC format.
-- Single user testing
+- Single user testing: only one thread per Thread Group was employed.
 - Each query was configured to run 10 times (to have 10 samples per query) in a separate Thread Group. 
 - Each Thread Group ran consecutively (one at a time) to avoid side effects on other requests.
 
-Instead of running JMeter on the same network of the cluster to minimize request latency, I decided to simulate an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
-Therefore, to reduce resource usage, all tests were executed in CLI mode and with all Listeners disabled, on a MacBook Pro Mid 2015 with these specs:
+Instead of running JMeter on the same network of the cluster to minimize request latency, the benchmark simulated an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
+Therefore all tests were executed in CLI mode and with all Listeners disabled, on a MacBook Pro Mid 2015 with these specs:
 
 - CPU 2,8 GHz Intel Core i7, 4 core/8 threads
 - 16 GB 1600 MHz DDR3 memory
@@ -1162,8 +1167,6 @@ Thesis scknowledgements.
 
 [1] "MIND Foods HUB". [Internet]. Available from: https://www.mindfoodshub.com/il-progetto/
 
-[2] "MIND Milano" [Internet]. Available from: https://www.mindmilano.it/
-
 [3] DISAA press, "The MIND Foods HUB project is ready to go" [Internet]. Available from: https://disaapress.unimi.it/en/2020/02/17/the-mind-foods-hub-project-is-ready-to-go/
 
 [4] The Apache Software Foundation, "Apache Hadoop". [Internet]. Available from: https://hadoop.apache.org/
@@ -1220,9 +1223,15 @@ Thesis scknowledgements.
 
 [27] E.J Weyuker, F.I. Vokolos, "Performance testing of software systems", WOSP '98: Proceedings of the 1st international workshop on Software and performance, pp. 80–87. 1998
 
-[28] "Docker Compose", [Internet]. Available from: https://docs.docker.com/compose/
+[29] Karl. Huppler, "The Art of Building a Good Benchmark", In Performance Evaluation and Benchmarking, pp. 18–30.  Berlin, Heidelberg: Springer Berlin Heidelberg. 2009
+
+[28] Docker Inc., "Docker Compose", [Internet]. Available from: https://docs.docker.com/compose/
+
+[29] P. O’Neil, E. O’Neil, C. Xuedong, S. Revilak, "The Star Schema Benchmark and Augmented Fact Table Indexing", In Performance Evaluation and Benchmarking, pp. 237–252. Berlin, Heidelberg: Springer Berlin Heidelberg. 2009
 
 [29] G. D'Arrigo, "MFH measurements generator". [Internet]. Available from: [https://github.com/SESARLab/mfh-measurements-generator]( https://github.com/SESARLab/mfh-measurements-generator).
+
+[30] M. Brocato, "Mockaroo". [Internet]. Available from: https://www.mockaroo.com/
 
 [] G. D'Arrigo, "Hive HTTP Proxy". [Internet]. Available from: https://github.com/SESARLab/hive-http-proxy
 
