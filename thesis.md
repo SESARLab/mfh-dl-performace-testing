@@ -5,7 +5,7 @@ subject: Evaluating performances of enterprise data lake solutions for MIND Food
 keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 ---
 
-<img src="./content/Logo_Università_degli_Studi_di_Milano.svg" alt="Università degli Studi di Milano" style="width: 340px"/>
+<img src="./content/Logo_Università_degli_Studi_di_Milano.svg" alt="Università degli Studi di Milano" style="width: 300px"/>
 
 
 
@@ -19,23 +19,26 @@ keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 
 
 
+**Supervisor**: Prof. Paolo Ceravolo, <paolo.ceravolo@unimi.it>
 
+**Co-examiner**: Filippo Berto, <filippo.berto@unimi.it>
 
-**Relatore**: Prof. Paolo Ceravolo, <paolo.ceravolo@unimi.it>
+**Graduand**: Gabriele D'Arrigo, <gabriele.darrigo@studenti.unimi.it>
 
-**Correlatore **: Filippo Berto, <filippo.berto@unimi.it>
+**Number**: 909953
 
-**Tesi di**: Gabriele D'Arrigo, <gabriele.darrigo@studenti.unimi.it>
-
-**Matricola**: 909953
-
-**Anno Accademico**: 2021-2022
+**Academic Year **: 2021-2022
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
 ## Table of contents
 
-0. Abstract
+Abstract
+
+List of Figures
+
+List of Tables
+
 1. Introduction
    1. Goals of the research
 2. Big Data technologies
@@ -102,6 +105,8 @@ The results show how Apache Druid is a strong, better alternative to Apache Hive
 
 **Keywords**: Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid
 
+<div style="page-break-after: always; visibility: hidden;"></div>
+
 ## 1. Introduction
 
 MIND Foods HUB [1] is an international, interdisciplinary project led by various public and private subjects (including Università Degli Studi di Milano, TIM and others) that operates in the context of the Milan Innovation District. Start-ups, organizations, and public institutions work on innovative and sustainable projects in this multifunctional space.
@@ -152,6 +157,8 @@ This research aims to study Apache Druid as a viable, more performant solution t
 
 That's why to test Apache Hive and Apache Druid, given the requirements of the MIND Foods HUB Data Lake platform, I applied a strict, thorough and reproducible methodology described in the following sections of this paper;
 Section 2 defines Big Data and Data Lake systems and describes Hadoop, Apache Hive, and Apache Druid, focusing on their architecture and functionalities. Section 3 demonstrates the testing methodologies employed to test Apache Hive and Apache Druid with JMeter; Section 4 discuss the testing results, while section 4 concludes this paper.
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ## 2. Big Data technologies
 
@@ -245,7 +252,6 @@ A typical HDFS cluster can have thousands of DataNodes and tens of thousands of 
     <figcaption>Figure 5: HDFS Architecture and data flow</figcaption>
 </figure>
 
-
 Figure 5 shows the HDFS architecture and the flow of I/O operations.
 
 1. An HDFS client wishing to read a file contact the NameNode to determine where the actual data is stored
@@ -291,6 +297,7 @@ MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (YARN
     <img src="https://hadoop.apache.org/docs/stable/hadoop-yarn/hadoop-yarn-site/yarn_architecture.gif" alt="YARN Architecture" style="width: 67%" />
     <figcaption>Figure 7: YARN Architecture</figcaption>
 </figure>
+
 YARN, at its core, is composed of two processes: the *ResourceManager* and the *NodeManager*. 
 The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
 YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.
@@ -303,8 +310,6 @@ The TimelineServer collects the historical states for each completed MapReduce j
 - The elapsed time for the job execution
 - The final status of the job (succeeded, failed, etc.)
 - The allocated memory and virtual cores per container
-
-<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 2.3 Apache Hive
 
@@ -322,7 +327,7 @@ Apache Hive is engineered to be scalable, as more machines can be dynamically ad
 
 <figure>
     <img src="./content/Apache Hive Architecture.jpg" alt="Apache Hive architecture" />
-    <figcaption>Figure 7: Apache Hive architecture</figcaption>
+    <figcaption>Figure 8: Apache Hive architecture</figcaption>
 </figure>
 
 Figure 7 shows the architecture of Apache Hive and its main components:
@@ -422,8 +427,9 @@ Apache Druid processes are the following:
 
 <figure>
     <img src="https://druid.apache.org/docs/latest/assets/druid-architecture.png" alt="Apache Druid architecture" style="zoom: 67%;" />
-    <figcaption>Figure 7: Apache Druid architecture</figcaption>
+    <figcaption>Figure 9: Apache Druid architecture</figcaption>
 </figure>
+
 Druid processes are typically organized into logical units, following a *Master*, *Query* and *Data* server topology; figure 7 shows the architecture of a representative Apache Druid cluster.
 Master servers manage data ingestion and availability; they are composed of the Coordinator and the Overlord processes. Query servers, formed by the Broker and the Router processes, expose the endpoints that users and client applications interact with; they route queries to the Data servers. Finally, data servers execute ingestion jobs and store the data into the distributed storage. Data servers are composed of the Historical and the MiddleManager processes.
 
@@ -466,9 +472,8 @@ The Coordinator polls the Metadata store periodically, by default every minute; 
 
 <figure>
     <img src="./content/Apache Druid ingestion.jpg" alt="Apache Druid ingestion" style="width: 67%;"/>
-    <figcaption>Figure 8: Apache Druid ingestion</figcaption>
+    <figcaption>Figure 10: Apache Druid ingestion</figcaption>
 </figure>
-
 
 With stream ingestion, Apache Druid reads raw data from the data stream and makes segments queryable as soon as they are available. Apache Druid supports two methods of stream ingestion: read from an *Apache Kafka* [28] stream or an *Amazon Kinesis* [29] stream.
 
@@ -687,10 +692,10 @@ CREATE TABLE dl_measurements
     CONSTRAINT dl_measurements_pk
         PRIMARY KEY (id) DISABLE NOVALIDATE
 )
-    PARTITIONED BY (insertion_date string)
-    STORED AS TEXTFILE
-    LOCATION 'hdfs://namenode:9000/user/hive/warehouse/mfh.db/dl_measurements'
-    TBLPROPERTIES ('bucketing_version' = '2');
+PARTITIONED BY (insertion_date string)
+STORED AS TEXTFILE
+LOCATION 'hdfs://namenode:9000/user/hive/warehouse/mfh.db/dl_measurements'
+TBLPROPERTIES ('bucketing_version' = '2');
 ```
 
 As we can see, it defines an `insertion_date` partition, which determines how to store data into the table; *measurements* with the same `insertion_date` are held together into the same partition, allowing Hive to efficiently retrieve data that satisfy specified criteria based on the `insertion_date`.
@@ -726,11 +731,11 @@ CREATE EXTERNAL TABLE IF NOT EXISTS dl_measurements_external
     CONSTRAINT dl_measurements_external_pk
         PRIMARY KEY (id) DISABLE NOVALIDATE
 )
-    ROW FORMAT DELIMITED
-    FIELDS TERMINATED BY ','
-    STORED AS TEXTFILE
-    LOCATION 'hdfs://namenode:9000/tmp/mfh'
-    TBLPROPERTIES ("skip.header.line.count"="1");
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION 'hdfs://namenode:9000/tmp/mfh'
+TBLPROPERTIES ("skip.header.line.count"="1");
 ```
 
 Finally, data was loaded from the external table into `dl_measurements` with the following SQL statement that computes the belonging `insertion_date` partition starting from the `insertion_timestamp`.
@@ -854,7 +859,7 @@ The queries are, where feasible, slightly optimized for each platform to make us
 
 Query 1 selects the first 100 measurements of `measurements` sensors in a month time range.  
 
-Apache Hive
+Apache Hive:
 
 ```sql
 SELECT *
@@ -865,7 +870,7 @@ AND double_value IS NOT NULL
 LIMIT 100;
 ```
 
-Apache Druid
+Apache Druid:
 
 ```sql
 SELECT *
@@ -892,7 +897,7 @@ AND start_timestamp IS NULL
 LIMIT 100;
 ```
 
-Apache Druid
+Apache Druid:
 
 ```sql
 SELECT *
@@ -920,7 +925,7 @@ AND start_timestamp IS NOT NULL
 LIMIT 100;
 ```
 
-Apache Druid
+Apache Druid:
 
 ```sql
 SELECT *
@@ -965,6 +970,8 @@ AND location_id = 'cassoni_sx'
 AND location_cultivation_name = 'Rubiaceae'
 GROUP BY sensor_id, location_id, location_cultivation_name;
 ```
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ### 3.5 Performance testing using Apache JMeter
 
@@ -1034,7 +1041,7 @@ JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performa
 
 <figure>
     <img src="./content/Average response time - Query 1.png" alt="Average response time - Query 1" />
-    <figcaption>Figure 1: Average response time for Query 1</figcaption>
+    <figcaption>Figure 11: Average response time for Query 1</figcaption>
 </figure>
 
 | Query           | Average | Min  | Max  | Std. Dev. |
@@ -1057,7 +1064,7 @@ Using Apache Druid, we can see a considerable decrease in average response time 
 
 <figure>
     <img src="./content/Average response time - Query 2.png" alt="Average response time - Query 2" />
-    <figcaption>Figure 1: Average response time for Query 2</figcaption>
+    <figcaption>Figure 12: Average response time for Query 2</figcaption>
 </figure>
 
 | Query           | Average | Min  | Max  | Std. Dev. |
@@ -1079,7 +1086,7 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 
 <figure>
     <img src="./content/Average response time - Query 3.png" alt="Average response time - Query 3" />
-    <figcaption>Figure 1: Average response time for Query 3</figcaption>
+    <figcaption>Figure 13: Average response time for Query 3</figcaption>
 </figure>
 
 | Query           | Average | Min  | Max  | Std. Dev. |
@@ -1102,7 +1109,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 
 <figure>
     <img src="./content/Average response time - Query 4.png" alt="Average response time - Query 4" />
-    <figcaption>Figure 1: Average response time for Query 4</figcaption>
+    <figcaption>Figure 14: Average response time for Query 4</figcaption>
 </figure>
 
 | Query           | Average | Min    | Max    | Std. Dev. |
@@ -1131,7 +1138,7 @@ On the other side, Apache Druid uses a complex in memory algorithm to aggregate 
 
 <figure>
     <img src="./content/Average response time - Query 5.png" alt="Average response time - Query 5" />
-    <figcaption>Figure 1: Average response time for Query 5</figcaption>
+    <figcaption>Figure 15: Average response time for Query 5</figcaption>
 </figure>
 
 | Query           | Average | Min    | Max    | Std. Dev. |
@@ -1154,7 +1161,7 @@ Apache Druid is exceedingly performant, remaining under the 2 seconds threshold 
 
 <figure>
     <img src="./content/Average response time - Query 6.png" alt="Average response time - Query 6" />
-    <figcaption>Figure 1: Average response time for Query 6</figcaption>
+    <figcaption>Figure 16: Average response time for Query 6</figcaption>
 </figure>
 
 | Query           | Average | Min    | Max    | Std. Dev. |
