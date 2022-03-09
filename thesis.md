@@ -118,37 +118,37 @@ The results show how Apache Druid is a strong, better alternative to Apache Hive
 
 
 
-Figure 1:    MIND Foods Hub computing infrastructure
+**Figure 1**    MIND Foods Hub computing infrastructure
 
-Figure 2:    Figure 2: Big Data three Vs
+**Figure 2**    Figure 2: Big Data three Vs
 
-Figure 3:    ETL
+**Figure 3**    ETL
 
-Figure 4:    ELT
+**Figure 4**    ELT
 
-Figure 5:    HDFS Architecture and data flow
+**Figure 5**    HDFS Architecture and data flow
 
-Figure 6:    MapReduce flow
+**Figure 6**    MapReduce flow
 
-Figure 7:    YARN Architecture
+**Figure 7**    YARN Architecture
 
-Figure 8:    Apache Hive architecture
+**Figure 8**    Apache Hive architecture
 
-Figure 9:    Apache Druid architecture
+**Figure 9**    Apache Druid architecture
 
-Figure 10: Apache Druid ingestion
+**Figure 10**   Apache Druid ingestion
 
-Figure 11:  Query 1 Average response time
+**Figure 11**    Query 1 Average response time
 
-Figure 12:  Query 2 Average response time
+**Figure 12**    Query 2 Average response time
 
-Figure 13:  Query 3 Average response time
+**Figure 13**    Query 3 Average response time
 
-Figure 14:  Query 4 Average response time
+**Figure 14**    Query 4 Average response time
 
-Figure 15:  Query 5 Average response time
+**Figure 15**    Query 5 Average response time
 
-Figure 16:  Query 6 Average response time
+**Figure 16**    Query 6 Average response time
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -156,11 +156,35 @@ Figure 16:  Query 6 Average response time
 
 
 
-Table 1:
+**Table 1**    Magnitude of d    
 
-Table 2:
+**Table 2**    Ingestion numbers
 
-Table 3:
+**Table 3**    Query 1 numbers
+
+**Table 4**    Performance evaluation for Query 1
+
+**Table 5**    Query 2 numbers
+
+**Table 6**    Performance evaluation for Query 2
+
+**Table 7**    Query 3 numbers
+
+**Table 8**    Performance evaluation for Query 3
+
+**Table 9**    Query 4 numbers
+
+**Table 10**   Performance evaluation for Query 4
+
+**Table 11**    Query 5 numbers
+
+**Table 12**    Performance evaluation for Query 5
+
+**Table 13**    Query 6 numbers
+
+**Table 14**    Performance evaluation for Query 6
+
+**Table 15**    Apache Hive and Apache Druid comparison
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -1107,7 +1131,7 @@ JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performa
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 1  | 382     | 346  | 457  | 39,50     |
 | Druid - Query 1 | 160     | 148  | 229  | 23,22     |
-<sub>Table 3: Query 1  numbers</sub>
+<sub>Table 3: Query 1 numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ------- | --------- | ------------------ |
@@ -1130,7 +1154,7 @@ Using Apache Druid, we can see a considerable decrease in average response time 
 | --------------- | ------- | ---- | ---- | --------- |
 | Hive - Query 2  | 376     | 359  | 401  | 13,55     |
 | Druid - Query 2 | 152     | 148  | 163  | 4,17      |
-<sub>Table 5: Query 2  numbers</sub>
+<sub>Table 5: Query 2 numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1175,7 +1199,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 4  | 521931  | 518235 | 526918 | 3157,38   |
 | Druid - Query 4 | 2027    | 2020   | 2038   | 6,53      |
-<sub>Table 9: Query 1 numbers</sub>
+<sub>Table 9: Query 4 numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1204,7 +1228,7 @@ On the other side, Apache Druid uses a complex in memory algorithm to aggregate 
 | --------------- | ------- | ------ | ------ | --------- |
 | Hive - Query 5  | 511250  | 503896 | 518260 | 3898,01   |
 | Druid - Query 5 | 1417    | 1401   | 1449   | 12,75     |
-<sub>Table 11:  Query  5 numbers</sub>
+<sub>Table 11:  Query 5 numbers</sub>
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1249,23 +1273,21 @@ To replace Apache Hive, I identified Apache Druid. This open-source distributed 
 
 |              | Apache Hive                                                  | Apache Druid                                                 |
 | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Use cases    | ETL tasks, reporting and data analysys in batch mode with SQL | Real-time analytics, high concurrency and sub-second queries with SQL |
-| Storage      | HDFS                                                         | HDFS, Amazon S3, local disk                                  |
+| Use cases    | ETL tasks, reporting and data analysis in batch mode with SQL | Real-time analytics, high concurrency and sub-second queries with SQL |
+| Storage      | HDFS                                                         | HDFS, Amazon S3, Google Cloud Storage, Microsoft Azure deep storage, local disk |
 | Partitioning | With string partition keys, optional                         | By default, partition data in time segments                  |
 | Ingestion    | Batch mode                                                   | Batch and streaming mode                                     |
 
 <sub>Table 15: Apache Hive and Apache Druid comparison</sub>
 
-Initially developed in 2009 by Facebook to access data on their Hadoop cluster, Apache Hive is not designed to work on modern dockerized environments. During my testing, Hive maintainability has proved to be scarce. 
-The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.
-
-Apache Druid instead remarkably satisfied the maintanability requirement. The provisioning of a cluster comprised of all Druid's component was straightforward, thanks to the official Docker images and the related documentation,that is well detailed and  comprehensive of the various deployment mode of the platform. Some limitations should be taken into account in regards to this requirement; the overall maintanability of a software system is tested on a long term scenario, working on various operational constraints and for different business requirements. This was not the scope of this research, and the maintanability of both Hive and Druid was tested only for the ambit of the performance testing.
+Initially developed in 2009 by Facebook to access data on their Hadoop cluster, Apache Hive is not designed to work on modern dockerized environments. During my testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.
+Apache Druid instead remarkably satisfied the maintainability requirement. The provisioning of a cluster comprised of all Druid's components was straightforward, thanks to the official Docker images and the related documentation that is well detailed and comprehensive of the various deployment mode of the platform. Also, Apache Druid supports a rich extensions ecosystem to add various functionality at runtime, like the support for Amazon S3, Google Cloud Storage or Microsoft Azure instead of HDFS for segments storage. This interoperability with the aforementioned cloud computing services allows the substitution of Hadoop with immediate advantages in terms of maintainability costs.
+However, some limitations should be considered when it comes to the maintainability requirement; the overall maintainability of a software system is usually evaluated on a long-term scenario, working on various operational constraints and for different business requirements. Unfortunately, an evaluation of this type is out of this research's scope, so the maintainability of Apache Hive and Apache Druid was tested only for the ambit of the performance testing.
 
 To test the performance of Apache Hive and Apache Druid, I focused on finding a valid benchmark, that is, a workload representative of how the system is used in the field and then run the system on those benchmarks. To achieve this goal I followed a rigorous, thorough methodology, comprises five steps: the provisioning of both Apache Hive and Druid, the generation of a large, random, synthetic dataset, the ingestion of the generated data, the definition of the test query and the performance testing with Apache JMeter. 
 Apache Druid proved to be more performant than Apache Hive on each tested query; Query 1, Query 2 and Query 3, which take advantage of time partitioning, are all under the 500ms threshold using Druid I achieved a considerable decrease in average response time. Finally, the indisputable performance increment could be observed with Query 4, Query 5 and Quer 6, that aggregate data according to different criteria. Apache Hive needs a 9 minutes average response time to satisfy these requests; Apache Druid has always been under the 2 seconds threshold. That is where the design of Apache Hive shows its limits: the rely on MapReduce to retrieve and aggregate data is suboptimal due to its recurring access to the disk, a notoriously slow operation. Not that Hive could not be further optimized by attempting various approaches. For example, using Apache Tez instead of MapReduce could speed up the queries execution, or configuring the `dl_measurements` table to use Apache ORC, a columnar file format, could improve the reading performance of Hive. Nevertheless, each of these methods comes at the cost of configuring and maintaining a complex platform that is not suited to perform real-time analytics tasks.
-Apache Druid, on the other side 
-
-
+On the other side, Apache Druid implements a more modern architecture combining column-oriented storage, distributed computing where each node can independently be scaled, and an advanced real-time ingestion system that serves data as soon as it is available. This design allows Druid to compute sub-second queries on data sources with billions of rows.
+In conclusion, Apache Druid fully satisfied the goals of this research, proving itself to be a suitable, highly performant solution to serve the actual use cases of the MIND Foods HUB computing infrastructure.
 
 ## 6. Acknowledgements
 
