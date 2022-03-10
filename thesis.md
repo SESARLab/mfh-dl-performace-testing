@@ -507,9 +507,10 @@ Apache Druid processes are the following:
 - **MiddleManager**: it handles the ingestion of new data into the cluster; MiddleManagers are responsible for reading data from external sources and publishing new Druid segments.
 
 <figure>
-    <img src="./content/Apache Druid architecture.jpg" alt="Apache Druid architecture" style="zoom: 67%;" />
+    <img src="./content/Apache Druid Architecture.jpg" alt="Apache Druid architecture" style="zoom: 67%;" />
     <figcaption>Figure 9: Apache Druid architecture</figcaption>
 </figure>
+
 
 Druid processes are typically organized into logical units, following a *Master*, *Query* and *Data* server topology; figure 9 shows the architecture of a representative Apache Druid cluster.
 Master servers manage data ingestion and availability; they are composed of the Coordinator and the Overlord processes. Query servers, formed by the Broker and the Router processes, expose the endpoints that users and client applications interact with; they route queries to the Data servers. Finally, data servers execute ingestion jobs and store the data into the distributed storage. Data servers are composed of the Historical and the MiddleManager processes.
