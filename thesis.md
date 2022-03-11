@@ -203,7 +203,7 @@ The project, split into different stages, plans to:
 <figure>
     <img src="./content/MFH Architecture.jpg" alt="MIND Food HUB computing infrastructure" />
     <figcaption>Figure 1: MIND Foods Hub computing infrastructure</figcaption>
-</figure>
+</figure>  
 
 The computing infrastructure, made by different modules, consists in:
 
@@ -256,7 +256,7 @@ Big Data is a universal term [13] that refers to data that is "too big, too fast
 <figure>
     <img src="./content/Big Data - 3Vs.jpg" alt="Figure 2: Big Data three Vs" style="width: 50%" />
     <figcaption>Figure 2: Big Data three Vs</subfigcaption
-</figure>
+</figure>  
 
 Over time the three Vs concepts of Big Data have been complemented by two additional properties: *Veracity* [16] and *Value*.
 
@@ -281,8 +281,7 @@ The most used data processing paradigm to ingest data into the Data Warehouse an
 <figure>
     <img src="./content/Data Warehouse.jpg" alt="Extract, Transform, Load" style="width: 67%;"/>
     <figcaption>Figure 3: Extract, Transform, Load</figcaption>
-</figure>
-
+</figure>  
 
 In ETL, data are extracted from different sources, transformed to adhere to the star schema, and loaded into the Data Warehouse; as Data Warehouses are built for analytical purposes, usually data is loaded in bath mode at regular time intervals. Later, data is gathered with ad-hoc queries for reporting and mining activities as part of the organization's business intelligence process. This process to store data in a Data Warehouse, also known as *schema-on-write*, allows efficient and fast reads operations at the cost of designing and maintaining a schema (the star schema) that describes the shape of the data. 
 
@@ -296,8 +295,7 @@ Unlike traditional Data Warehouses, which pursues an ETL approach, Data Lake sys
 <figure>
     <img src="./content/Data Lake.jpg" alt="Extract, Load, Transform" style="width: 67%"/>
     <figcaption>Figure 4: Extract, Load, Transform</figcaption>
-</figure>
-
+</figure>  
 
 In ELT, data is extracted from various sources in an untransformed o nearly transformed state and ingested into the Data Lake as soon as it is available. Data transformation is applied later during business analysis, giving the data a structure suited for that specific analysis on what is known as a *schema-on-read* process. 
 The advantages of a Data Lake over a Data Warehouse are that the upfront cost for data ingestion is extensively lower since ingestion does not require any prior schema design to store the data, nor any complex preprocessing or transformations. Also, data ingested into Data Lake often happens in streaming mode, allowing organizations to extract business insights in real-time to make effective decisions.
@@ -333,7 +331,7 @@ A typical HDFS cluster can have thousands of DataNodes and tens of thousands of 
 <figure>
     <img src="./content/HDFS Architecture.jpg" alt=" HDFS Architecture and data flow" style="width: 67%;"/>
     <figcaption>Figure 5: HDFS Architecture and data flow</figcaption>
-</figure>
+</figure>  
 
 Figure 5 shows the HDFS architecture and the flow of I/O operations.
 
@@ -362,7 +360,7 @@ The intermediate values are supplied to the user's reduce function via an iterat
 <figure>
     <img src="./content/MapReduce.jpg" alt="MapReduce flow" style="width: 67%;"/>
     <figcaption>Figure 6: MapReduce flow</figcaption>
-</figure>
+</figure>  
 
 The power of the MapReduce model is that it enables the parallel execution of computation since the Map invocations are distributed across multiple machines of a cluster. 
 Figure 6 shows the typical execution flow of a MapReduce application. First, the input data is split into a set of *M* splits; each input splits is processed in parallel by different Map functions, running on different machines. Next, the Map functions' intermediate key/value pairs are passed to the *R* available Reduce functions. The number *R* of  Reducer is obtained by applying a partitioning function on the intermediate key (for example,  `hash(key) mod R`).
@@ -379,7 +377,7 @@ MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (YARN
 <figure>
     <img src="./content/YARN Architecture.jpg" alt="YARN Architecture" style="width: 67%" />
     <figcaption>Figure 7: YARN Architecture</figcaption>
-</figure>
+</figure>  
 
 YARN, at its core, is composed of two processes: the *ResourceManager* and the *NodeManager*. 
 The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
@@ -411,7 +409,7 @@ Apache Hive is engineered to be scalable, as more machines can be dynamically ad
 <figure>
     <img src="./content/Apache Hive Architecture.jpg" alt="Apache Hive architecture" />
     <figcaption>Figure 8: Apache Hive architecture</figcaption>
-</figure>
+</figure>  
 
 Figure 8 shows the architecture of Apache Hive and its main components:
 
@@ -511,7 +509,7 @@ Apache Druid processes are the following:
 <figure>
     <img src="./content/Apache Druid Architecture.jpg" alt="Apache Druid architecture" style="zoom: 67%;" />
     <figcaption>Figure 9: Apache Druid architecture</figcaption>
-</figure>
+</figure>  
 
 Druid processes are typically organized into logical units, following a *Master*, *Query* and *Data* server topology; figure 9 shows the architecture of a representative Apache Druid cluster.
 Master servers manage data ingestion and availability; they are composed of the Coordinator and the Overlord processes. Query servers, formed by the Broker and the Router processes, expose the endpoints that users and client applications interact with; they route queries to the Data servers. Finally, data servers execute ingestion jobs and store the data into the distributed storage. Data servers are composed of the Historical and the MiddleManager processes.
@@ -556,7 +554,7 @@ The Coordinator polls the Metadata store periodically, by default every minute; 
 <figure>
     <img src="./content/Apache Druid ingestion.jpg" alt="Apache Druid ingestion" style="width: 67%;"/>
     <figcaption>Figure 10: Apache Druid ingestion</figcaption>
-</figure>
+</figure>  
 
 With stream ingestion, Apache Druid reads raw data from the data stream and makes segments queryable as soon as they are available. Apache Druid supports two methods of stream ingestion: read from an *Apache Kafka* [28] stream or an *Amazon Kinesis* [29] stream.
 
@@ -572,7 +570,7 @@ We define *response time* as the measure of time a system takes to respond to a 
 Usually, various standard statistical measures are calculated for response time, like the median, the average, and the standard deviation. Another valuable metric for response time is Cohen's *d* [31] of the samplers, a commonly recognized way to measure the effect size.
 Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
 
-<img src="https://latex.codecogs.com/svg.image?\large&space;d=\frac{\bar{x}_{1}-\bar{x}_{2}}{s}" />
+<img src="./content/Cohen_D.svg" alt="Cohen's d" />
 
 The magnitude of *d*, namely the difference between the means, is described by the table [32] below:
 
@@ -589,7 +587,7 @@ The magnitude of *d*, namely the difference between the means, is described by t
 
 <div style="text-align:center;">
     <sub>Table 1: Magnitude of d</sub>
-</div>
+</div>  
 
 One traditional way to accomplish performance testing is first to collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful.
 For example, the requirements of this research are:
@@ -934,7 +932,7 @@ The ingestion spec used to load data from the temporary HDFS folder on the NameN
 
 <div style="text-align:center;">
     <sub>Table 2: Ingestion numbers</sub>
-</div>
+</div>  
 
 Table 1 reports the number of partitions, the data size on HDFS, the total disk space used for data replication, and the computed ingestion time for each platform. It is worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 and Roaring algorithms.
 As a result, Apache Druid was 55,8% faster than Apache Hive to import 50 million rows from Hadoop.
@@ -1131,7 +1129,7 @@ JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performa
 <figure>
     <img src="./content/Average response time - Query 1.png" alt="Average response time - Query 1" style="width: 85%;" />
     <figcaption>Figure 11:  Query 1 Average response time</figcaption>
-</figure>
+</figure>  
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
@@ -1140,7 +1138,7 @@ JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performa
 
 <div style="text-align:center;">
     <sub>Table 3: Query 1 numbers</sub>
-</div>
+</div>  
 
 | Performance | Cohen's d | Average Difference |
 | ------- | --------- | ------------------ |
@@ -1148,7 +1146,7 @@ JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performa
 
 <div style="text-align:center;">
     <sub>Table 4: Performance evaluation for Query 1</sub>
-</div>
+</div>  
 
 Query 1 execution is fast on both platforms, staying under a 500 milliseconds threshold since it takes advantage of time partitions on Apache Hive and time segmentations on Apache Druid.
 Using Apache Druid, we can see a considerable decrease in average response time value, making this platform greatly performant than Hive.
@@ -1160,7 +1158,7 @@ Using Apache Druid, we can see a considerable decrease in average response time 
 <figure>
     <img src="./content/Average response time - Query 2.png" alt="Query 2 Average response time" style="width: 85%;" />
     <figcaption>Figure 12: Query 2 Average response time</figcaption>
-</figure>
+</figure>  
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
@@ -1169,7 +1167,7 @@ Using Apache Druid, we can see a considerable decrease in average response time 
 
 <div style="text-align:center;">
     <sub>Table 5: Query 2 numbers</sub>
-</div>
+</div>  
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1177,7 +1175,7 @@ Using Apache Druid, we can see a considerable decrease in average response time 
 
 <div style="text-align:center;">
     <sub>Table 6: Performance evaluation for Query 2</sub>
-</div>
+</div>  
 
 Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segmentations on Apache Druid, making its execution fast on both platforms. However, we can see a vast decrease in the Average response time value using Apache Druid.
 
@@ -1188,7 +1186,7 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 <figure>
     <img src="./content/Average response time - Query 3.png" alt="Query 3 Average response time " style="width: 85%;" />
     <figcaption>Figure 13: Query 3 Average response time</figcaption>
-</figure>
+</figure>  
 
 | Query           | Average | Min  | Max  | Std. Dev. |
 | --------------- | ------- | ---- | ---- | --------- |
@@ -1197,7 +1195,7 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 
 <div style="text-align:center;">
     <sub>Table 7: Query 3 numbers</sub>
-</div>
+</div>  
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1205,7 +1203,7 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 
 <div style="text-align:center;">
     <sub>Table 8: Performance evaluation for Query 3</sub>
-</div>
+</div>  
 
 Query 3 follows the same trends, achieving a massive decrease in average response time value for its execution on Apache Druid.
 We can notice how the behaviour of all time queries is the same on both platforms, with a similar Average response time between Query 1, Query 2 and Query 3 per database and minor standard deviation.
@@ -1217,7 +1215,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 <figure>
     <img src="./content/Average response time - Query 4.png" alt="Query 4 Average response time" style="width: 85%;" />
     <figcaption>Figure 14: Query 4 Average response time</figcaption>
-</figure>
+</figure>  
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
@@ -1226,7 +1224,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 
 <div style="text-align:center;">
     <sub>Table 9: Query 4 numbers</sub>
-</div>
+</div>  
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1234,7 +1232,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 
 <div style="text-align:center;">
     <sub>Table 10: Performance evaluation for Query 4</sub>
-</div>
+</div>  
 
 Query 4 requires grouping four different columns and showing another behaviour between the platforms; 
 While Apache Druid execution for Query 4 is sensibly slower than time queries, with an average response time of 2 seconds circa, Apache Hive is enormously slower, requesting 8,69 minutes to query the data. 
@@ -1252,7 +1250,7 @@ On the other side, Apache Druid uses a complex in-memory algorithm to aggregate 
 <figure>
     <img src="./content/Average response time - Query 5.png" alt="Query 5 Average response time" style="width: 85%;" />
     <figcaption>Figure 15: Query 5 Average response time</figcaption>
-</figure>
+</figure>  
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
@@ -1261,7 +1259,7 @@ On the other side, Apache Druid uses a complex in-memory algorithm to aggregate 
 
 <div style="text-align:center;">
     <sub>Table 11:  Query 5 numbers</sub>
-</div>
+</div>  
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1269,7 +1267,7 @@ On the other side, Apache Druid uses a complex in-memory algorithm to aggregate 
 
 <div style="text-align:center;">
     <sub>Table 12: Performance evaluation for Query 5</sub>
-</div>
+</div>  
 
 Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in an average response time of 8,52 minutes circa per query execution.
 Apache Druid is exceedingly performant, remaining under the 2 seconds threshold for Query 5 completion.
@@ -1281,7 +1279,7 @@ Apache Druid is exceedingly performant, remaining under the 2 seconds threshold 
 <figure>
     <img src="./content/Average response time - Query 6.png" alt=" Query 6 Average response time" style="width: 85%;" />
     <figcaption>Figure 16: Average response time</figcaption>
-</figure>
+</figure>  
 
 | Query           | Average | Min    | Max    | Std. Dev. |
 | --------------- | ------- | ------ | ------ | --------- |
@@ -1290,7 +1288,7 @@ Apache Druid is exceedingly performant, remaining under the 2 seconds threshold 
 
 <div style="text-align:center;">
     <sub>Table 13: Query 6 numbers</sub>
-</div>
+</div>  
 
 | Performance | Cohen's d | Average Difference |
 | ----------- | --------- | ------------------ |
@@ -1298,7 +1296,7 @@ Apache Druid is exceedingly performant, remaining under the 2 seconds threshold 
 
 <div style="text-align:center;">
     <sub>Table 14: Performance evaluation for Query 6</sub>
-</div>
+</div>  
 
 Query 6 behave the same in Apache Hive, bound to a full table scan that requests 9,67 minutes to accomplish its execution. However, Apache Druid acts differently from  Query 4 and Query 5, with Query 6 average response time of only 264 milliseconds.
 
@@ -1321,7 +1319,7 @@ I identified Apache Druid as a proper alternative solution to replace Apache Hiv
 
 <div style="text-align:center;">
     <sub>Table 15: Apache Hive and Apache Druid comparison</sub>
-</div>
+</div>  
 
 Initially developed in 2009 by Facebook to access data on their Hadoop cluster, Apache Hive is not designed to work on modern dockerized environments. During my testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.
 Apache Druid instead remarkably satisfied the maintainability requirement. The provisioning of a cluster comprised of all Druid's components was straightforward, thanks to the official Docker images and the related documentation that is well detailed and comprehensive of the various deployment mode of the platform. Also, Apache Druid supports a rich extensions ecosystem to add various functionality at runtime, like the support for Amazon S3, Google Cloud Storage or Microsoft Azure instead of HDFS for segments storage. This interoperability with the aforementioned cloud computing services allows the substitution of Hadoop with immediate advantages in terms of maintainability costs.
