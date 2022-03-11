@@ -19,15 +19,15 @@ keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 
 
 
-**Supervisor**: Prof. Paolo Ceravolo, <<paolo.ceravolo@unimi.it>>
+**Supervisor**: Prof. Paolo Ceravolo, &lt;paolo.ceravolo@unimi.it&gt;
 
-**Co-examiner**: Filippo Berto, <<filippo.berto@unimi.it>>
+**Co-examiner**: Filippo Berto, &lt;filippo.berto@unimi.it&gt;
 
-**Graduand**: Gabriele D'Arrigo, <<gabriele.darrigo@studenti.unimi.it>>
+**Graduand**: Gabriele D'Arrigo, &lt;gabriele.darrigo@studenti.unimi.it&gt;
 
 **Number**: 909953
 
-**Academic Year **: 2021-2022
+**Academic Year**: 2021-2022
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -45,72 +45,71 @@ The results show how Apache Druid is a strong, better alternative to Apache Hive
 ## Table of contents
 
 
+**Abstract**  
 
-**Abstract**
+**List of Figures**  
 
-**List of Figures**
+**List of Tables**  
 
-**List of Tables**
+**1    Introduction**  
+            1.1    Research goals  
 
-**1    Introduction**
-      1.1     Research goals
+**2    Big Data technologies**  
+            2.1    Data Warehouse and Data Lake systems  
+                                    Data Warehouse concepts  
+                                    Data Lake concepts  
+            2.2    Hadoop  
+                                    HDFS  
+                                    MapReduce  
+                                    YARN  
+            2.3    Apache Hive  
+                                    Design  
+                                    Query execution flow  
+                                    Data Model and Storage  
+                                    SQL capabilities  
+                                    Ingestion model  
+            2.4    Apache Druid  
+                                    Design  
+                                    Query execution flow  
+                                    Data Model and Storage  
+                                    SQL capabilities  
+                                    Ingestion model  
 
-**2   Big Data technologies**
-      2.1    Data Warehouse and Data Lake systems
-                     Data Warehouse concepts
-                     Data Lake concepts
-      2.2    Hadoop
-                     HDFS
-                     MapReduce
-                     YARN
-      2.3    Apache Hive
-                     Design
-                     Query execution flow
-                     Data Model and Storage
-                     SQL capabilities
-                     Ingestion model
-      2.4    Apache Druid
-                     Design
-                     Query execution flow
-                     Data Model and Storage
-                     SQL capabilities
-                     Ingestion model
+**3    Apache Hive and Apache Druid performance testing**  
+            3.1    Provision of each solution  
+                                    Apache Hive provisioning  
+                                    Apache Druid provisioning  
+            3.2    Data generation  
+            3.3    Data ingestion  
+                                    Apache Hive table optimization  
+                                    Apache Hive ingestion  
+                                    Apache Druid datasource optimization  
+                                    Apache Druid ingestion  
+                                    Ingestion performance  
+            3.4    Queries  
+                                    Query 1  
+                                    Query 2  
+                                    Query 3  
+                                    Query 4  
+                                    Query 5  
+                                    Query 6  
+            3.5    Performance testing using Apache JMeter  
+                                    Hive HTTP Proxy  
+                                    JMeter configuration  
 
-**3    Apache Hive and Apache Druid performance testing**
-       3.1    Provision of each solution
-                     Apache Hive provisioning
-                     Apache Druid provisioning
-       3.2    Data generation
-       3.3    Data ingestion
-                     Apache Hive table optimization
-                     Apache Hive ingestion
-                     Apache Druid datasource optimization
-                     Apache Druid ingestion
-                     Ingestion performance
-       3.4    Queries
-                     Query 1
-                     Query 2
-                     Query 3
-                     Query 4
-                     Query 5
-                     Query 6
-       3.5    Performance testing using Apache JMeter
-                     Hive HTTP Proxy
-                     JMeter configuration
+**4    Test results**  
+            4.1    Query 1  
+            4.2    Query 2  
+            4.3    Query 3  
+            4.4    Query 4  
+            4.5    Query 5  
+            4.6    Query 6  
 
-**4    Test results**
-       4.1    Query 1
-       4.2    Query 2
-       4.3    Query 3
-       4.4    Query 4
-       4.5    Query 5
-       4.6    Query 6
+**5    Conclusions**  
 
-**5 Conclusions**
+**6    Acknowledgements**   
 
-**6 Acknowledgements** 
-
-**7 References**
+**7    References**  
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -118,37 +117,37 @@ The results show how Apache Druid is a strong, better alternative to Apache Hive
 
 
 
-**Figure 1**    MIND Foods Hub computing infrastructure
+**Figure 1**    MIND Foods Hub computing infrastructure
 
-**Figure 2**    Big Data three Vs
+**Figure 2**    Big Data three Vs
 
-**Figure 3**    ETL
+**Figure 3**    ETL
 
-**Figure 4**    ELT
+**Figure 4**    ELT
 
-**Figure 5**    HDFS Architecture and data flow
+**Figure 5**    HDFS Architecture and data flow
 
-**Figure 6**    MapReduce flow
+**Figure 6**    MapReduce flow
 
-**Figure 7**    YARN Architecture
+**Figure 7**    YARN Architecture
 
-**Figure 8**    Apache Hive architecture
+**Figure 8**    Apache Hive architecture
 
-**Figure 9**    Apache Druid architecture
+**Figure 9**    Apache Druid architecture
 
-**Figure 10**   Apache Druid ingestion
+**Figure 10**    Apache Druid ingestion
 
-**Figure 11**    Query 1 Average response time
+**Figure 11**    Query 1 Average response time
 
-**Figure 12**    Query 2 Average response time
+**Figure 12**    Query 2 Average response time
 
-**Figure 13**    Query 3 Average response time
+**Figure 13**    Query 3 Average response time
 
-**Figure 14**    Query 4 Average response time
+**Figure 14**    Query 4 Average response time
 
-**Figure 15**    Query 5 Average response time
+**Figure 15**    Query 5 Average response time
 
-**Figure 16**    Query 6 Average response time
+**Figure 16**    Query 6 Average response time
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
@@ -156,35 +155,35 @@ The results show how Apache Druid is a strong, better alternative to Apache Hive
 
 
 
-**Table 1**    Magnitude of d    
+**Table 1**    Magnitude of d    
 
-**Table 2**    Ingestion numbers
+**Table 2**    Ingestion numbers
 
-**Table 3**    Query 1 numbers
+**Table 3**    Query 1 numbers
 
-**Table 4**    Performance evaluation for Query 1
+**Table 4**    Performance evaluation for Query 1
 
-**Table 5**    Query 2 numbers
+**Table 5**    Query 2 numbers
 
-**Table 6**    Performance evaluation for Query 2
+**Table 6**    Performance evaluation for Query 2
 
-**Table 7**    Query 3 numbers
+**Table 7**    Query 3 numbers
 
-**Table 8**    Performance evaluation for Query 3
+**Table 8**    Performance evaluation for Query 3
 
-**Table 9**    Query 4 numbers
+**Table 9**    Query 4 numbers
 
-**Table 10**   Performance evaluation for Query 4
+**Table 10**    Performance evaluation for Query 4
 
-**Table 11**    Query 5 numbers
+**Table 11**    Query 5 numbers
 
-**Table 12**    Performance evaluation for Query 5
+**Table 12**    Performance evaluation for Query 5
 
-**Table 13**    Query 6 numbers
+**Table 13**    Query 6 numbers
 
-**Table 14**    Performance evaluation for Query 6
+**Table 14**    Performance evaluation for Query 6
 
-**Table 15**    Apache Hive and Apache Druid comparison
+**Table 15**    Apache Hive and Apache Druid comparison
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
