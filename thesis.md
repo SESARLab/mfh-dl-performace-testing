@@ -570,7 +570,7 @@ We define *response time* as the measure of time a system takes to respond to a 
 Usually, various standard statistical measures are calculated for response time, like the median, the average, and the standard deviation. Another valuable metric for response time is Cohen's *d* [31] of the samplers, a commonly recognized way to measure the effect size.
 Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
 
-<img src="./content/Cohen_D.svg" alt="Cohen's d" />
+<img src="./content/Cohen_d.svg" alt="Cohen's d" />
 
 The magnitude of *d*, namely the difference between the means, is described by the table [32] below:
 
