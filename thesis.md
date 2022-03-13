@@ -8,7 +8,6 @@ keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 <img src="./content/Logo_Università_degli_Studi_di_Milano.svg" alt="Università degli Studi di Milano" style="width: 250px"/>
 
 
-
 <h2 style="text-align:center;">Università degli Studi di Milano</h2>
 
 <h3 style="text-align:center;">Facoltà di Scienze e Tecnologie</h3>
@@ -56,46 +55,46 @@ The test results show how Apache Druid is a strong, better alternative to Apache
 
 **2    Big Data technologies**  
             2.1    Data Warehouse and Data Lake systems  
-                                    Data Warehouse concepts  
-                                    Data Lake concepts  
+                            Data Warehouse concepts  
+                            Data Lake concepts  
             2.2    Hadoop  
-                                    HDFS  
-                                    MapReduce  
-                                    YARN  
+                            HDFS  
+                            MapReduce  
+                            YARN  
             2.3    Apache Hive  
-                                    Design  
-                                    Query execution flow  
-                                    Data Model and Storage  
-                                    SQL capabilities  
-                                    Ingestion model  
+                            Design  
+                            Query execution flow  
+                            Data Model and Storage  
+                            SQL capabilities  
+                            Ingestion model  
             2.4    Apache Druid  
-                                    Design  
-                                    Query execution flow  
-                                    Data Model and Storage  
-                                    SQL capabilities  
-                                    Ingestion model  
+                            Design  
+                            Query execution flow  
+                            Data Model and Storage  
+                            SQL capabilities  
+                            Ingestion model  
 
 **3    Apache Hive and Apache Druid performance testing**  
             3.1    Provision of each solution  
-                                    Apache Hive provisioning  
-                                    Apache Druid provisioning  
+                            Apache Hive provisioning  
+                            Apache Druid provisioning  
             3.2    Data generation  
             3.3    Data ingestion  
-                                    Apache Hive table optimization  
-                                    Apache Hive ingestion  
-                                    Apache Druid datasource optimization  
-                                    Apache Druid ingestion  
-                                    Ingestion performance  
+                            Apache Hive table optimization  
+                            Apache Hive ingestion  
+                            Apache Druid datasource optimization  
+                            Apache Druid ingestion  
+                            Ingestion performance  
             3.4    Queries  
-                                    Query 1  
-                                    Query 2  
-                                    Query 3  
-                                    Query 4  
-                                    Query 5  
-                                    Query 6  
+                            Query 1  
+                            Query 2  
+                            Query 3  
+                            Query 4  
+                            Query 5  
+                            Query 6  
             3.5    Performance testing using Apache JMeter  
-                                    Hive HTTP Proxy  
-                                    JMeter configuration  
+                            Hive HTTP Proxy  
+                            JMeter configuration  
 
 **4    Test results**  
             4.1    Query 1  
@@ -106,6 +105,8 @@ The test results show how Apache Druid is a strong, better alternative to Apache
             4.6    Query 6  
 
 **5    Conclusions**  
+            5.1    Maintainability and Performance results    
+            5.2    Future work
 
 **6    Acknowledgements**   
 
@@ -204,16 +205,10 @@ The project, split into different stages, plans to:
     <img src="./content/MFH Architecture.jpg" alt="MIND Food HUB computing infrastructure" />
     <figcaption>Figure 1: MIND Foods Hub computing infrastructure</figcaption>
 </figure>  
-
-The computing infrastructure, made by different modules, consists in:
-
-- A rover, equipped with different phenotyping sensors that take on-fields measurements on plants cultivation
-- Various on-field sensors that register weather or environmental data, like air temperature and humidity, soil temperature, leaf wetness, etc.
-- A 5G communicating network to support the sensor's data transmission.
-- Different software collection agents collect data from the rover and the on-field sensors and upload them to the Data Lake.
-- A Data Lake platform to store sensor's data and supports data analysis.
-- A hybrid GraphQL/REST API developed in Rust to access and consume data stored in the Data Lake platform
-- FoodsApp, a client application: a user could scan QRcode that identifies cultivation to visualize its raw and processed sensors data
+The computing infrastructure is the core component of the MIND Foods HUB project and, as figure 1 illustrates, is comprised of different modules. The phenotyping process is managed by a rover deployed on the greenhouse. 
+The rover, equipped with various phenotyping sensors on a robotic arm, autonomously takes measurements on plants cultivation. Along with the rover, various on-field sensors register weather or environmental data, like air temperature and humidity, soil temperature, solar radiation, etc. 
+The greenhouse is supplied with a 5G communication network; rover and on-field sensors measurements are collected by two software agents and sent through the network to a hybrid GraphQL/REST API that persists the data in the MIND Foods HUB Data Lake. The Data Lake is an essential element of the computing infrastructure; it stores historical sensor data and supports various ad-hoc data analysis processes. Also, Data Lake serves a client application, FoodsApp, through the GraphQL/REST API. 
+For example, greenhouse operators could use FoodsApp to scan a QRcode associated with each cultivated species and visualize raw and processed data of the phenotyping process.
 
 The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network, the on-field sensors, and the client application.
 Multiple departments of Università Degli Studi di Milano are actively  involved in the MIND Foods HUB project. 
@@ -296,7 +291,6 @@ Unlike traditional Data Warehouses, which pursues an ETL approach, Data Lake sys
     <img src="./content/Data Lake.jpg" alt="Extract, Load, Transform" style="width: 67%"/>
     <figcaption>Figure 4: Extract, Load, Transform</figcaption>
 </figure>  
-
 In ELT, data is extracted from various sources in an untransformed o nearly transformed state and ingested into the Data Lake as soon as it is available. Data transformation is applied later during business analysis, giving the data a structure suited for that specific analysis on what is known as a *schema-on-read* process. 
 The advantages of a Data Lake over a Data Warehouse are that the upfront cost for data ingestion is extensively lower since ingestion does not require any prior schema design to store the data, nor any complex preprocessing or transformations. Also, data ingested into Data Lake often happens in streaming mode, allowing organizations to extract business insights in real-time to make effective decisions.
 
@@ -316,16 +310,18 @@ So, at its core, Hadoop is composed of two modules: storage and processing. The 
 HDFS is a highly fault-tolerant, scalable, and distributed file system designed to run on commodity hardware; HDFS provides high throughput access to application data and is suitable for applications that need to compute large data sets.
 The goals of HDFS are:
 
-1. Processing of extremely large files, from multiple gigabytes to petabytes. HDFS supports small files but is not optimized for them
-2. Enable streaming of data to applications that run on HDFS, allowing high throughput of data access rather than low latency of data access
-3. Capability to execute the file system on low-cost hardware; an HDFS cluster can run on hundreds or thousands of server machines, each storing part of the file system's data, making hardware failure the norm rather than an exception
-4. Move the computation near the data to avoid the network transfer of large data sets, which is a notoriously slow and costly operation
+1. Processing of extremely large files, from multiple gigabytes to petabytes. HDFS supports small files but is not optimized for them.
+2. Enable data streaming to applications that run on HDFS, allowing high throughput of data access rather  than low data access latency.
+3. Implement a simplified data coherence model. Once a file on HDFS is created, written and closed, it cannot be changed except for append or truncate operations. This assumption simplifies data coherence across the file system and allows high throughput data access.
+4. Capability to execute the file system on low-cost hardware; an HDFS cluster can run on hundreds or thousands of server machines, each storing part of the file system's data, making hardware failure the norm rather than an exception.
+5. Move the computation near the data to avoid the network transfer of large data sets, which is a notoriously slow and costly operation
+6. Portability of the file system across heterogeneous hardware and software platforms; since HDFS is implemented in Java, any machine that supports its runtime can operate HDFS.
 
 HDFS is based on a master/slave architecture.
-The master server is called *NameNode*, and it manages the file system namespace and regulates client access to files. In HDFS, a file is split into one or more blocks of equal size (default is 128 megabytes); these blocks are stored and replicated in a set of *DataNodes*.
-NameNode responsibility is to handle the mapping of blocks between DataNodes; also, NameNode manages file system namespace operations, like opening, closing, and renaming files and directories, instructing DataNodes on their execution.
+The master server is called *NameNode*, and it manages the file system namespace and regulates client access to files. In HDFS, a file is split into one or more blocks of equal size (default is 128 megabytes); these blocks are stored and replicated in a set of *DataNodes*.  NameNode responsibility is to handle the mapping of blocks between DataNodes; also, NameNode manages file system namespace operations, like opening, closing, and renaming files and directories, instructing DataNodes on their execution.
 
-DataNodes manage the data and the storage attached to the nodes on which they run; they are responsible for serving read and write requests from the file system's clients. Also, DataNodes, when instructed from a NameNode, perform block creation, deletion, and replication.
+DataNodes manage the data and the storage attached to the nodes on which they run; they are responsible for serving read and write requests from the file system's clients. Also, DataNodes, when instructed from a NameNode, perform block creation, deletion, and replication. 
+Data replication across the DataNodes of the cluster guarantee reliability and fault-tolerance to HDFS. A client application can specify the desired number of replicas per file, which is three by the default policy; this means that a Hadoop cluster should have at least three DataNodes. To implement replication, DataNodes communicate with the NameNode sending a periodical *heartbeat* message. When the NameNode detects the absence of the heartbeat caused by a disk failure or a network partition, it marks the DataNode as no more available to HDFS and does not forward any new I/O requests to it. Eventually, the NameNode starts replicating the affected blocks across the remaining DataNodes. 
 A typical HDFS cluster can have thousands of DataNodes and tens of thousands of HDFS clients per cluster since each DataNode may execute multiple application tasks simultaneously.
 
 <figure>
@@ -378,7 +374,6 @@ MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (YARN
     <img src="./content/YARN Architecture.jpg" alt="YARN Architecture" style="width: 67%" />
     <figcaption>Figure 7: YARN Architecture</figcaption>
 </figure>  
-
 YARN, at its core, is composed of two processes: the *ResourceManager* and the *NodeManager*. 
 The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
 YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.
@@ -394,15 +389,10 @@ The TimelineServer collects the historical states for each completed MapReduce j
 
 ### 2.3 Apache Hive
 
-*Apache Hive* is an open-source Data Warehouse system designed for querying and analyzing large datasets stored in Hadoop. Hive provides standard SQL functionality with HiveQL, a declarative language that enables users to do ad-hoc querying, aggregation and data analysis.
-Apache Hive offers many advantages over working directly on Hadoop: 
+Initially developed in 2009 by Facebook to access data on their Hadoop cluster, *Apache Hive* is an open-source Data Warehouse system designed for querying and analyzing large datasets stored in Hadoop. Hive provides standard SQL functionality with HiveQL, a declarative language that enables users to do ad-hoc querying, aggregation and data analysis. 
+Apache Hive offers many advantages over working directly on Hadoop; first, SQL is familiar to many developers and analysts. Instead of writing verbose, complex MapReduce jobs in Java, a user can submit SQL queries to Hive to compute data stored on HDFS. Then, Apache Hive is a mechanism to impose structure, using relational database abstractions, like tables, on various data formats. Finally, since HDFS can hold structured, semi-structured and unstructured data, Hive can read and store table data in various formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, and others.
 
-- SQL is familiar to many developers and analysts; instead of writing complex MapReduce jobs in Java, a user can submit SQL queries to Hive to compute data stored on HDFS. 
-- A mechanism to impose structure, using relational database abstractions, on a variety of data formats
-- Since HDFS can hold structured, semi-structured and unstructured data, Hive can read and store table data in various formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, and others.
-
-Apache Hive is not designed for OLTP workloads or to support real-time analytics due to its batch-oriented nature. It is best suited for traditional data warehousing tasks: data analysis and distributed processing of massive volumes of data.
-Apache Hive is engineered to be scalable, as more machines can be dynamically added to the Hadoop cluster as needed, fault-tolerant, and loosely coupled with its input formats.
+Apache Hive is not designed for OLTP workloads or to support real-time analytics due to its batch-oriented nature, and it is more suitable for traditional data warehousing tasks: data analysis and distributed processing of massive volumes of data. Since it is based on Hadoop, Apache Hive is engineered to be scalable: more machines can be dynamically added to the Hadoop cluster as the storage needs of an organization increase over time. Also, Hive exploits HDFS peculiarity in fault-tolerance since data is automatically replicated across the DataNodes and available even in the presence of failures. As described in the following "Ingestion" section, Apache Hive is loosely coupled with its input formats because it can ingest data of various types and shapes.
 
 #### Design
 
@@ -486,22 +476,22 @@ For example, the following statements create an external table `T` that points t
 *Apache Druid* is an open-source distributed data store that supports various modern applications, like real-time analytics on large datasets and fast data aggregations for highly concurrent APIs.
 Apache Druid offers many advantages over traditional Data Warehouse systems:
 
-- Real-time data ingestion in streaming mode, even if batch mode ingestion is supported
+- Real-time data ingestion in streaming mode; also batch mode ingestion is supported.
 - Low latency real-time queries
 - Default time-based partitioning on data, which enables performant time-based queries
 - Native support for semi-structured and nested data in different formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, Protobuf, and others.
 
-Apache Druid architecture combines ideas from different storage systems (Data Warehouse systems, Timeseries databases, Search engines). At its core, Druid uses a columnar storage format only to load the exact columns needed for a particular query instead of the entire row. Also, ingested data is automatically time partitioned into what are known as *segments*.  As we will see in the "Data model and storage section", segments are stored in Druid's distributed storage; time-based queries only access segments that match the query's time range, allowing Druid to provide data to the clients efficiently.
+Apache Druid architecture combines ideas from different storage systems (Data Warehouse systems, Timeseries databases, Search engines). At its core, Druid uses a columnar storage format only to load the exact columns needed for a particular query instead of the entire row. Also, ingested data is automatically time partitioned into what are known as *segments*.  As we will see in the "Data model and storage section", segments are stored in Druid's distributed storage; time-based queries only access segments that match the query's time range, allowing Druid to provide data to the clients efficiently. Apache Druid is designed to be horizontally scalable, fault-tolerant, performant, and easy to operate and maintain.
 
 #### Design
 
-Apache Druid is a multi-process distributed data store designed to be deployed in a cluster. Each system component can be configured and scaled independently based on the system's needs.
+Apache Druid is a multi-process distributed data store designed to be deployed in a cluster. Each system component, ingestion, querying, and coordination, can be configured and scaled independently based on the system's needs; for example, a configuration for a specific workload can dedicate more resources to the query component while giving fewer to the ingestion one. This type of architecture, other than allowing horizontal scalability, enables operational fault-tolerance: if the ingestion process fails, the query process is not affected, allowing Druid to serve query requests regardless of the failure.
 Apache Druid processes are the following:
 
 - **Coordinator**: it is responsible for managing data availability and distribution on the cluster. The *Coordinator* instructs the *Historical* process to load new segments, drop outdated segments, ensure that segments are correctly replicated across the Historical process, and distribute segments between Historical nodes to keep the latter evenly loaded.
 - **Router**: it is an optional process that acts as an API gateway. The *Router* receives queries from external clients and routes them to the *Brokers*. Additionally, the Router runs the Druid Console, a management Web UI to run SQL or native Druid queries and manage the Druid cluster.
 - **Broker**: it is responsible for forwarding queries to the Historical processes, depending on the location of the segments.
-  A Broker understands what segments exist on what Historical processes depending on the time partitioning and route queries to execute them on the correct nodes. The Broker also merges the result sets of a query from all individual Historical involved in the load operation.
+  A Broker understands what segments exist on what Historical processes depending on the time partitioning, and route queries to execute them on the correct nodes. The Broker also merges the result sets of a query from all individual Historical involved in the load operation.
 - **Historical**: it stores historical queryable data. Since Druid data is time partitioned into segments, each Historical process, usually multiple per cluster, is responsible for loading and serving data about a specific segment when instructed by the Coordinator or the Broker. Data is generally stored in a distributed file system and loaded into Historical memory every time a read/write operation is requested.
 - **Overlord**: it is responsible for accepting ingestion tasks, assigning them to the *MiddleManagers* and coordinating data publishing on the distributed storage.
 - **MiddleManager**: it handles the ingestion of new data into the cluster; MiddleManagers are responsible for reading data from external sources and publishing new Druid segments.
@@ -514,8 +504,7 @@ Apache Druid processes are the following:
 Druid processes are typically organized into logical units, following a *Master*, *Query* and *Data* server topology; figure 9 shows the architecture of a representative Apache Druid cluster.
 Master servers manage data ingestion and availability; they are composed of the Coordinator and the Overlord processes. Query servers, formed by the Broker and the Router processes, expose the endpoints that users and client applications interact with; they route queries to the Data servers. Finally, data servers execute ingestion jobs and store the data into the distributed storage. Data servers are composed of the Historical and the MiddleManager processes.
 
-Apache Druid also relies on three external dependencies: *Deep storage*, covered in the related section, *Metadata storage*, and *ZooKeeper*.
-The Metadata storage stores various system metadata, like the number of segments available on the cluster and their usage, internal task status, etc. It is typically employed as an external relational database on clustered deployments, like MySQL or PostgreSQL.
+Apache Druid also relies on three external dependencies: *Deep storage*, covered in the related section, *Metadata storage*, and *ZooKeeper*. The Metadata storage stores various system metadata, like the number of segments available on the cluster and their usage, internal task status, etc. It is typically employed as an external relational database on clustered deployments, like MySQL or PostgreSQL.
 
 ZooKeeper is an open-source coordination service [23] used to maintain centralized configuration, naming, and synchronization for distributed applications. For example, Apache Druid uses ZooKeeper for internal service discovery, coordination between the processes, and leader election.
 
@@ -538,13 +527,14 @@ Datasources columns are of two types: *dimensions* and *metrics*. Dimensions are
 
 Datasources are time partitioned: each time interval, for example, a month, is called a chunk;  a chunk is additionally partitioned into one or more segments. Formally, a *segment* is defined as a collection of rows of data, typically 5–10 million, that span an interval of time [25]. A segment comprises different files that store various data structures to arrange columns data so that Apache Druid can extract only those needed for a query.
 Depending on the column data type, two compression algorithms, *LZ4* [26] and *Roaring* [27], are used to reduce the cost of storing a column in memory and on disk.
-Deep storage is an external, shared file system accessible by the cluster; Apache Druid uses Deep storage to store segments; typically, in a clustered deployment, Deep storage is a distributed file system like HDFS.
-It is important to note that Druid never accesses the Deep storage at query time: Historical processes load segments from the Deep storage when instructed by the Coordinator and serve them from their local disk as well from memory when the Broker requests a query.
+Deep storage is an external, shared file system accessible by the cluster. Apache Druid uses it to store segments; typically, in a clustered deployment, Deep storage is a distributed file system like HDFS or Amazon S3.
+Using a distributed file system to store segments enables Druid to be fault-tolerant by design. Even if the cluster is reprovisioned after a network or hardware failure, as long as the data is persisted in the Deep storage, Druid can recover data from it and republish segments to the new Historicals. Also, as described in the prior sections, a distributed storage like HDFS, among many other characteristics, guarantee data replication, improving the reliability of the entire system.
+It is important to note that Druid never accesses the Deep storage at query time: Historical processes load segments from the Deep storage when instructed by the Coordinator and serve them from their memory as well from the local disk when the Broker requests a query.
 
 #### SQL capabilities
 
 Apache Druid supports two query languages: Druid SQL, a declarative language similar to SQL, and native queries, JSON objects that describe how to filter, group, or aggregate data. Apache Druid automatically translates Druid SQL into a native query every time a query hits a Broker.
-Druid SQL capabilities are limited: it only supports `SELECT` queries. This means that DDL statements like `CREATE`, `ALTER` or `DROP`, or typical DML statements like `INSERT` and `UPDATE` are not supported. Also, Druid SQL only supports equality `JOIN` between native datasources.
+Druid SQL capabilities are limited: it only supports `SELECT` queries. This design choice means that DDL statements like `CREATE`, `ALTER` or `DROP`, or typical DML statements like `INSERT` and `UPDATE` are not supported. Also, Druid SQL only supports equality `JOIN` between native datasources.
 
 #### Ingestion
 
@@ -572,7 +562,7 @@ Cohen's *d* is defined as the difference between two means divided by a standard
 
 <img src="./content/Cohen_d.svg" alt="Cohen's d" />
 
-The magnitude of *d*, namely the difference between the means, is described by the table [32] below:
+The magnitude of *d*, namely the difference between the means, is described in the table [32] below:
 
 | d           | Effect size |
 | ----------- | ----------- |
@@ -656,7 +646,7 @@ Moreover, I configured Hive to enable dynamic partitioning of data and disabled 
 
 Apache Druid deployments could be configured in two ways: single-machine deployment, with each process running on the same machine, or clustered deployment, where Druid processes are distributed with the architecture illustrated in section 2.4.  Clustered deployment could be accomplished with Docker since the Apache Software Foundation provides Druid's official Docker images and the related documentation to configure a Druid cluster via Docker Compose. 
 
-The Apache Druid set-up used for the performance testing consists of the following Docker Compose services:
+The Apache Druid setup used for the performance testing consists of the following Docker Compose services:
 
 - A Coordinator
 - A Broker
@@ -1233,8 +1223,7 @@ We can notice how the behaviour of all time queries is the same on both platform
 <div style="text-align:center;">
     <sub>Table 10: Performance evaluation for Query 4</sub>
 </div>  
-
-Query 4 requires grouping four different columns and showing another behaviour between the platforms; 
+Query 4 groups four different columns, and its execution shows a distinct behaviour between the two platforms.
 While Apache Druid execution for Query 4 is sensibly slower than time queries, with an average response time of 2 seconds circa, Apache Hive is enormously slower, requesting 8,69 minutes to query the data. 
 Two factors essentially cause this: 
 
@@ -1307,8 +1296,7 @@ Query 6 behave the same in Apache Hive, bound to a full table scan that requests
 Big Data heavily changed the shape of business analytical processes. Organizations of all domains and sizes now employ, in one way or another, complex processes that handle large volumes of data on which they base their business decisions. Choosing the right platform to support these processes is a difficult task and can make a real difference in the market competitiveness of these organizations.
 MIND Foods HUB, an international, interdisciplinary project, employs a complex computing infrastructure to store and analyze data of an innovative plant-phenotyping process. The core component of this infrastructure is a Data Lake platform comprised of Apache Hadoop, a framework for parallel and distributed processing of large datasets and Apache Hive, a Data Warehouse software that allows reading, writing, and managing large datasets using SQL.
 The main goal of this research was to find a valid, more performant alternative to Apache Hive for the MIND Foods HUB Data Lake due to its low maintainability and the inferior performances for even simple aggregations queries.
-The alternative platform's requirements are two software qualities: maintainability and performance. The ideal substitute system should be easy to configure, maintain, and integrate well with the existing Hadoop ecosystem on which MIND Foods HUB relies for different use cases. Also, the alternative platform should guarantee sub-seconds performance for aggregation queries.
-I identified Apache Druid as a proper alternative solution to replace Apache Hive. This open-source distributed data store supports various modern applications, like real-time analytics on large datasets and fast data aggregations for highly concurrent APIs. The table below shows the essential differences between Hive and Druid.
+The alternative platform's requirements are two software qualities: maintainability and performance. The ideal substitute system should be easy to configure, maintain, and integrate well with the existing Hadoop ecosystem on which MIND Foods HUB relies for different use cases. Also, the alternative platform should guarantee sub-seconds performance for aggregation queries. I identified Apache Druid as a proper alternative solution to replace Apache Hive. This open-source distributed data store supports various modern applications, like real-time analytics on large datasets and fast data aggregations for highly concurrent APIs. The table below shows the essential differences between Hive and Druid.
 
 |              | Apache Hive                                                  | Apache Druid                                                 |
 | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -1320,8 +1308,10 @@ I identified Apache Druid as a proper alternative solution to replace Apache Hiv
 <div style="text-align:center;">
     <sub>Table 15: Apache Hive and Apache Druid comparison</sub>
 </div>  
+### 5.1 Maintainability and Performance results
 
-Initially developed in 2009 by Facebook to access data on their Hadoop cluster, Apache Hive is not designed to work on modern dockerized environments. During my testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.
+Initially developed in 2009, Apache Hive is not designed to work with modern dockerized environments.
+During my testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.
 Apache Druid instead remarkably satisfied the maintainability requirement. The provisioning of a cluster comprised of all Druid's components was straightforward, thanks to the official Docker images and the related documentation that is well detailed and comprehensive of the various deployment mode of the platform. Also, Apache Druid supports a rich extensions ecosystem to add various functionality at runtime, like the support for Amazon S3, Google Cloud Storage or Microsoft Azure instead of HDFS for segments storage. This interoperability with the aforementioned cloud computing services allows the substitution of Hadoop with immediate advantages in terms of maintainability costs.
 However, some limitations should be considered when it comes to the maintainability requirement; the overall maintainability of a software system is usually evaluated on a long-term scenario, working on various operational constraints and for different business requirements. Unfortunately, an evaluation of this type is out of this research's scope, so the maintainability of Apache Hive and Apache Druid was tested only for the ambit of the performance testing.
 
@@ -1330,9 +1320,17 @@ Apache Druid proved to be more performant than Apache Hive on each tested query;
 On the other side, Apache Druid implements a more modern architecture combining column-oriented storage, distributed computing where each node can independently be scaled, and an advanced real-time ingestion system that serves data as soon as it is available. This design allows Druid to compute sub-second queries on data sources with billions of rows.
 In conclusion, Apache Druid fully satisfied the goals of this research, proving itself to be a suitable, highly performant solution to serve the actual use cases of the MIND Foods HUB computing infrastructure.
 
+### 5.2 Future Work
+
+The work done for this research opens on diverse further possible developments. First, the integration of Apache Druid in the MIND Foods HUB Data Lake is not complete. The provisioning described in section 3.1 was achieved on the existing Data Lake architecture, integrating Apache Druid with the Hadoop cluster to ingest data from HDFS. However, the ingestion process, handled by the hybrid GraphQL/REST API, should be revised. The API ingests new measurements, loaded from the collection agents, into the dl_measurements table using a simple INSERT statement with the corresponding values. As we know, Apache Druid does not support DML operations and allows data ingestion only in batch mode, by loading files from different storages, or in streaming mode, by reading events from Apache Kafka or Amazon Kinesis. So, a natural extension of this work would be the integration of Apache Kafka in the Data Lake cluster. With this configuration, collection agents *publish* measurements to Kafka, while Druid *consumes* them in real-time; in this way, the write operations will be decoupled from the read ones, allowing the API that serves the client applications to be scaled independently from the write architectural layer.
+Coming to scalability, as described in section 3, the test of this property was out of the scope of this research: MIND Foods HUB started to ingest measurements data as soon as I joined the project, and the resources available for the research was not adequate to scale both Hive and Druid to support a heavy workload. Therefore, a natural extension of this work could be the test of Apache Druid with a benchmark designed to quantify its scalability under a peak of multiple, concurrent and high-compute demanding requests. A benchmark of this type should measure, other than time-related metrics, like average response time or throughput, also resource-related metrics: the number of nodes the systems needs to support the peak of load, the CPU and memory consumptions, and the storage needed by Historicals to load segments after ingestions.
+Finally, the last development of this research would be the testing of other platforms for the MIND Foods Hub Data Lake. While the SESAR Lab team was investigating various alternatives like Presto (now Trino), a distributed SQL query engine for big data analytics, or Apache Impala, an SQL layer on Hadoop different from Hive, the research on a valid substitute could focus on a cloud solution, like Google Big Query, to remove the cost of configuring and maintaining an in-house architecture.
+
 ## 6. Acknowledgements
 
 Thesis acknowledgements.
+
+<div style="page-break-after: always; visibility: hidden;"></div>
 
 ## 7. References
 
@@ -1417,6 +1415,3 @@ Thesis acknowledgements.
 [40] rbourga, Results Comparator Plugin. [Internet]. Available from: https://github.com/rbourga/jmeter-plugins-2/blob/main/tools/resultscomparator/src/site/dat/wiki/ResultsComparator.wiki
 
 [41] G. D'Arrigo, "MIND Foods HUB Data Lake Performace Testing". [Internet]. Available from: https://github.com/SESARLab/mfh-dl-performace-testing
-
-
-
