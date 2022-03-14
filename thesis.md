@@ -20,7 +20,7 @@ keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 
 **Supervisor**: Prof. Paolo Ceravolo, &lt;paolo.ceravolo@unimi.it&gt;
 
-**Co-examiner**: Filippo Berto, &lt;filippo.berto@unimi.it&gt;
+**Co-supervisor**: Filippo Berto, &lt;filippo.berto@unimi.it&gt;
 
 **Graduand**: Gabriele D'Arrigo, &lt;gabriele.darrigo@studenti.unimi.it&gt;
 
@@ -1328,7 +1328,16 @@ Finally, the last development of this research would be the testing of other pla
 
 ## 6. Acknowledgements
 
-Thesis acknowledgements.
+A bachelor's degree thesis is only the final step of a route that, for me, endured for four years of hard work and dedication; this work would not have been possible without the many people that, in one way or another, accompanied me in this long journey.
+First and foremost, I want to thank teacher Paolo Ceravolo and the SESAR Lab team guys, who introduced me to the MIND Foods HUB project, and especially Filippo Berto, who carefully revisioned each version of this paper and patiently helped me to reach the end of this research. 
+I should also thank Sabrina, the beating heart of SSRI online, for her precious help with the organization of my studies, and all my course colleagues that every day are committed to completing this challenging path: don't give up, guys, you are one step closer to the goal!
+Then, I want to thank my crazy fellows of DNF: Manu, Robs, Matti, Ricky, Frone, Vale, Giorgio, Sepe; these guys are always around for troubles and good times, and our long friendship is invaluable!
+Talking about friends, Jeffrey boys, and the magnificent Kek nights have been a source of incredible fun for me: Rprt, Raibaz, Paolone, Memo, Omar, Tired, thank you!
+People come and go, so here we are: I want to thank Gab, an incredible mate and a true inspiration for enjoying life.
+Robi, and the compari from Messina for all the fun during the hot days in Sicily: see you soon, guys! 
+For her amazing help during these years, I want to acknowledge Doc Sonia Marino: we made it, doc.
+And then, love is an important business: I would like to thank Daniela and Deborah, my joyful past, and Chiara, my lovely, beautiful present.
+Finally, I have to thank my family for their tireless support during the most challenging time, for their unconditional love and forbearing me despite my hot temper. Teresa, Felice, I really love you!
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
