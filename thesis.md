@@ -1308,6 +1308,7 @@ The alternative platform's requirements are two software qualities: maintainabil
 <div style="text-align:center;">
     <sub>Table 15: Apache Hive and Apache Druid comparison</sub>
 </div>  
+
 ### 5.1 Maintainability and Performance results
 
 Initially developed in 2009, Apache Hive is not designed to work with modern dockerized environments.
