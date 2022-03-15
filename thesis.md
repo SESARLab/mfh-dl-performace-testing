@@ -32,11 +32,11 @@ keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 
 ## Abstract
 
-Big Data, which defines significant in volume, various in structure and shape, and fast-paced data, is no longer an academic or technology domain. To stay competitive, organizations of all types and sizes now need to adapt their business to deal with this vast amount of information that traditional processing tools cannot treat. 
-Comparing, testing, and choosing between different databases suited to work with large amounts of data is not an easy operation since multiple characteristics should be considered: scalability, operation and maintenance costs, performances and, not least, the type of business analysis that needs to be supported. 
-An international, interdisciplinary project, MIND Foods HUB employs a Data Lake infrastructure to store and analyze data for an innovative plant-phenotyping process. Its main component, Apache Hive, an open-source Data Warehouse system that allows querying distributes datasets with SQL, does not satisfy two essential requirements of the project: maintainability e performance.  As a possible, performant solution, I identified Apache Druid, a real-time analytics database designed to support sub-seconds aggregation queries and high concurrency APIs. 
-In this paper, I describe how I tested the performance of these two Big Data platforms following a rigorous, thorough and repeatable methodology. 
-The test results show how Apache Druid is a strong, better alternative to Apache Hive, outperforming it in every test scenario.
+Big Data, which defines significant in volume, various in structure and shape, and fast-paced data, is no longer an academic or technology domain. To stay competitive, organizations of all types and sizes now need to adapt their business to deal with this vast amount of information that traditional processing tools cannot treat.  
+Comparing, testing, and choosing between different databases suited to work with large amounts of data is not an easy operation since multiple characteristics should be considered: scalability, operation and maintenance costs, performances and, not least, the type of business analysis that needs to be supported.  
+An international, interdisciplinary project, MIND Foods HUB employs a Data Lake infrastructure to store and analyze data for an innovative plant-phenotyping process. Its main component, Apache Hive, an open-source Data Warehouse system that allows querying distributes datasets with SQL, does not satisfy two essential requirements of the project: maintainability e performance.  As a possible, performant solution, I identified Apache Druid, a real-time analytics database designed to support sub-seconds aggregation queries and high concurrency APIs.  
+In this paper, I describe how I tested the performance of these two Big Data platforms following a rigorous, thorough and repeatable methodology.  
+The test results show how Apache Druid is a strong, better alternative to Apache Hive, outperforming it in every test scenario.  
 
 **Keywords**: Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid
 
@@ -190,8 +190,8 @@ The test results show how Apache Druid is a strong, better alternative to Apache
 
 ## 1. Introduction
 
-MIND Foods HUB [1] is an international, interdisciplinary project led by various public and private subjects (including Università Degli Studi di Milano, TIM and others) that operates in the context of the Milan Innovation District. Start-ups, organizations, and public institutions work on innovative and sustainable projects in this multifunctional space.
-The goal of MIND Foods HUB is to "implement a computational infrastructure to model, engineer and distribute data about plants phenotyping" [2].
+MIND Foods HUB [1] is an international, interdisciplinary project led by various public and private subjects (including Università Degli Studi di Milano, TIM and others) that operates in the context of the Milan Innovation District. Start-ups, organizations, and public institutions work on innovative and sustainable projects in this multifunctional space.  
+The goal of MIND Foods HUB is to "implement a computational infrastructure to model, engineer and distribute data about plants phenotyping" [2].  
 The project, split into different stages, plans to:
 
 1. Identify crops with optimal nutritional profiles
@@ -205,44 +205,45 @@ The project, split into different stages, plans to:
     <img src="./content/MFH Architecture.jpg" alt="MIND Food HUB computing infrastructure" />
     <figcaption>Figure 1: MIND Foods Hub computing infrastructure</figcaption>
 </figure>  
-The computing infrastructure is the core component of the MIND Foods HUB project and, as figure 1 illustrates, is comprised of different modules. The phenotyping process is managed by a rover deployed on the greenhouse. 
-The rover, equipped with various phenotyping sensors on a robotic arm, autonomously takes measurements on plants cultivation. Along with the rover, various on-field sensors register weather or environmental data, like air temperature and humidity, soil temperature, solar radiation, etc. 
-The greenhouse is supplied with a 5G communication network; rover and on-field sensors measurements are collected by two software agents and sent through the network to a hybrid GraphQL/REST API that persists the data in the MIND Foods HUB Data Lake. The Data Lake is an essential element of the computing infrastructure; it stores historical sensor data and supports various ad-hoc data analysis processes. Also, Data Lake serves a client application, FoodsApp, through the GraphQL/REST API. 
-For example, greenhouse operators could use FoodsApp to scan a QRcode associated with each cultivated species and visualize raw and processed data of the phenotyping process.
 
-The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network, the on-field sensors, and the client application.
-Multiple departments of Università Degli Studi di Milano are actively  involved in the MIND Foods HUB project. 
-The Dipartimento di Scienza Agrarie e Ambientale (DISAA) designed and implemented the rover, its sensors, and the algorithms that analyze the nutritional properties of the chosen species.
-The SEcure Service-oriented Architectures Research Lab (SESAR Lab) planned and implemented all software modules of the computing infrastructure: the collection agents, the GraphQL/REST API, the data model to structure sensor's data and the Data Lake platform.
-The MIND Foods HUB Data Lake platform is based, among other components, on Apache Hadoop [3], a framework for parallel and distributed processing of large data sets and Apache Hive [4]. This software allows reading, writing, and managing large datasets in distributed storage using SQL. 
+The computing infrastructure is the core component of the MIND Foods HUB project and, as figure 1 illustrates, is comprised of different modules. The phenotyping process is managed by a rover deployed on the greenhouse.  
+The rover, equipped with various phenotyping sensors on a robotic arm, autonomously takes measurements on plants cultivation. Along with the rover, various on-field sensors register weather or environmental data, like air temperature and humidity, soil temperature, solar radiation, etc. 
+The greenhouse is supplied with a 5G communication network; rover and on-field sensors measurements are collected by two software agents and sent through the network to a hybrid GraphQL/REST API that persists the data in the MIND Foods HUB Data Lake. The Data Lake is an essential element of the computing infrastructure; it stores historical sensor data and supports various ad-hoc data analysis processes. Also, Data Lake serves a client application, FoodsApp, through the GraphQL/REST API.  
+For example, greenhouse operators could use FoodsApp to scan a QRcode associated with each cultivated species and visualize raw and processed data of the phenotyping process.  
+
+The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network, the on-field sensors, and the client application.  
+Multiple departments of Università Degli Studi di Milano are actively  involved in the MIND Foods HUB project.  
+The Dipartimento di Scienza Agrarie e Ambientale (DISAA) designed and implemented the rover, its sensors, and the algorithms that analyze the nutritional properties of the chosen species.  
+The SEcure Service-oriented Architectures Research Lab (SESAR Lab) planned and implemented all software modules of the computing infrastructure: the collection agents, the GraphQL/REST API, the data model to structure sensor's data and the Data Lake platform.  
+The MIND Foods HUB Data Lake platform is based, among other components, on Apache Hadoop [3], a framework for parallel and distributed processing of large data sets and Apache Hive [4]. This software allows reading, writing, and managing large datasets in distributed storage using SQL.  
 
 ### 1.1 Research goals
 
-In the MIND Foods HUB project, the Data Lake platform is a core component of the computing infrastructure. It must support various stakeholders and use cases: the uploading of raw sensors data, the algorithmic analysis of the collected data, the serving of the client application through the hybrid GraphQL/REST API. So, like every architectural core component, the Data Lake platform must conform to non-functional requirements in terms of quality attributes [5]: scalability, maintainability and, not least, performance.
+In the MIND Foods HUB project, the Data Lake platform is a core component of the computing infrastructure. It must support various stakeholders and use cases: the uploading of raw sensors data, the algorithmic analysis of the collected data, the serving of the client application through the hybrid GraphQL/REST API. So, like every architectural core component, the Data Lake platform must conform to non-functional requirements in terms of quality attributes [5]: scalability, maintainability and, not least, performance.  
 
-*Scalability* determines the ability of a system to perform gracefully as the client's requests increase over time [6]. *Maintainability* is defined as the ease with which a system can be modified to improve its performance, correct defects, or adapt to new requirements [7]. Finally, *performance* is defined as the amount of work a system must perform in a unit of time within given constraints, such as speed, accuracy, or memory usage [7].
+*Scalability* determines the ability of a system to perform gracefully as the client's requests increase over time [6]. *Maintainability* is defined as the ease with which a system can be modified to improve its performance, correct defects, or adapt to new requirements [7]. Finally, *performance* is defined as the amount of work a system must perform in a unit of time within given constraints, such as speed, accuracy, or memory usage [7].  
 
-When I joined the project, the SESAR Lab team was not pleased with at least two of these properties: Apache Hive reading performance has proven poor even on simple aggregations queries. Also, the maintainability of the Data Lake infrastructure was not satisfying since it relies on a complex multi-container Docker application, using custom images with various bash scripts and configuration files to define the Hadoop and Apache Hive services. So, they started investigating for faster and more maintainable alternatives to Apache Hive, including Apache Druid [8], a real-time database that supports modern analytics applications.
+When I joined the project, the SESAR Lab team was not pleased with at least two of these properties: Apache Hive reading performance has proven poor even on simple aggregations queries. Also, the maintainability of the Data Lake infrastructure was not satisfying since it relies on a complex multi-container Docker application, using custom images with various bash scripts and configuration files to define the Hadoop and Apache Hive services. So, they started investigating for faster and more maintainable alternatives to Apache Hive, including Apache Druid [8], a real-time database that supports modern analytics applications.  
 The requirements that the alternative platform must satisfy are:
 
 1. Scalability: adding more resources to the platform to support an increase in the average workload should be effortless
 2. Maintainability: the platform must be easy to configure and deploy on the MIND Foods HUB Hadoop cluster
 3. Performance: the platform should provide sub-second aggregations queries
 
-This research aims to study Apache Druid as a viable, more performant solution to Apache Hive; to accomplish this goal, I tested the performance 0f the two platforms with Apache JMeter [9], an open-source Java application designed to measure the performance of various systems and protocols. Performance testing, which is a type of non-functional testing, evaluates the functioning of a system by simulating a variety of standard and abnormal load conditions. However, in testing the performance for Big Data technologies, an essential factor should be considered: the variety and volume of the data set involved for testing [10].
+This research aims to study Apache Druid as a viable, more performant solution to Apache Hive; to accomplish this goal, I tested the performance 0f the two platforms with Apache JMeter [9], an open-source Java application designed to measure the performance of various systems and protocols. Performance testing, which is a type of non-functional testing, evaluates the functioning of a system by simulating a variety of standard and abnormal load conditions. However, in testing the performance for Big Data technologies, an essential factor should be considered: the variety and volume of the data set involved for testing [10].  
 
-That is why to test Apache Hive and Apache Druid, given the requirements of the MIND Foods HUB Data Lake platform, I applied a strict, thorough and reproducible methodology described in the following sections of this paper;
-Section 2 defines Big Data and Data Lake systems and describes Hadoop, Apache Hive, and Apache Druid, focusing on their architecture and functionalities. Section 3 demonstrates the testing methodologies employed to test Apache Hive and Apache Druid with JMeter; Section 4 discuss the testing results, while section 4 concludes this paper.
+That is why to test Apache Hive and Apache Druid, given the requirements of the MIND Foods HUB Data Lake platform, I applied a strict, thorough and reproducible methodology described in the following sections of this paper;  
+Section 2 defines Big Data and Data Lake systems and describes Hadoop, Apache Hive, and Apache Druid, focusing on their architecture and functionalities. Section 3 demonstrates the testing methodologies employed to test Apache Hive and Apache Druid with JMeter; Section 4 discuss the testing results, while section 4 concludes this paper.  
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
 ## 2. Big Data technologies
 
-We live in the age of data: mobile phones, smart devices, sensors, social networks, etc., all concur in a scenario where all information is digital and needs to be processed, stored and analyzed. 
-According to statistics, a person produces 1.7 MB of data per second [11]; globally, 44 zettabytes of data are generated daily. Furthermore, based on research [12] led by Seagate and IDC, the amount of global data will reach 175 zettabytes by the end of 2025. 
-This exponential explosion of data generation directly impacts organizations facing the challenge of managing a massive amount of data, coming from multiple sources at an ever-increasing rate; days are gone when a single database serves as the primary source of truth for an entire business. That is where new Big Data technologies can make the difference in how organizations make business decisions based on their data to stay competitive.
+We live in the age of data: mobile phones, smart devices, sensors, social networks, etc., all concur in a scenario where all information is digital and needs to be processed, stored and analyzed.  
+According to statistics, a person produces 1.7 MB of data per second [11]; globally, 44 zettabytes of data are generated daily. Furthermore, based on research [12] led by Seagate and IDC, the amount of global data will reach 175 zettabytes by the end of 2025.  
+This exponential explosion of data generation directly impacts organizations facing the challenge of managing a massive amount of data, coming from multiple sources at an ever-increasing rate; days are gone when a single database serves as the primary source of truth for an entire business. That is where new Big Data technologies can make the difference in how organizations make business decisions based on their data to stay competitive.  
 
-Big Data is a universal term [13] that refers to data that is "too big, too fast, or too hard" [14] to be processed or analyzed by traditional methods or technologies. To be so considered, Big Data is characterized by the "three Vs", a concept formulated by Doug Laney from Meta (now Gartner) in 2001 [15]: *Volume*, *Velocity*, *Variety*.
+Big Data is a universal term [13] that refers to data that is "too big, too fast, or too hard" [14] to be processed or analyzed by traditional methods or technologies. To be so considered, Big Data is characterized by the "three Vs", a concept formulated by Doug Laney from Meta (now Gartner) in 2001 [15]: *Volume*, *Velocity*, *Variety*.  
 
 - *Volume* is a property that determines the size of the data, usually expressed in petabytes.
 - *Velocity* refers to the speed at which data is generated and processed. Generally, data processing happens in batch, where a large volume of data within a specific time is processed, on in a stream mode, where data is processed in real-time as it is produced.
@@ -267,10 +268,10 @@ Big Data heavily changed the shape of traditional data management systems, like 
 #### Data Warehouse concepts
 
 There are two types of operations in data processing at the core: transactional and analytical. 
-Usually, organizations handle daily operations using multiple Online Transaction Processing (OLTP) systems, or rather relational SQL databases with ACID properties, supporting the classical Create, Read, Update, Delete (CRUD) routines. Historically, organizations that want to apply analytical processes to their data employed a Data Warehouse system. 
-A *Data Warehouse* is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [17], typically operated by business end-users to support management's decision. 
-A fundamental property of Data Warehouses is non-volatility; differently from OLTP systems, a Data Warehouse does not allow update or delete operations on the data. This property allows the historical comparison and analysis of data across extensive data ranges. 
-At its core, a Data Warehouse collects data from different OLTP data sources into a star schema. A star schema comprises a central *fact* table that stores measurable quantitative values for an event, like sales, revenues, costs, and multiple *dimension* tables that store the attributes of the fact data, like products, stores, and others. 
+Usually, organizations handle daily operations using multiple Online Transaction Processing (OLTP) systems, or rather relational SQL databases with ACID properties, supporting the classical Create, Read, Update, Delete (CRUD) routines. Historically, organizations that want to apply analytical processes to their data employed a Data Warehouse system.  
+A *Data Warehouse* is a system used for reporting and data analysis that store historical, time-variant collection of data in a single repository [17], typically operated by business end-users to support management's decision.  
+A fundamental property of Data Warehouses is non-volatility; differently from OLTP systems, a Data Warehouse does not allow update or delete operations on the data. This property allows the historical comparison and analysis of data across extensive data ranges.  
+At its core, a Data Warehouse collects data from different OLTP data sources into a star schema. A star schema comprises a central *fact* table that stores measurable quantitative values for an event, like sales, revenues, costs, and multiple *dimension* tables that store the attributes of the fact data, like products, stores, and others.  
 The most used data processing paradigm to ingest data into the Data Warehouse and populate the fact and the dimension tables is Extract, Transform, Load (ETL).
 
 <figure>
@@ -284,14 +285,15 @@ In ETL, data are extracted from different sources, transformed to adhere to the 
 
 *Data Lake* is a term coined in 2011 by James Dixon [18], founder and former CTO of Pentaho and successively  extended by several studies [19]: "*A Data Lake uses a flat architecture to store data in their raw format. Each data entity in the lake is associated with a unique identifier and a set of extended metadata, and consumers can use purpose-built schemas to query relevant data, which will result in a smaller set of data that can be analyzed to help answer a consumer’s question*".
 
-In essence, a Data Lake is a repository that stores large quantities and varieties of data in their raw format, independently from their source or structure. Differently from a Data Warehouse, a Data Lake could store structured, semi-structured and unstructured data, regardless of their format, types, or structure. With this approach, the understanding of the data stored in a Data Lake is left to the consumer when data is later processed for business analysis. 
+In essence, a Data Lake is a repository that stores large quantities and varieties of data in their raw format, independently from their source or structure. Differently from a Data Warehouse, a Data Lake could store structured, semi-structured and unstructured data, regardless of their format, types, or structure. With this approach, the understanding of the data stored in a Data Lake is left to the consumer when data is later processed for business analysis.  
 Unlike traditional Data Warehouses, which pursues an ETL approach, Data Lake systems use an Extract, Load, Transform (ELT) data processing paradigm.  
 
 <figure>
     <img src="./content/Data Lake.jpg" alt="Extract, Load, Transform" style="width: 67%"/>
     <figcaption>Figure 4: Extract, Load, Transform</figcaption>
-</figure>  
-In ELT, data is extracted from various sources in an untransformed o nearly transformed state and ingested into the Data Lake as soon as it is available. Data transformation is applied later during business analysis, giving the data a structure suited for that specific analysis on what is known as a *schema-on-read* process. 
+</figure>    
+
+In ELT, data is extracted from various sources in an untransformed o nearly transformed state and ingested into the Data Lake as soon as it is available. Data transformation is applied later during business analysis, giving the data a structure suited for that specific analysis on what is known as a *schema-on-read* process.  
 The advantages of a Data Lake over a Data Warehouse are that the upfront cost for data ingestion is extensively lower since ingestion does not require any prior schema design to store the data, nor any complex preprocessing or transformations. Also, data ingested into Data Lake often happens in streaming mode, allowing organizations to extract business insights in real-time to make effective decisions.
 
 Many implementations of Data Lake systems are originally based on Apache Hadoop, which is described in detail in the following section.
@@ -300,14 +302,14 @@ Many implementations of Data Lake systems are originally based on Apache Hadoop,
 
 ### 2.2 Hadoop
 
-Hadoop is an open-source framework that enables reliable, scalable, distributed computing.
+Hadoop is an open-source framework that enables reliable, scalable, distributed computing.  
 Started in 2002 as an open-source project by Doug Cutting and Mike Cafarella, that was developing a search engine capable to index 1 billion pages, the first version of Hadoop implemented two powerful computing concepts introduced by Google in 2003 and 2004: Google File System (GFS) [20], a scalable distributed file system for large distributed data-intensive applications, and *MapReduce* [21], a programming model for processing and generating large data sets.
 
 So, at its core, Hadoop is composed of two modules: storage and processing. The storage component is the Hadoop Distributed File System (HDFS), while the processing component is MapReduce.
 
 #### HDFS
 
-HDFS is a highly fault-tolerant, scalable, and distributed file system designed to run on commodity hardware; HDFS provides high throughput access to application data and is suitable for applications that need to compute large data sets.
+HDFS is a highly fault-tolerant, scalable, and distributed file system designed to run on commodity hardware; HDFS provides high throughput access to application data and is suitable for applications that need to compute large data sets.  
 The goals of HDFS are:
 
 1. Processing of extremely large files, from multiple gigabytes to petabytes. HDFS supports small files but is not optimized for them.
@@ -317,11 +319,11 @@ The goals of HDFS are:
 5. Move the computation near the data to avoid the network transfer of large data sets, which is a notoriously slow and costly operation
 6. Portability of the file system across heterogeneous hardware and software platforms; since HDFS is implemented in Java, any machine that supports its runtime can operate HDFS.
 
-HDFS is based on a master/slave architecture.
+HDFS is based on a master/slave architecture.  
 The master server is called *NameNode*, and it manages the file system namespace and regulates client access to files. In HDFS, a file is split into one or more blocks of equal size (default is 128 megabytes); these blocks are stored and replicated in a set of *DataNodes*.  NameNode responsibility is to handle the mapping of blocks between DataNodes; also, NameNode manages file system namespace operations, like opening, closing, and renaming files and directories, instructing DataNodes on their execution.
 
-DataNodes manage the data and the storage attached to the nodes on which they run; they are responsible for serving read and write requests from the file system's clients. Also, DataNodes, when instructed from a NameNode, perform block creation, deletion, and replication. 
-Data replication across the DataNodes of the cluster guarantee reliability and fault-tolerance to HDFS. A client application can specify the desired number of replicas per file, which is three by the default policy; this means that a Hadoop cluster should have at least three DataNodes. To implement replication, DataNodes communicate with the NameNode sending a periodical *heartbeat* message. When the NameNode detects the absence of the heartbeat caused by a disk failure or a network partition, it marks the DataNode as no more available to HDFS and does not forward any new I/O requests to it. Eventually, the NameNode starts replicating the affected blocks across the remaining DataNodes. 
+DataNodes manage the data and the storage attached to the nodes on which they run; they are responsible for serving read and write requests from the file system's clients. Also, DataNodes, when instructed from a NameNode, perform block creation, deletion, and replication.  
+Data replication across the DataNodes of the cluster guarantee reliability and fault-tolerance to HDFS. A client application can specify the desired number of replicas per file, which is three by the default policy; this means that a Hadoop cluster should have at least three DataNodes. To implement replication, DataNodes communicate with the NameNode sending a periodical *heartbeat* message. When the NameNode detects the absence of the heartbeat caused by a disk failure or a network partition, it marks the DataNode as no more available to HDFS and does not forward any new I/O requests to it. Eventually, the NameNode starts replicating the affected blocks across the remaining DataNodes.  
 A typical HDFS cluster can have thousands of DataNodes and tens of thousands of HDFS clients per cluster since each DataNode may execute multiple application tasks simultaneously.
 
 <figure>
@@ -374,6 +376,7 @@ MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (YARN
     <img src="./content/YARN Architecture.jpg" alt="YARN Architecture" style="width: 67%" />
     <figcaption>Figure 7: YARN Architecture</figcaption>
 </figure>  
+
 YARN, at its core, is composed of two processes: the *ResourceManager* and the *NodeManager*. 
 The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
 YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.
@@ -1295,7 +1298,7 @@ Query 6 behave the same in Apache Hive, bound to a full table scan that requests
 
 Big Data heavily changed the shape of business analytical processes. Organizations of all domains and sizes now employ, in one way or another, complex processes that handle large volumes of data on which they base their business decisions. Choosing the right platform to support these processes is a difficult task and can make a real difference in the market competitiveness of these organizations.
 MIND Foods HUB, an international, interdisciplinary project, employs a complex computing infrastructure to store and analyze data of an innovative plant-phenotyping process. The core component of this infrastructure is a Data Lake platform comprised of Apache Hadoop, a framework for parallel and distributed processing of large datasets and Apache Hive, a Data Warehouse software that allows reading, writing, and managing large datasets using SQL.
-The main goal of this research was to find a valid, more performant alternative to Apache Hive for the MIND Foods HUB Data Lake due to its low maintainability and the inferior performances for even simple aggregations queries.
+The main goal of this research was to find a valid, more performant alternative to Apache Hive for the MIND Foods HUB Data Lake due to its low maintainability and the inferior performances for even simple aggregations queries.  
 The alternative platform's requirements are two software qualities: maintainability and performance. The ideal substitute system should be easy to configure, maintain, and integrate well with the existing Hadoop ecosystem on which MIND Foods HUB relies for different use cases. Also, the alternative platform should guarantee sub-seconds performance for aggregation queries. I identified Apache Druid as a proper alternative solution to replace Apache Hive. This open-source distributed data store supports various modern applications, like real-time analytics on large datasets and fast data aggregations for highly concurrent APIs. The table below shows the essential differences between Hive and Druid.
 
 |              | Apache Hive                                                  | Apache Druid                                                 |
@@ -1329,16 +1332,16 @@ Finally, the last development of this research would be the testing of other pla
 
 ## 6. Acknowledgements
 
-A bachelor's degree thesis is only the final step of a route that, for me, endured for four years of hard work and dedication; this work would not have been possible without the many people that, in one way or another, accompanied me in this long journey.
-First and foremost, I want to thank teacher Paolo Ceravolo and the SESAR Lab team guys, who introduced me to the MIND Foods HUB project, and especially Filippo Berto, who carefully revisioned each version of this paper and patiently helped me to reach the end of this research. 
-I should also thank Sabrina, the beating heart of SSRI online, for her precious help with the organization of my studies, and all my course colleagues that every day are committed to completing this challenging path: don't give up, guys, you are one step closer to the goal!
-Then, I want to thank my crazy fellows of DNF: Manu, Robs, Matti, Ricky, Frone, Vale, Giorgio, Sepe; these guys are always around for troubles and good times, and our long friendship is invaluable!
-Talking about friends, Jeffrey boys, and the magnificent Kek nights have been a source of incredible fun for me: Rprt, Raibaz, Paolone, Memo, Omar, Tired, thank you!
-People come and go, so here we are: I want to thank Gab, an incredible mate and a true inspiration for enjoying life.
+A bachelor's degree thesis is only the final step of a route that, for me, endured for four years of hard work and dedication; this work would not have been possible without the many people that, in one way or another, accompanied me in this long journey.  
+First and foremost, I want to thank teacher Paolo Ceravolo and the SESAR Lab team guys, who introduced me to the MIND Foods HUB project, and especially Filippo Berto, who carefully revisioned each version of this paper and patiently helped me to reach the end of this research.  
+I should also thank Sabrina, the beating heart of SSRI online, for her precious help with the organization of my studies, and all my course colleagues that every day are committed to completing this challenging path: don't give up, guys, you are one step closer to the goal!  
+Then, I want to thank my crazy fellows of DNF: Manu, Robs, Matti, Ricky, Frone, Vale, Giorgio, Sepe; these guys are always around for troubles and good times, and our long friendship is invaluable!  
+Talking about friends, Jeffrey boys, and the magnificent Kek nights have been a source of incredible fun for me: Rprt, Raibaz, Paolone, Memo, Omar, Tired, thank you!  
+People come and go, so here we are: I want to thank Gab, an incredible mate and a true inspiration for enjoying life.  
 Robi, and the compari from Messina for all the fun during the hot days in Sicily: see you soon, guys! 
 For her amazing help during these years, I want to acknowledge Doc Sonia Marino: we made it, doc.
-And then, love is an important business: I would like to thank Daniela and Deborah, my joyful past, and Chiara, my lovely, beautiful present.
-Finally, I have to thank my family for their tireless support during the most challenging time, for their unconditional love and forbearing me despite my hot temper. Teresa, Felice, I really love you!
+And then, love is an important business: I would like to thank Daniela and Deborah, my joyful past, and Chiara, my lovely, beautiful present.  
+Finally, I have to thank my family for their tireless support during the most challenging time, for their unconditional love and forbearing me despite my hot temper. Teresa, Felice, I really love you!  
 
 <div style="page-break-after: always; visibility: hidden;"></div>
 
