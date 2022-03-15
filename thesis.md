@@ -205,17 +205,16 @@ The project, split into different stages, plans to:
     <img src="./content/MFH Architecture.jpg" alt="MIND Food HUB computing infrastructure" />
     <figcaption>Figure 1: MIND Foods Hub computing infrastructure</figcaption>
 </figure>  
-
 The computing infrastructure is the core component of the MIND Foods HUB project and, as figure 1 illustrates, is comprised of different modules. The phenotyping process is managed by a rover deployed on the greenhouse.  
-The rover, equipped with various phenotyping sensors on a robotic arm, autonomously takes measurements on plants cultivation. Along with the rover, various on-field sensors register weather or environmental data, like air temperature and humidity, soil temperature, solar radiation, etc. 
+The rover, equipped with various phenotyping sensors on a robotic arm, autonomously takes measurements on plants cultivation. Along with the rover, various on-field sensors register weather or environmental data, like air temperature and humidity, soil temperature, solar radiation, etc.  
 The greenhouse is supplied with a 5G communication network; rover and on-field sensors measurements are collected by two software agents and sent through the network to a hybrid GraphQL/REST API that persists the data in the MIND Foods HUB Data Lake. The Data Lake is an essential element of the computing infrastructure; it stores historical sensor data and supports various ad-hoc data analysis processes. Also, Data Lake serves a client application, FoodsApp, through the GraphQL/REST API.  
-For example, greenhouse operators could use FoodsApp to scan a QRcode associated with each cultivated species and visualize raw and processed data of the phenotyping process.  
+For example, greenhouse operators could use FoodsApp to scan a QRcode associated with each cultivated species and visualize raw and processed data of the phenotyping process.
 
 The implementation of the computing infrastructure involved various technological partners; TIM, the first Italian provider of fixed, mobile and cloud infrastructures, developed the 5G network, the on-field sensors, and the client application.  
 Multiple departments of Università Degli Studi di Milano are actively  involved in the MIND Foods HUB project.  
 The Dipartimento di Scienza Agrarie e Ambientale (DISAA) designed and implemented the rover, its sensors, and the algorithms that analyze the nutritional properties of the chosen species.  
 The SEcure Service-oriented Architectures Research Lab (SESAR Lab) planned and implemented all software modules of the computing infrastructure: the collection agents, the GraphQL/REST API, the data model to structure sensor's data and the Data Lake platform.  
-The MIND Foods HUB Data Lake platform is based, among other components, on Apache Hadoop [3], a framework for parallel and distributed processing of large data sets and Apache Hive [4]. This software allows reading, writing, and managing large datasets in distributed storage using SQL.  
+The MIND Foods HUB Data Lake platform is based, among other components, on Apache Hadoop [3], a framework for parallel and distributed processing of large data sets and Apache Hive [4]. This software allows reading, writing, and managing large datasets in distributed storage using SQL.
 
 ### 1.1 Research goals
 
@@ -279,7 +278,7 @@ The most used data processing paradigm to ingest data into the Data Warehouse an
     <figcaption>Figure 3: Extract, Transform, Load</figcaption>
 </figure>  
 
-In ETL, data are extracted from different sources, transformed to adhere to the star schema, and loaded into the Data Warehouse; as Data Warehouses are built for analytical purposes, usually data is loaded in bath mode at regular time intervals. Later, data is gathered with ad-hoc queries for reporting and mining activities as part of the organization's business intelligence process. This process to store data in a Data Warehouse, also known as *schema-on-write*, allows efficient and fast reads operations at the cost of designing and maintaining a schema (the star schema) that describes the shape of the data. 
+In ETL, data are extracted from different sources, transformed to adhere to the star schema, and loaded into the Data Warehouse; as Data Warehouses are built for analytical purposes, usually data is loaded in bath mode at regular time intervals. Later, data is gathered with ad-hoc queries for reporting and mining activities as part of the organization's business intelligence process. This process to store data in a Data Warehouse, also known as *schema-on-write*, allows efficient and fast reads operations at the cost of designing and maintaining a schema (the star schema) that describes the shape of the data.
 
 #### Data Lake concepts
 
@@ -382,7 +381,7 @@ The ResourceManager is a process that runs on a dedicated node and is responsibl
 YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.  
 A ResourceManager accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution. NodeManager processes, one per each Hadoop node, are responsible for container lifecycle: they launch the container, monitor its execution and its resources usage (in terms of CPU, memory, disk, network), and reports the information to the ResourceManager. The ResourceManager, collecting information from all NodeManagers, can assemble the global status of the cluster and schedule job execution.  
 
-It is worth mentioning another component of the YARN architecture: the *TimelineServer* (previously known as the Application History Server), which runs on a dedicated node of the cluster.
+It is worth mentioning another component of the YARN architecture: the *TimelineServer* (previously known as the Application History Server), which runs on a dedicated node of the cluster.  
 The TimelineServer collects the historical states for each completed MapReduce job and provides various YARN related metrics  accessible via REST APIs, including:
 
 - The number of Map and Reduce tasks employed for a specific job
@@ -392,7 +391,7 @@ The TimelineServer collects the historical states for each completed MapReduce j
 
 ### 2.3 Apache Hive
 
-Initially developed in 2009 by Facebook to access data on their Hadoop cluster, *Apache Hive* is an open-source Data Warehouse system designed for querying and analyzing large datasets stored in Hadoop. Hive provides standard SQL functionality with HiveQL, a declarative language that enables users to do ad-hoc querying, aggregation and data analysis. 
+Initially developed in 2009 by Facebook to access data on their Hadoop cluster, *Apache Hive* is an open-source Data Warehouse system designed for querying and analyzing large datasets stored in Hadoop. Hive provides standard SQL functionality with HiveQL, a declarative language that enables users to do ad-hoc querying, aggregation and data analysis.  
 Apache Hive offers many advantages over working directly on Hadoop; first, SQL is familiar to many developers and analysts. Instead of writing verbose, complex MapReduce jobs in Java, a user can submit SQL queries to Hive to compute data stored on HDFS. Then, Apache Hive is a mechanism to impose structure, using relational database abstractions, like tables, on various data formats. Finally, since HDFS can hold structured, semi-structured and unstructured data, Hive can read and store table data in various formats, including comma and tab-separated values (CSV/TSV), JSON, Apache Parquet, Apache ORC, and others.
 
 Apache Hive is not designed for OLTP workloads or to support real-time analytics due to its batch-oriented nature, and it is more suitable for traditional data warehousing tasks: data analysis and distributed processing of massive volumes of data. Since it is based on Hadoop, Apache Hive is engineered to be scalable: more machines can be dynamically added to the Hadoop cluster as the storage needs of an organization increase over time. Also, Hive exploits HDFS peculiarity in fault-tolerance since data is automatically replicated across the DataNodes and available even in the presence of failures. As described in the following "Ingestion" section, Apache Hive is loosely coupled with its input formats because it can ingest data of various types and shapes.
@@ -441,7 +440,7 @@ HiveQL supports all basic DDL, DQL and DML operations to work with tables and pa
 
 #### Ingestion
 
-There are multiple ways to ingest data into Apache Hive using SQL statements, but since the Compiler translates these into MapReduce jobs, all data ingestion occurs in a batch mode.
+There are multiple ways to ingest data into Apache Hive using SQL statements, but since the Compiler translates these into MapReduce jobs, all data ingestion occurs in a batch mode.  
 So, for example, to load data into Apache Hive, a user can:
 
 1. Create an external table that points to a specified location within HDFS and copy the data into any other Hive table. As previously mentioned, Apache Hive can store table data in various file formats; when a user creates a table, could specify the format of the files stored on HDFS. 
@@ -476,7 +475,7 @@ For example, the following statements create an external table `T` that points t
 
 ### 2.4 Apache Druid
 
-*Apache Druid* is an open-source distributed data store that supports various modern applications, like real-time analytics on large datasets and fast data aggregations for highly concurrent APIs.
+*Apache Druid* is an open-source distributed data store that supports various modern applications, like real-time analytics on large datasets and fast data aggregations for highly concurrent APIs.  
 Apache Druid offers many advantages over traditional Data Warehouse systems:
 
 - Real-time data ingestion in streaming mode; also batch mode ingestion is supported.
@@ -488,7 +487,7 @@ Apache Druid architecture combines ideas from different storage systems (Data Wa
 
 #### Design
 
-Apache Druid is a multi-process distributed data store designed to be deployed in a cluster. Each system component, ingestion, querying, and coordination, can be configured and scaled independently based on the system's needs; for example, a configuration for a specific workload can dedicate more resources to the query component while giving fewer to the ingestion one. This type of architecture, other than allowing horizontal scalability, enables operational fault-tolerance: if the ingestion process fails, the query process is not affected, allowing Druid to serve query requests regardless of the failure.
+Apache Druid is a multi-process distributed data store designed to be deployed in a cluster. Each system component, ingestion, querying, and coordination, can be configured and scaled independently based on the system's needs; for example, a configuration for a specific workload can dedicate more resources to the query component while giving fewer to the ingestion one. This type of architecture, other than allowing horizontal scalability, enables operational fault-tolerance: if the ingestion process fails, the query process is not affected, allowing Druid to serve query requests regardless of the failure.  
 Apache Druid processes are the following:
 
 - **Coordinator**: it is responsible for managing data availability and distribution on the cluster. The *Coordinator* instructs the *Historical* process to load new segments, drop outdated segments, ensure that segments are correctly replicated across the Historical process, and distribute segments between Historical nodes to keep the latter evenly loaded.
@@ -503,8 +502,7 @@ Apache Druid processes are the following:
     <img src="./content/Apache Druid Architecture.jpg" alt="Apache Druid architecture" style="zoom: 67%;" />
     <figcaption>Figure 9: Apache Druid architecture</figcaption>
 </figure>  
-
-Druid processes are typically organized into logical units, following a *Master*, *Query* and *Data* server topology; figure 9 shows the architecture of a representative Apache Druid cluster.
+Druid processes are typically organized into logical units, following a *Master*, *Query* and *Data* server topology; figure 9 shows the architecture of a representative Apache Druid cluster.  
 Master servers manage data ingestion and availability; they are composed of the Coordinator and the Overlord processes. Query servers, formed by the Broker and the Router processes, expose the endpoints that users and client applications interact with; they route queries to the Data servers. Finally, data servers execute ingestion jobs and store the data into the distributed storage. Data servers are composed of the Historical and the MiddleManager processes.
 
 Apache Druid also relies on three external dependencies: *Deep storage*, covered in the related section, *Metadata storage*, and *ZooKeeper*. The Metadata storage stores various system metadata, like the number of segments available on the cluster and their usage, internal task status, etc. It is typically employed as an external relational database on clustered deployments, like MySQL or PostgreSQL.
@@ -528,15 +526,15 @@ Apache Druid data is organized into *datasources*, similar to relational databas
 
 Datasources columns are of two types: *dimensions* and *metrics*. Dimensions are columns that Druid stores in their original format, and represents the relevant and descriptive attributes of the data; they can be filtered, grouped, and aggregated at query time. Metrics are columns that Druid stores in an aggregated form; during ingestion, a user can apply an aggregation function (count, sum, min/max, etc.) to each computed row.
 
-Datasources are time partitioned: each time interval, for example, a month, is called a chunk;  a chunk is additionally partitioned into one or more segments. Formally, a *segment* is defined as a collection of rows of data, typically 5–10 million, that span an interval of time [25]. A segment comprises different files that store various data structures to arrange columns data so that Apache Druid can extract only those needed for a query.
-Depending on the column data type, two compression algorithms, *LZ4* [26] and *Roaring* [27], are used to reduce the cost of storing a column in memory and on disk.
-Deep storage is an external, shared file system accessible by the cluster. Apache Druid uses it to store segments; typically, in a clustered deployment, Deep storage is a distributed file system like HDFS or Amazon S3.
+Datasources are time partitioned: each time interval, for example, a month, is called a chunk;  a chunk is additionally partitioned into one or more segments. Formally, a *segment* is defined as a collection of rows of data, typically 5–10 million, that span an interval of time [25]. A segment comprises different files that store various data structures to arrange columns data so that Apache Druid can extract only those needed for a query.  
+Depending on the column data type, two compression algorithms, *LZ4* [26] and *Roaring* [27], are used to reduce the cost of storing a column in memory and on disk.  
+Deep storage is an external, shared file system accessible by the cluster. Apache Druid uses it to store segments; typically, in a clustered deployment, Deep storage is a distributed file system like HDFS or Amazon S3.  
 Using a distributed file system to store segments enables Druid to be fault-tolerant by design. Even if the cluster is reprovisioned after a network or hardware failure, as long as the data is persisted in the Deep storage, Druid can recover data from it and republish segments to the new Historicals. Also, as described in the prior sections, a distributed storage like HDFS, among many other characteristics, guarantee data replication, improving the reliability of the entire system.
 It is important to note that Druid never accesses the Deep storage at query time: Historical processes load segments from the Deep storage when instructed by the Coordinator and serve them from their memory as well from the local disk when the Broker requests a query.
 
 #### SQL capabilities
 
-Apache Druid supports two query languages: Druid SQL, a declarative language similar to SQL, and native queries, JSON objects that describe how to filter, group, or aggregate data. Apache Druid automatically translates Druid SQL into a native query every time a query hits a Broker.
+Apache Druid supports two query languages: Druid SQL, a declarative language similar to SQL, and native queries, JSON objects that describe how to filter, group, or aggregate data. Apache Druid automatically translates Druid SQL into a native query every time a query hits a Broker.  
 Druid SQL capabilities are limited: it only supports `SELECT` queries. This design choice means that DDL statements like `CREATE`, `ALTER` or `DROP`, or typical DML statements like `INSERT` and `UPDATE` are not supported. Also, Druid SQL only supports equality `JOIN` between native datasources.
 
 #### Ingestion
@@ -557,10 +555,10 @@ With batch ingestion Apache Druid reads raw data from files in a one-time job; s
 
 ## 3. Apache Hive and Apache Druid performance testing
 
-In software, performance testing is a type of non-functional testing that measures a system's behaviour under satisfactory and unsatisfactory conditions [30]. 
-The performance of a system, especially for those that use the network to transfer data, is assessed by collecting various time-related metrics, like response time, throughput, and concurrency.
-We define *response time* as the measure of time a system takes to respond to a given  business request or command; *Throughput* refers to the amount of work, that is, the number of requests, that an application can process in a unit of time, while *concurrency* is defined as the property of a system to respond to several requests that potentially interact with each other, simultaneously. 
-Usually, various standard statistical measures are calculated for response time, like the median, the average, and the standard deviation. Another valuable metric for response time is Cohen's *d* [31] of the samplers, a commonly recognized way to measure the effect size.
+In software, performance testing is a type of non-functional testing that measures a system's behaviour under satisfactory and unsatisfactory conditions [30].  
+The performance of a system, especially for those that use the network to transfer data, is assessed by collecting various time-related metrics, like response time, throughput, and concurrency.  
+We define *response time* as the measure of time a system takes to respond to a given  business request or command; *Throughput* refers to the amount of work, that is, the number of requests, that an application can process in a unit of time, while *concurrency* is defined as the property of a system to respond to several requests that potentially interact with each other, simultaneously.  
+Usually, various standard statistical measures are calculated for response time, like the median, the average, and the standard deviation. Another valuable metric for response time is Cohen's *d* [31] of the samplers, a commonly recognized way to measure the effect size.  
 Cohen's *d* is defined as the difference between two means divided by a standard deviation for the data:
 
 <img src="./content/Cohen_d.svg" alt="Cohen's d" />
@@ -581,8 +579,7 @@ The magnitude of *d*, namely the difference between the means, is described in t
 <div style="text-align:center;">
     <sub>Table 1: Magnitude of d</sub>
 </div>  
-
-One traditional way to accomplish performance testing is first to collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful.
+One traditional way to accomplish performance testing is first to collect performance requirements, provided in a concrete, verifiable manner to make the performance testing meaningful.  
 For example, the requirements of this research are:
 
 1. Scalability: adding more resources to the platform should be effortless
@@ -605,7 +602,7 @@ To evaluate the maintainability and the performance of Apache Hive and Apache Dr
 4. Prepare the test queries
 5. Run the performance testing using Apache JMeter
 
-The test of the scalability of Apache Hive and Apache Druid instead is out of the scope of this research since the actual use of MIND Foods HUB Data Lake does not need robust horizontal scalability given the youth of the project.
+The test of the scalability of Apache Hive and Apache Druid instead is out of the scope of this research since the actual use of MIND Foods HUB Data Lake does not need robust horizontal scalability given the youth of the project.  
 Also, the available resources, both in time and commodity (hardware), were not enough to scale the two platforms to support a heavy workload.
 
 ### 3.1 Provision of each solution
@@ -630,7 +627,7 @@ The choice to use Docker Compose to deploy Hadoop, Hive and Druid on the same ma
 
 #### Apache Hive provisioning
 
-Apache Hive was configured to run on the same Hadoop dockerized cluster.
+Apache Hive was configured to run on the same Hadoop dockerized cluster.  
 The setup used for the performance testing consists of the following Docker Compose services:
 
 - A single HiveServer
@@ -638,11 +635,11 @@ The setup used for the performance testing consists of the following Docker Comp
 - A MySQL 8.2 instance to persists Metastore's metadata
 
 Apache Hive provisioning was not smooth as presumed. The Apache Software Foundation does not provide any official Docker image for Hive or related documentation to work with Docker. So, each service was defined by using custom Docker images and various bash scripts maintained by the SESAR Lab team and published on their internal registry. 
-This setup led to low maintainability of the platform: each change to the Hive configuration, for example, new Hive versions, or security patches, requires the revision, the rebuild, and the publishing of each image, as well as the integrations tests with the existing Hadoop infrastructure. 
+This setup led to low maintainability of the platform: each change to the Hive configuration, for example, new Hive versions, or security patches, requires the revision, the rebuild, and the publishing of each image, as well as the integrations tests with the existing Hadoop infrastructure.  
 Eventually, it needs to be said that the official Hive documentation is quite fragmented and makes its configuration harder than expected.
 
 After the provisioning, I did various preliminary performance tests, during which I encountered various timeouts and `java.lang.OutOfMemoryError: Java heap space` errors caused by the default Hive's heap size of 1024 MiB. 
-After some research and multiple attempts, I increased the maximum heap size of the Hive Server to 4096 MiB; I also configured the Hive CLI JVM heap size to 8192 MiB. 
+After some research and multiple attempts, I increased the maximum heap size of the Hive Server to 4096 MiB; I also configured the Hive CLI JVM heap size to 8192 MiB.  
 Moreover, I configured Hive to enable dynamic partitioning of data and disabled the query result cache not to alter the test samples.
 
 #### Apache Druid provisioning
@@ -659,19 +656,19 @@ The Apache Druid setup used for the performance testing consists of the followin
 - A PostgreSQL instance to persists Druid's metadata
 
 As previously mentioned, Apache Druid can ingest batch data natively or by loading data files from HDFS. 
-However, one of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. So, to adhere to this requirement, the Druid cluster was configured to work with HDFS using druid-hdfs-storage extensions. Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS and store segments in it, exploiting HDFS peculiarities in terms of distributed storage, scalability, and fault tolerance. 
+However, one of the requirements of MIND Foods HUB Data Lake is to take advantage of the Hadoop infrastructure already in place. So, to adhere to this requirement, the Druid cluster was configured to work with HDFS using druid-hdfs-storage extensions. Integrating Druid with HDSF allows a user to ingest data formerly present on HDFS and store segments in it, exploiting HDFS peculiarities in terms of distributed storage, scalability, and fault tolerance.  
 However, the choice to use HDFS for batch data ingestion has a few drawbacks: the overall architecture is more complex since Apache Druids depend on an external Hadoop cluster and, more important, the waive to streaming ingestion mode, which enables users to perform real-time analytics on data.
 
 The provisioning of Apache Druid was simple, and the cluster did not encounter any errors or faults during the preliminary performance tests. Furthermore, the overall maintainability of the platform is satisfactory since the official Druid's Docker images worked well out of the box without any custom configuration. Also, Druid documentation covers every use case of the platform in-depth, making its deployment pretty straightforward.
 
 ### 3.2 Data generation
 
-One of the steps of testing database systems that process large volumes of data is to ingest them with a relevant, large dataset and benchmark their performances with a typical workload. 
+One of the steps of testing database systems that process large volumes of data is to ingest them with a relevant, large dataset and benchmark their performances with a typical workload.  
 At the time of this writing MIND Foods HUB project was starting to ingest data into the Apache Hive cluster. The relatively small dataset that could be dumped was not suited to test the performances of Big Data systems like Hive and Druid.  Several systems have been studied to verify their capabilities using Star Schema Benchmark (SSB) [35], a benchmark designed to measure the performance of Data Warehouse systems employing a star schema. Instead of using a modified version of SSB, adapted to fit the denormalized schema of MIND Foods Hub Data Lake, I opted to keep the same data structure and randomly generate an extensive and representative dataset to ingest both Hive and Druid.
 
 The generated dataset should respect the *volume* and *variety* properties of Big Data illustrated in section 2.
 
-MIND Foods HUB data are stored in a single table, named `dl_measurements`, that follows a denormalized data model to avoid expensive join operations.
+MIND Foods HUB data are stored in a single table, named `dl_measurements`, that follows a denormalized data model to avoid expensive join operations.  
 `dl_measurements` table schema is the following:
 
 ```sql
@@ -703,7 +700,7 @@ CREATE TABLE dl_measurements
 ```
 
 Each row of the table represents a *measurement* for a given *location*, or rather cultivation, provided by a specific *sensor*; each measurement reports its *unit of measure* and the corresponding *timestamps* that states when it was taken.
-Instead, the insertion agent is the software agent that collected the measurement and sent it through the 5G communication network.
+Instead, the insertion agent is the software agent that collected the measurement and sent it through the 5G communication network.  
 
 MIND Foods HUB *sensors* are of three types:
 
@@ -727,16 +724,16 @@ Both `start_timestamp` and `end_timestamp` times are calculated, while `measure_
 - For tag based measurement, `str_value` is populated, while `double_value` is `NULL`.
 `measure_timestamp` is calculated, while `start_timestamp` and `end_timestamp` are `NULL`
 
-I wrote "MFH measurements generator" [36] to solve this problem, a Node.js application to generate random synthetic data for performance testing; the application source code is hosted on SESAR Lab Github's organization and is released under the Apache 2.0 License.
-The application's working is simple: it iterates from 1 to *N*, where *N* is the desired number of rows. Each iteration produces a randomly generated measurement that respects the logical constraints reported above; the application's output is a CSV file containing the produced data. 
+I wrote "MFH measurements generator" [36] to solve this problem, a Node.js application to generate random synthetic data for performance testing; the application source code is hosted on SESAR Lab Github's organization and is released under the Apache 2.0 License.  
+The application's working is simple: it iterates from 1 to *N*, where *N* is the desired number of rows. Each iteration produces a randomly generated measurement that respects the logical constraints reported above; the application's output is a CSV file containing the produced data.  
 To provide a certain degree of semantic to the random measurement, I defined some static datasets used as the basis for each generation. Sensors (sensor_id, sensor_type, sensor_desc_name, unit_of_measure) and collection agents (insertion_agent) were dumped from the MIND Foods HUB Hive production cluster and randomly picked for each generated row.  For the values of `location_name`, `location_botanic_name`, and `location_cultivation_name`, I used Mockaroo [37]. This online service allows generating synthetic data comprehensive of commons and scientific plant names, with whom I produced a set of 100 locations, randomly picked for each generated row.  Ultimately, to simulate a dataset of a Data Lake in operation, all rows were generated computing the `insertion_timestamp` in a temporal range of two years.
 
 Using the "MFH measurements generator", I produced a CSV dataset containing 50 million rows (approximately 15 GB of size) of random, synthetic data to test Apache Hive and Apache Druid.
 
 ### 3.3 Data ingestion
 
-Before ingesting data, defining the tables for each platform was necessary. 
-Unlike the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some optimizations to test each platform at the top of their performance capability, using Hive partitions and Druid segments. 
+Before ingesting data, defining the tables for each platform was necessary.  
+Unlike the original Hive `dl_measurements` table that holds MIND Foods HUB data, I decided to apply some optimizations to test each platform at the top of their performance capability, using Hive partitions and Druid segments.  
 So, each *measurement* was stored depending on its `insertion_timestamp`, allowing each system to retrieve data based on temporal criteria efficiently.
 
 #### Apache Hive table optimization
@@ -779,7 +776,7 @@ As we can see, it defines an `insertion_date` partition, which determines how to
 
 #### Apache Hive ingestion
 
-The first step for ingestion consisted in loading the generated dataset in a temporary HDFS folder (`/tmp/mfh`) on the Hadoop NameNode, to serve as the primary source for the ingestion process.
+The first step for ingestion consisted in loading the generated dataset in a temporary HDFS folder (`/tmp/mfh`) on the Hadoop NameNode, to serve as the primary source for the ingestion process.  
 Then I created an external table that points to the temporary folder:
 
 ```sql
@@ -830,7 +827,7 @@ On Apache Druid, data was ingested using `insertion_timestamp` as the primary da
 
 #### Apache Druid ingestion
 
-Apache Druid ingestion is configured by submitting an ingestion task spec to the Druid Coordinator; the overall process was more accessible since it could be obtained by just using Druid's web console.
+Apache Druid ingestion is configured by submitting an ingestion task spec to the Druid Coordinator; the overall process was more accessible since it could be obtained by just using Druid's web console.  
 The ingestion spec used to load data from the temporary HDFS folder on the NameNode is the following.
 
 ```json
@@ -926,13 +923,12 @@ The ingestion spec used to load data from the temporary HDFS folder on the NameN
 <div style="text-align:center;">
     <sub>Table 2: Ingestion numbers</sub>
 </div>  
-
-Table 1 reports the number of partitions, the data size on HDFS, the total disk space used for data replication, and the computed ingestion time for each platform. It is worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 and Roaring algorithms.
+Table 1 reports the number of partitions, the data size on HDFS, the total disk space used for data replication, and the computed ingestion time for each platform. It is worth observing that Apache Druid consume significantly less disk space on HDFS since it automatically compresses segment data with LZ4 and Roaring algorithms.  
 As a result, Apache Druid was 55,8% faster than Apache Hive to import 50 million rows from Hadoop.
 
 ### 3.4 Queries
 
-The benchmark developed to test Apache Hive comprises six SQL queries chosen from the ones executed by MIND Foods Hub's front-end. These queries are the most representative of the analysis processes of MIND Foods HUB and make the performance testing similar to an actual production workload.
+The benchmark developed to test Apache Hive comprises six SQL queries chosen from the ones executed by MIND Foods Hub's front-end. These queries are the most representative of the analysis processes of MIND Foods HUB and make the performance testing similar to an actual production workload.  
  In addition,  the queries are, where feasible, slightly optimized for each platform to make use of Apache Hive table partitions and Apache Druid time segments.
 
 #### Query 1
@@ -1065,7 +1061,7 @@ After a Test Plan is complete, JMeter can output the results to a file, usually 
 
 #### Hive HTTP Proxy
 
-The performance testing was intended to run against each database HTTP API. Sadly, Apache Hive does not expose a set of REST APIs to interact with, contrary to other more recent platforms. Instead, a client is forced to use Hive JDBC drivers or Hive Thrift APIs to perform TCP connections to the database. At the time of this writing, Hive's only available REST API is *WebHCat*, a web application layer on top of HCatalog, a table and storage management layer for Hadoop. 
+The performance testing was intended to run against each database HTTP API. Sadly, Apache Hive does not expose a set of REST APIs to interact with, contrary to other more recent platforms. Instead, a client is forced to use Hive JDBC drivers or Hive Thrift APIs to perform TCP connections to the database. At the time of this writing, Hive's only available REST API is *WebHCat*, a web application layer on top of HCatalog, a table and storage management layer for Hadoop.  
 While WebHCat is installed with Hive, starting with Hive release 0.11.0, its capabilities are pretty limited: a client can run a Hive query or set of commands via the `http://hostname/templeton/v1/hive` endpoint, but the response contains only the ID of a job that runs on background on Hadoop, and an optional callback property, that defines a URL called upon job completion. This behaviour makes it very hard to test Apache Hive with JMeter unless configuring the latter to connect to Hive via JDBC, a not viable option due to the configuration difficulties.
 
 I decided to write "Hive HTTP Proxy" [38], a Node.js application that works as an HTTP layer on top of Apache Hive, to work around this problem. Hive HTTP Proxy working is simple: internally, it uses *Hive Driver*, a Javascript implementation of the Hive Thrift APIs to connect to Hive, and exposes a single HTTP endpoint on port 10001. A client willing to execute Hive SQL statements can do a POST HTTP call with a JSON payload, containing the required statement, to Hive HTTP Proxy; the following example shows how to perform a simple SQL statement:
@@ -1078,7 +1074,7 @@ Hive HTTP Proxy source code is hosted on SESAR Lab Github's organization and is 
 
 #### JMeter and test configuration
 
-Data Lake platforms are very different from application databases that support hundreds or thousands of concurrent connections under heavy load. Instead, especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days. 
+Data Lake platforms are very different from application databases that support hundreds or thousands of concurrent connections under heavy load. Instead, especially for small to mid organizations, Data Lake platforms run data extraction for analytical and business purposes, consisting of a few concurrent requests, often triggering batch jobs that run from hours to days.  
 This characteristic led to the decision of configuring JMeter to assess single-user query performance testing, simulating an average workload; only one thread for each query was employed to run the Test Plan. 
 
 JMeter ran with the following conditions:
@@ -1089,7 +1085,7 @@ JMeter ran with the following conditions:
 - Each query was configured to run 10 times (to have 10 samples per query) in a separate Thread Group. 
 - Each Thread Group ran consecutively (one at a time) to avoid side effects on other requests.
 
-Instead of running JMeter on the same network of the cluster to minimize request latency, the benchmark simulated an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.
+Instead of running JMeter on the same network of the cluster to minimize request latency, the benchmark simulated an everyday use case, or rather a stakeholder of an organization that uses its client machine to extrapolate and analyze data and business insights from its Data Lake.  
 Therefore all tests were executed in CLI mode and with all Listeners disabled, on a MacBook Pro Mid 2015 with these specs:
 
 - CPU 2,8 GHz Intel Core i7, 4 core/8 threads
@@ -1101,8 +1097,8 @@ Therefore all tests were executed in CLI mode and with all Listeners disabled, o
 
 ## 4. Test results
 
-Each JMeter execution produced a CSV dataset containing the test results for each platform, one for Apache Hive the other for Apache Druid. 
-First, to simplify the comparison of the two results, I merged the dataset in a single CSV file with the *Merge Results* plugin [39].
+Each JMeter execution produced a CSV dataset containing the test results for each platform, one for Apache Hive the other for Apache Druid.  
+First, to simplify the comparison of the two results, I merged the dataset in a single CSV file with the *Merge Results* plugin [39].  
 Then, I imported the combined results in *Summary Report* JMeter listener to calculate, for each sample: 
 
 - Average response time
@@ -1110,7 +1106,7 @@ Then, I imported the combined results in *Summary Report* JMeter listener to cal
 - Maximum response time
 - Average response time standard deviation
 
-Also, I compared each query's average response time with the *Results Comparator* [40] plugin to quantify the performance difference between Apache Hive and Apache Druid by calculating Cohen's *d* effect size.
+Also, I compared each query's average response time with the *Results Comparator* [40] plugin to quantify the performance difference between Apache Hive and Apache Druid by calculating Cohen's *d* effect size.  
 Finally, I imported the combined results into Google Sheets to draw the bar graph that visually compares each query's average response time. The results for each query are illustrated in the following pages.
 
 JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performace Testing" [41] repository hosted on SESAR Lab Github's organization; they are released under the Apache 2.0 License.
@@ -1140,8 +1136,7 @@ JMeter test results are downloadable from the "MIND Foods HUB Data Lake Performa
 <div style="text-align:center;">
     <sub>Table 4: Performance evaluation for Query 1</sub>
 </div>  
-
-Query 1 execution is fast on both platforms, staying under a 500 milliseconds threshold since it takes advantage of time partitions on Apache Hive and time segmentations on Apache Druid.
+Query 1 execution is fast on both platforms, staying under a 500 milliseconds threshold since it takes advantage of time partitions on Apache Hive and time segmentations on Apache Druid.  
 Using Apache Druid, we can see a considerable decrease in average response time value, making this platform greatly performant than Hive.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
@@ -1197,8 +1192,7 @@ Like Query 1, Query 2 makes use of time partitions on Apache Hive and time segme
 <div style="text-align:center;">
     <sub>Table 8: Performance evaluation for Query 3</sub>
 </div>  
-
-Query 3 follows the same trends, achieving a massive decrease in average response time value for its execution on Apache Druid.
+Query 3 follows the same trends, achieving a massive decrease in average response time value for its execution on Apache Druid.  
 We can notice how the behaviour of all time queries is the same on both platforms, with a similar Average response time between Query 1, Query 2 and Query 3 per database and minor standard deviation.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
@@ -1227,7 +1221,7 @@ We can notice how the behaviour of all time queries is the same on both platform
     <sub>Table 10: Performance evaluation for Query 4</sub>
 </div>  
 Query 4 groups four different columns, and its execution shows a distinct behaviour between the two platforms.
-While Apache Druid execution for Query 4 is sensibly slower than time queries, with an average response time of 2 seconds circa, Apache Hive is enormously slower, requesting 8,69 minutes to query the data. 
+While Apache Druid execution for Query 4 is sensibly slower than time queries, with an average response time of 2 seconds circa, Apache Hive is enormously slower, requesting 8,69 minutes to query the data.  
 Two factors essentially cause this: 
 
 1. The query does not use any partitions, forcing Hive to do a full table scan to select and group the requested values. 
@@ -1260,8 +1254,7 @@ On the other side, Apache Druid uses a complex in-memory algorithm to aggregate 
 <div style="text-align:center;">
     <sub>Table 12: Performance evaluation for Query 5</sub>
 </div>  
-
-Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in an average response time of 8,52 minutes circa per query execution.
+Query 5 shows the exact behaviour of Query 6, with Hive, forced to do a full table scan to aggregates sensor's related data, resulting in an average response time of 8,52 minutes circa per query execution.  
 Apache Druid is exceedingly performant, remaining under the 2 seconds threshold for Query 5 completion.
 
 <div style="page-break-after: always; visibility: hidden;"></div>
@@ -1296,8 +1289,8 @@ Query 6 behave the same in Apache Hive, bound to a full table scan that requests
 
 ## 5. Conclusions
 
-Big Data heavily changed the shape of business analytical processes. Organizations of all domains and sizes now employ, in one way or another, complex processes that handle large volumes of data on which they base their business decisions. Choosing the right platform to support these processes is a difficult task and can make a real difference in the market competitiveness of these organizations.
-MIND Foods HUB, an international, interdisciplinary project, employs a complex computing infrastructure to store and analyze data of an innovative plant-phenotyping process. The core component of this infrastructure is a Data Lake platform comprised of Apache Hadoop, a framework for parallel and distributed processing of large datasets and Apache Hive, a Data Warehouse software that allows reading, writing, and managing large datasets using SQL.
+Big Data heavily changed the shape of business analytical processes. Organizations of all domains and sizes now employ, in one way or another, complex processes that handle large volumes of data on which they base their business decisions. Choosing the right platform to support these processes is a difficult task and can make a real difference in the market competitiveness of these organizations.  
+MIND Foods HUB, an international, interdisciplinary project, employs a complex computing infrastructure to store and analyze data of an innovative plant-phenotyping process. The core component of this infrastructure is a Data Lake platform comprised of Apache Hadoop, a framework for parallel and distributed processing of large datasets and Apache Hive, a Data Warehouse software that allows reading, writing, and managing large datasets using SQL.  
 The main goal of this research was to find a valid, more performant alternative to Apache Hive for the MIND Foods HUB Data Lake due to its low maintainability and the inferior performances for even simple aggregations queries.  
 The alternative platform's requirements are two software qualities: maintainability and performance. The ideal substitute system should be easy to configure, maintain, and integrate well with the existing Hadoop ecosystem on which MIND Foods HUB relies for different use cases. Also, the alternative platform should guarantee sub-seconds performance for aggregation queries. I identified Apache Druid as a proper alternative solution to replace Apache Hive. This open-source distributed data store supports various modern applications, like real-time analytics on large datasets and fast data aggregations for highly concurrent APIs. The table below shows the essential differences between Hive and Druid.
 
@@ -1314,20 +1307,20 @@ The alternative platform's requirements are two software qualities: maintainabil
 
 ### 5.1 Maintainability and Performance results
 
-Initially developed in 2009, Apache Hive is not designed to work with modern dockerized environments.
-During my testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.
-Apache Druid instead remarkably satisfied the maintainability requirement. The provisioning of a cluster comprised of all Druid's components was straightforward, thanks to the official Docker images and the related documentation that is well detailed and comprehensive of the various deployment mode of the platform. Also, Apache Druid supports a rich extensions ecosystem to add various functionality at runtime, like the support for Amazon S3, Google Cloud Storage or Microsoft Azure instead of HDFS for segments storage. This interoperability with the aforementioned cloud computing services allows the substitution of Hadoop with immediate advantages in terms of maintainability costs.
+Initially developed in 2009, Apache Hive is not designed to work with modern dockerized environments.  
+During my testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.  
+Apache Druid instead remarkably satisfied the maintainability requirement. The provisioning of a cluster comprised of all Druid's components was straightforward, thanks to the official Docker images and the related documentation that is well detailed and comprehensive of the various deployment mode of the platform. Also, Apache Druid supports a rich extensions ecosystem to add various functionality at runtime, like the support for Amazon S3, Google Cloud Storage or Microsoft Azure instead of HDFS for segments storage. This interoperability with the aforementioned cloud computing services allows the substitution of Hadoop with immediate advantages in terms of maintainability costs.  
 However, some limitations should be considered when it comes to the maintainability requirement; the overall maintainability of a software system is usually evaluated on a long-term scenario, working on various operational constraints and for different business requirements. Unfortunately, an evaluation of this type is out of this research's scope, so the maintainability of Apache Hive and Apache Druid was tested only for the ambit of the performance testing.
 
-To test the performance of Apache Hive and Apache Druid, I focused on finding a valid benchmark, that is, a workload representative of how the system is used in the field and then run the system on those benchmarks. To achieve this goal I followed a rigorous, thorough methodology, comprises five steps: the provisioning of both Apache Hive and Druid, the generation of a large, random, synthetic dataset, the ingestion of the generated data, the definition of the test query and the performance testing with Apache JMeter. 
-Apache Druid proved to be more performant than Apache Hive on each tested query; Query 1, Query 2 and Query 3, which take advantage of time partitioning, are all under the 500ms threshold using Druid I achieved a considerable decrease in average response time. Finally, the indisputable performance increment could be observed with Query 4, Query 5 and Quer 6, that aggregate data according to different criteria. Apache Hive needs a 9 minutes average response time to satisfy these requests; Apache Druid has always been under the 2 seconds threshold. That is where the design of Apache Hive shows its limits: the rely on MapReduce to retrieve and aggregate data is suboptimal due to its recurring access to the disk, a notoriously slow operation. Not that Hive could not be further optimized by attempting various approaches. For example, using Apache Tez instead of MapReduce could speed up the queries execution, or configuring the `dl_measurements` table to use Apache ORC, a columnar file format, could improve the reading performance of Hive. Nevertheless, each of these methods comes at the cost of configuring and maintaining a complex platform that is not suited to perform real-time analytics tasks.
-On the other side, Apache Druid implements a more modern architecture combining column-oriented storage, distributed computing where each node can independently be scaled, and an advanced real-time ingestion system that serves data as soon as it is available. This design allows Druid to compute sub-second queries on data sources with billions of rows.
+To test the performance of Apache Hive and Apache Druid, I focused on finding a valid benchmark, that is, a workload representative of how the system is used in the field and then run the system on those benchmarks. To achieve this goal I followed a rigorous, thorough methodology, comprises five steps: the provisioning of both Apache Hive and Druid, the generation of a large, random, synthetic dataset, the ingestion of the generated data, the definition of the test query and the performance testing with Apache JMeter.  
+Apache Druid proved to be more performant than Apache Hive on each tested query; Query 1, Query 2 and Query 3, which take advantage of time partitioning, are all under the 500ms threshold using Druid I achieved a considerable decrease in average response time. Finally, the indisputable performance increment could be observed with Query 4, Query 5 and Quer 6, that aggregate data according to different criteria. Apache Hive needs a 9 minutes average response time to satisfy these requests; Apache Druid has always been under the 2 seconds threshold. That is where the design of Apache Hive shows its limits: the rely on MapReduce to retrieve and aggregate data is suboptimal due to its recurring access to the disk, a notoriously slow operation. Not that Hive could not be further optimized by attempting various approaches. For example, using Apache Tez instead of MapReduce could speed up the queries execution, or configuring the `dl_measurements` table to use Apache ORC, a columnar file format, could improve the reading performance of Hive. Nevertheless, each of these methods comes at the cost of configuring and maintaining a complex platform that is not suited to perform real-time analytics tasks.  
+On the other side, Apache Druid implements a more modern architecture combining column-oriented storage, distributed computing where each node can independently be scaled, and an advanced real-time ingestion system that serves data as soon as it is available. This design allows Druid to compute sub-second queries on data sources with billions of rows.  
 In conclusion, Apache Druid fully satisfied the goals of this research, proving itself to be a suitable, highly performant solution to serve the actual use cases of the MIND Foods HUB computing infrastructure.
 
 ### 5.2 Future Work
 
-The work done for this research opens on diverse further possible developments. First, the integration of Apache Druid in the MIND Foods HUB Data Lake is not complete. The provisioning described in section 3.1 was achieved on the existing Data Lake architecture, integrating Apache Druid with the Hadoop cluster to ingest data from HDFS. However, the ingestion process, handled by the hybrid GraphQL/REST API, should be revised. The API ingests new measurements, loaded from the collection agents, into the dl_measurements table using a simple INSERT statement with the corresponding values. As we know, Apache Druid does not support DML operations and allows data ingestion only in batch mode, by loading files from different storages, or in streaming mode, by reading events from Apache Kafka or Amazon Kinesis. So, a natural extension of this work would be the integration of Apache Kafka in the Data Lake cluster. With this configuration, collection agents *publish* measurements to Kafka, while Druid *consumes* them in real-time; in this way, the write operations will be decoupled from the read ones, allowing the API that serves the client applications to be scaled independently from the write architectural layer.
-Coming to scalability, as described in section 3, the test of this property was out of the scope of this research: MIND Foods HUB started to ingest measurements data as soon as I joined the project, and the resources available for the research was not adequate to scale both Hive and Druid to support a heavy workload. Therefore, a natural extension of this work could be the test of Apache Druid with a benchmark designed to quantify its scalability under a peak of multiple, concurrent and high-compute demanding requests. A benchmark of this type should measure, other than time-related metrics, like average response time or throughput, also resource-related metrics: the number of nodes the systems needs to support the peak of load, the CPU and memory consumptions, and the storage needed by Historicals to load segments after ingestions.
+The work done for this research opens on diverse further possible developments. First, the integration of Apache Druid in the MIND Foods HUB Data Lake is not complete. The provisioning described in section 3.1 was achieved on the existing Data Lake architecture, integrating Apache Druid with the Hadoop cluster to ingest data from HDFS. However, the ingestion process, handled by the hybrid GraphQL/REST API, should be revised. The API ingests new measurements, loaded from the collection agents, into the `dl_measurements` table using a simple `INSERT` statement with the corresponding values. As we know, Apache Druid does not support DML operations and allows data ingestion only in batch mode, by loading files from different storages, or in streaming mode, by reading events from Apache Kafka or Amazon Kinesis. So, a natural extension of this work would be the integration of Apache Kafka in the Data Lake cluster. With this configuration, collection agents *publish* measurements to Kafka, while Druid *consumes* them in real-time; in this way, the write operations will be decoupled from the read ones, allowing the API that serves the client applications to be scaled independently from the write architectural layer.  
+Coming to scalability, as described in section 3, the test of this property was out of the scope of this research: MIND Foods HUB started to ingest measurements data as soon as I joined the project, and the resources available for the research was not adequate to scale both Hive and Druid to support a heavy workload. Therefore, a natural extension of this work could be the test of Apache Druid with a benchmark designed to quantify its scalability under a peak of multiple, concurrent and high-compute demanding requests. A benchmark of this type should measure, other than time-related metrics, like average response time or throughput, also resource-related metrics: the number of nodes the systems needs to support the peak of load, the CPU and memory consumptions, and the storage needed by Historicals to load segments after ingestions.  
 Finally, the last development of this research would be the testing of other platforms for the MIND Foods Hub Data Lake. While the SESAR Lab team was investigating various alternatives like Presto (now Trino), a distributed SQL query engine for big data analytics, or Apache Impala, an SQL layer on Hadoop different from Hive, the research on a valid substitute could focus on a cloud solution, like Google Big Query, to remove the cost of configuring and maintaining an in-house architecture.
 
 ## 6. Acknowledgements
