@@ -324,7 +324,7 @@ The master server is called *NameNode*, and it manages the file system namespace
 
 DataNodes manage the data and the storage attached to the nodes on which they run; they are responsible for serving read and write requests from the file system's clients. Also, DataNodes, when instructed from a NameNode, perform block creation, deletion, and replication.  
 Data replication across the DataNodes of the cluster guarantee reliability and fault-tolerance to HDFS. A client application can specify the desired number of replicas per file, which is three by the default policy; this means that a Hadoop cluster should have at least three DataNodes. To implement replication, DataNodes communicate with the NameNode sending a periodical *heartbeat* message. When the NameNode detects the absence of the heartbeat caused by a disk failure or a network partition, it marks the DataNode as no more available to HDFS and does not forward any new I/O requests to it. Eventually, the NameNode starts replicating the affected blocks across the remaining DataNodes.  
-A typical HDFS cluster can have thousands of DataNodes and tens of thousands of HDFS clients per cluster since each DataNode may execute multiple application tasks simultaneously.
+A typical HDFS cluster can have thousands of DataNodes and tens of thousands of HDFS clients per cluster since each DataNode may execute multiple application tasks simultaneously.  
 
 <figure>
     <img src="./content/HDFS Architecture.jpg" alt=" HDFS Architecture and data flow" style="width: 67%;"/>
@@ -352,7 +352,7 @@ reduce(k2, list(v2)) -> list(v2)
 
 The Map function is written by the user and takes a key/value pair as input to generate a set of intermediate key/value pairs. All intermediate values with the same intermediate key are grouped together and passed to the Reduce function.
 
-The Reduce function accepts an intermediate key and a set of values for that key. Then, it merges these values to form a smaller set of values; typically, zero or one output value is produced per Reduce invocation. 
+The Reduce function accepts an intermediate key and a set of values for that key. Then, it merges these values to form a smaller set of values; typically, zero or one output value is produced per Reduce invocation.  
 The intermediate values are supplied to the user's reduce function via an iterator that allows handling lists of too large values to fit in memory.
 
 <figure>
@@ -360,12 +360,12 @@ The intermediate values are supplied to the user's reduce function via an iterat
     <figcaption>Figure 6: MapReduce flow</figcaption>
 </figure>  
 
-The power of the MapReduce model is that it enables the parallel execution of computation since the Map invocations are distributed across multiple machines of a cluster. 
-Figure 6 shows the typical execution flow of a MapReduce application. First, the input data is split into a set of *M* splits; each input splits is processed in parallel by different Map functions, running on different machines. Next, the Map functions' intermediate key/value pairs are passed to the *R* available Reduce functions. The number *R* of  Reducer is obtained by applying a partitioning function on the intermediate key (for example,  `hash(key) mod R`).
+The power of the MapReduce model is that it enables the parallel execution of computation since the Map invocations are distributed across multiple machines of a cluster.  
+Figure 6 shows the typical execution flow of a MapReduce application. First, the input data is split into a set of *M* splits; each input splits is processed in parallel by different Map functions, running on different machines. Next, the Map functions' intermediate key/value pairs are passed to the *R* available Reduce functions. The number *R* of  Reducer is obtained by applying a partitioning function on the intermediate key (for example,  `hash(key) mod R`).  
 The user specifies the number of partitions *R* and the partitioning function; the use of the partitioning function guarantee that the output of the various Map invocations is evenly distributed across the Reducers.
 
-Hadoop implements MapReduce as a framework to process data stored on HDFS.
-A MapReduce job is typically implemented in Java; it splits the input dataset into independent chunks processed in parallel by the Map tasks. Next, the framework sorts the outputs of the Maps, which are then input to the Reduce tasks. Usually, both the job's input and output are stored on HDFS. 
+Hadoop implements MapReduce as a framework to process data stored on HDFS.  
+A MapReduce job is typically implemented in Java; it splits the input dataset into independent chunks processed in parallel by the Map tasks. Next, the framework sorts the outputs of the Maps, which are then input to the Reduce tasks. Usually, both the job's input and output are stored on HDFS.   
 The computing and storage nodes are the same, so the MapReduce framework and HDFS run on the same set of nodes; this allows the framework to take advantage of data locality, moving the computation where the data already resides. As a result, data locality helps minimize network congestion because it avoids the transfer of large data sets across the cluster and improves the overall computation throughput.
 
 #### YARN
@@ -378,9 +378,9 @@ MapReduce jobs are scheduled by Hadoop's "Yet Another Resource Negotiator" (YARN
 </figure>  
 
 YARN, at its core, is composed of two processes: the *ResourceManager* and the *NodeManager*. 
-The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.
-YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.
-A ResourceManager accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution. NodeManager processes, one per each Hadoop node, are responsible for container lifecycle: they launch the container, monitor its execution and its resources usage (in terms of CPU, memory, disk, network), and reports the information to the ResourceManager. The ResourceManager, collecting information from all NodeManagers, can assemble the global status of the cluster and schedule job execution.
+The ResourceManager is a process that runs on a dedicated node and is responsible for arbitrating cluster's resources among various contending jobs and scheduling job execution depending on resources availability.  
+YARN resources are called *containers*, a logical set of resources (for example, 2 GB of RAM, 1 CPU) bound to a specific node of the cluster and reserved for executing a MapReduce job.  
+A ResourceManager accepts jobs submissions from the clients and asks the NodeManager to allocate the required resources for their execution. NodeManager processes, one per each Hadoop node, are responsible for container lifecycle: they launch the container, monitor its execution and its resources usage (in terms of CPU, memory, disk, network), and reports the information to the ResourceManager. The ResourceManager, collecting information from all NodeManagers, can assemble the global status of the cluster and schedule job execution.  
 
 It is worth mentioning another component of the YARN architecture: the *TimelineServer* (previously known as the Application History Server), which runs on a dedicated node of the cluster.
 The TimelineServer collects the historical states for each completed MapReduce job and provides various YARN related metrics  accessible via REST APIs, including:
