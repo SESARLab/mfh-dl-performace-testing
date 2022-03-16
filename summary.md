@@ -1,46 +1,41 @@
 # Apache Hive and Apache Druid performance testing for MIND Foods HUB Data Lake
 
-**Supervisor**: Prof. Paolo Ceravolo, &lt;paolo.ceravolo@unimi.it&gt;
+**Graduand**: Gabriele D'Arrigo, <gabriele.darrigo@studenti.unimi.it>, 909953
 
-**Co-supervisor**: Filippo Berto, &lt;filippo.berto@unimi.it&
+**Internship conclusion**: 16/03/2022
 
-**Graduand**: Gabriele D'Arrigo, &lt;gabriele.darrigo@studenti.unimi.it&gt;, 909953
+## 1 Organization where the internship was carried out
 
-**Stage conclusion**: 16/03/2022
+The internship took place with the SEcure Service-oriented Architectures Research Lab (SESAR Lab), a laboratory within the Computer Science Department of the University of Milan. SESAR Lab focuses on various activity research, like knowledge management, geo-localization mobile networks, security of distributed systems, and Big Data.  
+This research focuses on one of the projects managed by SESAR Lab, MIND Foods HUB: an international, interdisciplinary project that operates in the context of the Milan Innovation District. The goal of MIND Foods HUB is to "implement a computational infrastructure to model, engineer and distribute data about plants phenotyping". 
 
-Questo documento deve descrivere per brevi capitoletti il lavoro svolto dallo studente durante lo stage. Seguendo il presente formato si raccomanda di contenere la descrizione in al massimo quattro pagine (ma non meno di una).
+## 2 Initial Context
 
-## 1 Ente presso cui  e stato svolto il lavoro di stage
-Descrizione dell’azienda/ente/Laboratorio e dell'ambiente di lavoro in cui si `e andati ad operare.
+The plants phenotyping project plans to identify crops with optimal nutritional profiles and cultivate them in protected environments, like greenhouses and vertical farms. A robotic rover, deployed on the greenhouse, autonomously applies high-throughput phenotyping applications on plant cultivation. The rover, and other on-fields sensors that register weather or environmental data, send various measurements through a 5G network to a Data Lake. In the context of Big Data, a Data Lake is a repository that stores large quantities and varieties of data in their raw format, independently from their source or structure. The MIND Foods HUB Data Lake platform is based, among other components, on Apache Hadoop, a framework for parallel and distributed processing of large data sets and Apache Hive. This software allows reading, writing, and managing large datasets in distributed storage using SQL. The data stored in the Data Lake are helpful to study the nutritional properties of the selected species and develop prediction models of nutritional and functional value.
 
-## 2 Contesto iniziale
-Inquadramento dello stage, situazione esistente.
+## 3 Research goals
 
-## 3 Obiettivi del lavoro
-Cosa si voleva raggiungere inizialmente.
+In the MIND Foods HUB project, the Data Lake platform is a core component of the computing infrastructure. Therefore, it must conform to non-functional requirements regarding quality attributes: scalability, maintainability and performance. When this research started, the SESAR Lab team was not pleased with two of these properties: Apache Hive reading performance was poor even on simple aggregations queries. Also, the maintainability of the Data Lake infrastructure was not satisfying since it relies on a complex multi-container Docker application, using custom images with various bash scripts and configuration files to define the Hadoop and Apache Hive services. So, the SESAR Lab team started investigating for faster and more maintainable alternatives to Apache Hive, including Apache Druid, a real-time database that supports modern analytics applications. 
+This research aims to study Apache Druid as a viable, performant, and more maintainable solution to Apache Hive. Apache JMeter, an open-source Java application designed to measure the performance of various systems and protocols, was used to test the performance of the two platforms.
 
-## 4 Descrizione lavoro svolto
-Cosa `e stato effettivamente fatto.
+## 4 Research
 
-## 5 Tecnologie coinvolte
-Quali tecnologie sono state utilizzate e apprese.
+In software, performance testing is a type of non-functional testing that measures a system's behaviour under satisfactory and unsatisfactory conditions. The performance of a system that uses the network to transfer data is assessed by collecting various time-related metrics, like response time, throughput, and concurrency. One traditional way to accomplish performance testing is to collect requirements provided in a concrete, verifiable manner to make the performance testing meaningful. Then, with the requirements available, it is necessary to develop a benchmark: a workload representative of how the system is used in the field and then run the system on those benchmarks. Designing and implementing a valid performance benchmark is a complex process, especially for the performance testing of Big Data technologies, since an essential factor should be considered: the variety and volume of the dataset involved for testing. I followed five rigorous steps to evaluate Apache Hive and Apache Druid's maintainability and performance and achieve a relevant, repeatable and verifiable test.
 
-## 6 Competenze e risultati raggiunti
-- Quali risultati sono stati raggiunti rispetto agli obiettivi iniziali?
-- Quali insegnamenti si possono trarre dall’esperienza effettuata?
-- Quali i problemi incontrati? Quali risolti e quali no? Perch´e?
+The first step consisted in the provisioning of Apache Hive and Apache Druid and their integration with a replica of the Hadoop cluster used in production by MIND Foods Hub. I used a Vmware virtual machine hosted on the SESAR Lab infrastructure for the deployment. To provision Hadoop, Apache Hive and Apache Druid, I used a *Docker Compose*, a tool for defining and running multi-container Docker applications with YAML. The provisioning step included various ad-hoc tuning configurations to Apache Hive.
 
-## 7 Bibliografia
-[1] S. Madden, "From Databases to Big Data," IEEE Internet Computing, vol. 16, no. 3, pp. 4–6, 2012.
+The second step was the generation of a relevant, large dataset to ingest both Apache Hive and Apache Druid. I wrote "MFH measurements generator" to generate the dataset, a Node.js application that I used to produce a CSV dataset containing 50 million rows of random measurements.
 
-[2] W. Inmon, "Building the Data Warehouse", John Wiley and Sons, 2005.
+The third step was the ingestion of Apache Hive and Apache Druid. First, I created the related tables for each platform to store the data. Then, I decided to apply some optimizations for each table to test each platform at the top of their performance capability, using Hive partitions and Druid segments. Finally, I loaded the generated dataset into each table by transferring the data from a temporary Hadoop folder.
 
-[3] S. Ghemawat, H. Gobioff, S. Leung, "The Google File System", "Proceedings of the 19th ACM Symposium on Operating Systems Principles", ACM, Bolton Landing, NY, pp. 20-43. 2003. [Internet] Available from: https://research.google/pubs/pub51/
+The fourth step consisted of developing a benchmark to test Apache Hive and Apache Druid. The benchmark comprises six SQL queries. These queries are the most representative of the analysis processes of MIND Foods HUB and make the performance testing similar to an actual production workload.
 
-[4] J. Dean, S. Ghemawat, "MapReduce: Simplified Data Processing on Large Clusters", "OSDI 04: Sixth Symposium on Operating System Design and Implementation", San Francisco, CA, pp. 137-150, 2004. [Internet]. Available from: https://research.google/pubs/pub62/
+The last step was the execution of the performance testing with Apache JMeter. The goal of the performance test is to measure the average response time for the execution of each SQL query against each database HTTP API. Since Apache Hive does not expose a set of REST APIs to interact with, I wrote "Hive HTTP Proxy", a Node.js application that works as an HTTP layer on top of Apache Hive. JMeter was configured to run each query 10 times with a single thread to simulate an average analytical workflow. For each query, the following metrics were calculated: average response time, minimum response time, maximum response time, average response time standard deviation, and Cohen's D effect size.
 
-[5] F. Yang, E. Tschetter, X. Léauté, N. Ray, G. Merlino, D. Ganguli, "Druid: A real-time analytical data store", Proceedings of the ACM SIGMOD International Conference on Management of Data. 2014.
+## 4 Research results
 
-[6] E.J Weyuker, F.I. Vokolos, "Performance testing of software systems", WOSP '98: Proceedings of the 1st international workshop on Software and performance, pp. 80–87. 1998.
+During the testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly. Apache Druid instead remarkably satisfied the maintainability requirement. The provisioning of a cluster comprised of all Druid's components was straightforward, thanks to the official Docker images and the related documentation that is well detailed and comprehensive of the various deployment mode of the platform. Also, Apache Druid supports a rich extensions ecosystem to add various functionality at runtime, like the support for Amazon S3, Google Cloud Storage or Microsoft Azure instead of HDFS for data storage. This interoperability with the aforementioned cloud computing services allows the substitution of Hadoop with immediate advantages in terms of maintainability costs.
 
-[7] Karl. Huppler, "The Art of Building a Good Benchmark", In Performance Evaluation and Benchmarking, pp. 18–30.  Berlin, Heidelberg: Springer Berlin Heidelberg. 2009.
+The performance testing shows that Apache Druid outperforms Apache Hive on each test scenario. Apache Druid considerably decreased the average response time for simple queries that select and filter measurements depending on their insertion time, from 372ms of Apache Hive to 155 ms circa. For queries that aggregate data according to different criteria, Apache Druid achieved an indisputable performance increment: Apache Hive needs a 9 minutes average response time to satisfy these requests; Apache Druid always responded under a 2 seconds threshold.
+
+In conclusion, Apache Druid fully satisfied the goals of this research, proving itself to be a suitable, highly performant solution to serve the actual use cases of the MIND Foods HUB computing infrastructure.

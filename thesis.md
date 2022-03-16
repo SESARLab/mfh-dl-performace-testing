@@ -607,7 +607,7 @@ Also, the available resources, both in time and commodity (hardware), were not e
 
 ### 3.1 Provision of each solution
 
-The first step was to provision Hadoop, Apache Hive and Apache Druid and seamlessly integrate them with a replica of the Hadoop cluster used in production by MIND Foods Hub. I used a Vmware virtual machine hosted on the SESAR Lab infrastructure to deploy each platform. The virtual machine has the following specifications:
+The first step was to provision Apache Hive and Apache Druid and seamlessly integrate them with a replica of the Hadoop cluster used in production by MIND Foods Hub. I used a Vmware virtual machine hosted on the SESAR Lab infrastructure to deploy each platform. The virtual machine has the following specifications:
 
 - 12 vCPU
 - 48 GB of memory
@@ -928,7 +928,7 @@ As a result, Apache Druid was 55,8% faster than Apache Hive to import 50 million
 
 ### 3.4 Queries
 
-The benchmark developed to test Apache Hive comprises six SQL queries chosen from the ones executed by MIND Foods Hub's front-end. These queries are the most representative of the analysis processes of MIND Foods HUB and make the performance testing similar to an actual production workload.  
+The benchmark developed to test Apache Hive and Apache Druid comprises six SQL queries chosen from the ones executed by MIND Foods Hub's front-end. These queries are the most representative of the analysis processes of MIND Foods HUB and make the performance testing similar to an actual production workload.  
  In addition,  the queries are, where feasible, slightly optimized for each platform to make use of Apache Hive table partitions and Apache Druid time segments.
 
 #### Query 1
@@ -1308,7 +1308,7 @@ The alternative platform's requirements are two software qualities: maintainabil
 ### 5.1 Maintainability and Performance results
 
 Initially developed in 2009, Apache Hive is not designed to work with modern dockerized environments.  
-During my testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.  
+During the testing, Hive maintainability has proved to be scarce. The cluster configuration, consisting of ad-hoc, custom Docker images and various bash scripts, was complex, and the official Hive documentation was not always helpful. Also, Apache Hive does not implement many features of more modern platforms, like a REST API to submit queries; this limitation forced the development of an HTTP proxy layer on top of Hive to test the system properly.  
 Apache Druid instead remarkably satisfied the maintainability requirement. The provisioning of a cluster comprised of all Druid's components was straightforward, thanks to the official Docker images and the related documentation that is well detailed and comprehensive of the various deployment mode of the platform. Also, Apache Druid supports a rich extensions ecosystem to add various functionality at runtime, like the support for Amazon S3, Google Cloud Storage or Microsoft Azure instead of HDFS for segments storage. This interoperability with the aforementioned cloud computing services allows the substitution of Hadoop with immediate advantages in terms of maintainability costs.  
 However, some limitations should be considered when it comes to the maintainability requirement; the overall maintainability of a software system is usually evaluated on a long-term scenario, working on various operational constraints and for different business requirements. Unfortunately, an evaluation of this type is out of this research's scope, so the maintainability of Apache Hive and Apache Druid was tested only for the ambit of the performance testing.
 
