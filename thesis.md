@@ -1,7 +1,7 @@
 ---
 title: Apache Hive and Apache Druid performance testing for MIND Foods HUB Data Lake
-author: Gabriele D'Arrigo
-subject: Evaluating performances of enterprise data lake solutions for MIND Foods HUB project
+author: Gabriele D'Arrigo, <gabriele.darrigo@studenti.unimi.it>
+subject: Evaluating performances of enterprise Data Lake solutions for MIND Foods HUB project
 keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 ---
 
@@ -18,11 +18,11 @@ keywords: [Big Data, Data Lake, Performance Testing, Apache Hive, Apache Druid]
 
 
 
-**Supervisor**: Prof. Paolo Ceravolo, &lt;paolo.ceravolo@unimi.it&gt;
+**Supervisor**: Prof. Paolo Ceravolo, [<paolo.ceravolo@unimi.it>](mailto:paolo.ceravolo@unimi.it)
 
-**Co-supervisor**: Filippo Berto, &lt;filippo.berto@unimi.it&gt;
+**Co-supervisor**: Filippo Berto, [<filippo.berto@unimi.it>](mailto:filippo.berto@unimi.it)
 
-**Graduand**: Gabriele D'Arrigo, &lt;gabriele.darrigo@studenti.unimi.it&gt;
+**Graduand**: Gabriele D'Arrigo, [<gabriele.darrigo@studenti.unimi.it>](mailto:gabriele.darrigo@studenti.unimi.it)
 
 **Number**: 909953
 
