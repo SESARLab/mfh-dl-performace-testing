@@ -13,6 +13,5 @@ The content of the repository is the following:
 - Inside the `content` folder: are all charts and images that I drew for the thesis (using a combination of Google Sheet's charts and Miro).
 
 - Inside the `benchmark` folder:
-
-- - Apache JMeter test plans used to benchmark Apache Hive and Apache Druid via HTTP
+  - Apache JMeter test plans used to benchmark Apache Hive and Apache Druid via HTTP
   - The performance testing results in CSV
